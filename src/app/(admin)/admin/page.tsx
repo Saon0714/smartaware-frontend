@@ -41,6 +41,11 @@ const AVAILABLE = [
     description: "Submissions from the website contact form.",
   },
   {
+    href: "/admin/notes",
+    title: "Client Notes",
+    description: "Information shared with clients in their portal.",
+  },
+  {
     href: "/admin/documents",
     title: "Documents",
     description: "Files clients have sent in, and documents shared with them.",

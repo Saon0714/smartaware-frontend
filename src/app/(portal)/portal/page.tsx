@@ -60,8 +60,30 @@ export default function PortalHomePage() {
         </Link>
       </div>
 
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        {[
+          { href: "/portal/profile", title: "Profile", text: "Your business details." },
+          { href: "/portal/manager", title: "My manager", text: "Your point of contact." },
+          { href: "/portal/notes", title: "Notes", text: "Information shared with you." },
+          {
+            href: "/portal/onboarding",
+            title: "Onboarding",
+            text: "Tell us about your business.",
+          },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
+          >
+            <h2 className="font-medium">{item.title}</h2>
+            <p className="mt-1 text-sm text-muted">{item.text}</p>
+          </Link>
+        ))}
+      </div>
+
       <p className="mt-4 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
-        Invoices and notes arrive in later chunks.
+        Payments and invoices arrive in a later chunk.
       </p>
     </div>
   );

@@ -512,6 +512,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portal/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My profile */
+        get: operations["portal-profile_my_profile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update my profile */
+        patch: operations["portal-profile_update_my_profile"];
+        trace?: never;
+    };
+    "/api/v1/portal/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The onboarding wizard */
+        get: operations["portal-profile_my_onboarding"];
+        put?: never;
+        /**
+         * Save onboarding answers
+         * @description Saves progress, and marks the wizard complete only when asked.
+         *
+         *     Required answers are checked at completion rather than on every save, so a
+         *     long wizard can be left half-finished and resumed.
+         */
+        post: operations["portal-profile_save_my_onboarding"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Notes from SmartAWARE
+         * @description Read-only.
+         *
+         *     There is no write route here at all: Section 5.3.G describes notes as
+         *     information shared by SmartAWARE, so a client can read them and nothing
+         *     more. Drafts are excluded — staff can prepare a note before it is visible.
+         */
+        get: operations["portal-profile_my_notes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/invites": {
         parameters: {
             query?: never;
@@ -2021,6 +2087,148 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-notes_list"];
+        put?: never;
+        /** Create */
+        post: operations["admin-notes_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/notes/{note_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete
+         * @description A genuine delete.
+         *
+         *     Unlike tasks and documents, a note is commentary rather than a record of
+         *     work performed or a document a client relied on, so removing one destroys
+         *     no evidence.
+         */
+        delete: operations["admin-notes_delete"];
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-notes_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/clients/{client_id}/onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Client Onboarding
+         * @description What the client told us during onboarding, labelled rather than raw.
+         *
+         *     Question keys mean nothing to a reader, and the wizard is editable, so the
+         *     labels are resolved here instead of being duplicated in the frontend.
+         */
+        get: operations["admin-notes_client_onboarding"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/wizard/steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Steps */
+        get: operations["admin-wizard_list_steps"];
+        put?: never;
+        /** Create Step */
+        post: operations["admin-wizard_create_step"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/wizard/steps/{step_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Deactivate Step
+         * @description Deactivated rather than deleted.
+         *
+         *     Clients' answers reference this step's questions; removing the rows would
+         *     orphan them and lose what those clients told us.
+         */
+        delete: operations["admin-wizard_deactivate_step"];
+        options?: never;
+        head?: never;
+        /** Update Step */
+        patch: operations["admin-wizard_update_step"];
+        trace?: never;
+    };
+    "/api/v1/admin/wizard/steps/{step_id}/questions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Question */
+        post: operations["admin-wizard_create_question"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/wizard/questions/{question_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Deactivate Question */
+        delete: operations["admin-wizard_deactivate_question"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2126,6 +2334,23 @@ export interface components {
             escalated: boolean;
             /** Top Similarity */
             top_similarity: number | null;
+        };
+        /**
+         * AssignedManagerOut
+         * @description The client's point of contact — spec Section 5.3.C.
+         *
+         *     Name and email only. A client needs to know who is looking after their
+         *     account and how to reach them; SmartAWARE's internal user record is not
+         *     theirs to see.
+         */
+        AssignedManagerOut: {
+            /** Full Name */
+            full_name: string | null;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
         };
         /** AuditEntryOut */
         AuditEntryOut: {
@@ -3295,6 +3520,84 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /** NoteOut */
+        NoteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Title */
+            title: string | null;
+            /** Content */
+            content: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Author Name */
+            author_name?: string | null;
+        };
+        /** NoteUpdate */
+        NoteUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Content */
+            content?: string | null;
+            /** Is Visible To Client */
+            is_visible_to_client?: boolean | null;
+        };
+        /** NoteWrite */
+        NoteWrite: {
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Title */
+            title?: string | null;
+            /** Content */
+            content: string;
+            /**
+             * Is Visible To Client
+             * @default true
+             */
+            is_visible_to_client: boolean;
+        };
+        /** OnboardingAnswers */
+        OnboardingAnswers: {
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+            /**
+             * Complete
+             * @default false
+             */
+            complete: boolean;
+        };
+        /** OnboardingOut */
+        OnboardingOut: {
+            /** Steps */
+            steps: components["schemas"]["WizardStepOut"][];
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+            /** Completed At */
+            completed_at: string | null;
+        };
         /** PersonSummary */
         PersonSummary: {
             /**
@@ -3309,6 +3612,36 @@ export interface components {
             email: string;
             /** Full Name */
             full_name: string | null;
+        };
+        /**
+         * ProfileOut
+         * @description The form to render, and what is currently stored in it.
+         *
+         *     Fields come from the database (Section 13 item 3 leaves the final list
+         *     unconfirmed), so the frontend renders whatever it is given rather than
+         *     knowing any field by name.
+         */
+        ProfileOut: {
+            /** Fields */
+            fields: components["schemas"]["FormFieldOut"][];
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
+            /** Client Ref */
+            client_ref: string;
+            /** Status */
+            status: string;
+            /** Onboarding Completed At */
+            onboarding_completed_at: string | null;
+            assigned_manager?: components["schemas"]["AssignedManagerOut"] | null;
+        };
+        /** ProfileUpdate */
+        ProfileUpdate: {
+            /** Values */
+            values: {
+                [key: string]: unknown;
+            };
         };
         /** QualificationOut */
         QualificationOut: {
@@ -3937,6 +4270,43 @@ export interface components {
              */
             is_archived: boolean;
         };
+        /** StaffNoteOut */
+        StaffNoteOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Title */
+            title: string | null;
+            /** Content */
+            content: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Author Name */
+            author_name?: string | null;
+            /** Is Visible To Client */
+            is_visible_to_client: boolean;
+            /** Author Email */
+            author_email?: string | null;
+            /** Client Ref */
+            client_ref: string;
+            /** Client Company Name */
+            client_company_name: string | null;
+        };
         /**
          * StaffSummary
          * @description A manager or admin, as shown in assignment controls.
@@ -4254,6 +4624,106 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** WizardQuestionOut */
+        WizardQuestionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Field Type */
+            field_type: string;
+            /** Help Text */
+            help_text: string | null;
+            /** Is Required */
+            is_required: boolean;
+            /** Options */
+            options: unknown[] | null;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** WizardQuestionWrite */
+        WizardQuestionWrite: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            /** Field Type */
+            field_type: string;
+            /** Help Text */
+            help_text?: string | null;
+            /**
+             * Is Required
+             * @default false
+             */
+            is_required: boolean;
+            /** Options */
+            options?: unknown[] | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /** WizardStepOut */
+        WizardStepOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Key */
+            key: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Questions */
+            questions: components["schemas"]["WizardQuestionOut"][];
+        };
+        /** WizardStepWrite */
+        WizardStepWrite: {
+            /** Key */
+            key: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /** WizardStepWritePatch */
+        WizardStepWritePatch: {
+            /** Key */
+            key?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Active */
+            is_active?: boolean | null;
         };
         /** ClientSummary */
         app__schemas__auth__ClientSummary: {
@@ -5113,6 +5583,132 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-profile_my_profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+        };
+    };
+    "portal-profile_update_my_profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-profile_my_onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OnboardingOut"];
+                };
+            };
+        };
+    };
+    "portal-profile_save_my_onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OnboardingAnswers"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OnboardingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-profile_my_notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NoteOut"][];
                 };
             };
         };
@@ -9061,6 +9657,346 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["StaffDocumentOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-notes_list": {
+        parameters: {
+            query?: {
+                client_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffNoteOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-notes_create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffNoteOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-notes_delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-notes_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                note_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NoteUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffNoteOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-notes_client_onboarding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-wizard_list_steps": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WizardStepOut"][];
+                };
+            };
+        };
+    };
+    "admin-wizard_create_step": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WizardStepWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WizardStepOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-wizard_deactivate_step": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                step_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-wizard_update_step": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                step_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WizardStepWritePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WizardStepOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-wizard_create_question": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                step_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WizardQuestionWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WizardStepOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-wizard_deactivate_question": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                question_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

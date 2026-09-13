@@ -29,19 +29,39 @@ function initialValue(field: FormField): string | string[] | boolean {
 
 export function DynamicForm({
   definition,
+  initialValues,
   submitLabel = "Submit",
   onSubmit,
   busy = false,
   error,
+  showHoneypot = true,
 }: {
   definition: FormDefinition;
+  /** Existing values, for forms that edit a record rather than create one. */
+  initialValues?: Record<string, unknown>;
   submitLabel?: string;
   busy?: boolean;
   error?: string | null;
+  /** The honeypot belongs on public forms; a signed-in editor is not a bot. */
+  showHoneypot?: boolean;
   onSubmit: (answers: Record<string, unknown>, honeypot: string) => void;
 }) {
   const [values, setValues] = useState<FormValues>(() =>
-    Object.fromEntries(definition.fields.map((f) => [f.key, initialValue(f)])),
+    Object.fromEntries(
+      definition.fields.map((field) => {
+        const existing = initialValues?.[field.key];
+        if (existing === undefined || existing === null) {
+          return [field.key, initialValue(field)];
+        }
+        // Everything arrives from JSON, so coerce to what the control expects
+        // rather than trusting the stored shape.
+        if (field.field_type === "checkbox") return [field.key, Boolean(existing)];
+        if (field.field_type === "multiselect") {
+          return [field.key, Array.isArray(existing) ? existing.map(String) : []];
+        }
+        return [field.key, String(existing)];
+      }),
+    ),
   );
   // Hidden from sight and from assistive technology, so only a bot fills it.
   const [honeypot, setHoneypot] = useState("");
@@ -61,6 +81,7 @@ export function DynamicForm({
     >
       {error && <FormBanner tone="error">{error}</FormBanner>}
 
+      {showHoneypot && (
       <div
         aria-hidden
         className="absolute left-[-9999px] h-0 w-0 overflow-hidden"
@@ -76,6 +97,7 @@ export function DynamicForm({
           onChange={(e) => setHoneypot(e.target.value)}
         />
       </div>
+      )}
 
       {definition.fields.map((field) => (
         <DynamicField
