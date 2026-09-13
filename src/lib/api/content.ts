@@ -25,8 +25,16 @@ export type ContentBlock = NonNullable<AboutPage["intro"]>;
 export type ServiceTeaser = HomePage["services"][number];
 export type ContactDetail = ContactPage["details"][number];
 
-export function getHomePage(): Promise<HomePage> {
-  return apiFetch<HomePage>("/public/home");
+/**
+ * `regionSlug` scopes the service teasers to that market, so every card on the
+ * homepage links somewhere that exists. The backend falls back to the full list
+ * for an unknown or unpublished slug.
+ */
+export function getHomePage(regionSlug?: string | null): Promise<HomePage> {
+  const query = regionSlug
+    ? `?region=${encodeURIComponent(regionSlug)}`
+    : "";
+  return apiFetch<HomePage>(`/public/home${query}`);
 }
 
 export function getAboutPage(): Promise<AboutPage> {

@@ -130,14 +130,25 @@
 
   /* --- Surfaces -------------------------------------------------------------- */
 
-  /* Every panel. Depth only — a static panel that lifts on hover would imply it
-   * can be clicked. */
+  /* Every panel.
+   *
+   * Static panels lift slightly on hover as well. The risk with that is
+   * implying they can be clicked, so the lift is deliberately smaller than an
+   * interactive card's, there is no pointer cursor, and no affordance is added
+   * — nothing says "learn more", nothing draws a top edge. The panel
+   * acknowledges the pointer without pretending to be a link. */
   .sa-card {
     box-shadow: var(--sa-shadow-sm);
     transition:
       box-shadow var(--sa-dur) var(--sa-ease),
       border-color var(--sa-dur) var(--sa-ease),
       transform var(--sa-dur) var(--sa-ease-out);
+  }
+
+  .sa-card:hover {
+    transform: translate3d(0, -2px, 0);
+    box-shadow: var(--sa-shadow-md);
+    border-color: color-mix(in srgb, var(--sa-color-primary) 22%, var(--sa-color-border));
   }
 
   /* Panels that genuinely lead somewhere. */
@@ -340,6 +351,11 @@
     transform: translate3d(0, -2px, 0);
     box-shadow: var(--sa-shadow-md);
   }
+
+  .sa-workspace .sa-card:hover {
+    transform: none;
+    box-shadow: var(--sa-shadow-md);
+  }
 }
 
 /* --- Reduced motion -------------------------------------------------------------
@@ -365,6 +381,7 @@
   }
 
   .sa-interactive:hover,
+  .sa-card:hover,
   .sa-press:hover:not(:disabled) {
     transform: none;
   }

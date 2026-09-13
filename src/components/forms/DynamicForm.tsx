@@ -161,6 +161,15 @@ function DynamicField({
   }
 
   if (field.field_type === "select" || field.field_type === "country") {
+    // A supplied value that is not among the options is offered as one rather
+    // than dropped. Options are admin-editable and a value can arrive from a
+    // saved record or a prefilled link, so the list it was chosen from may no
+    // longer match — silently resetting the control to blank would lose the
+    // answer without telling anyone.
+    const current = String(value);
+    const unlisted =
+      current && !options.some((option) => String(option) === current) ? current : null;
+
     return (
       <div>
         {label}
@@ -168,12 +177,13 @@ function DynamicField({
           id={id}
           required={field.is_required}
           aria-describedby={describedBy}
-          value={String(value)}
+          value={current}
           onChange={(e) => onChange(e.target.value)}
         >
           <option value="">
             {field.placeholder ?? "Please choose…"}
           </option>
+          {unlisted && <option value={unlisted}>{unlisted}</option>}
           {options.map((option) => (
             <option key={String(option)} value={String(option)}>
               {String(option)}

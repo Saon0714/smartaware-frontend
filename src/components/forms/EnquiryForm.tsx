@@ -11,8 +11,16 @@ import { getForm, submitEnquiry, type FormDefinition } from "@/lib/api/enquiries
  *
  * Fetched at render time rather than baked in, so a field added in the Admin
  * Portal appears on the next page load.
+ *
+ * `prefill` carries the context of whatever the visitor clicked to get here —
+ * a service, a specific service under it, a market. They are starting values in
+ * ordinary editable controls, not a locked-in submission.
  */
-export function EnquiryForm() {
+export function EnquiryForm({
+  prefill,
+}: {
+  prefill?: Record<string, string>;
+}) {
   const [definition, setDefinition] = useState<FormDefinition | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +72,7 @@ export function EnquiryForm() {
   return (
     <DynamicForm
       definition={definition}
+      initialValues={prefill}
       submitLabel="Send enquiry"
       busy={busy}
       error={error}

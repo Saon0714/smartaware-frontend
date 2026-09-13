@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-import { BrandWave, ServiceGlyph } from "@/components/brand/BrandWave";
+import { BrandWave } from "@/components/brand/BrandWave";
+import { IconTile, StrengthMark } from "@/components/brand/Icon";
 import { Prose, Section } from "@/components/content/Prose";
 import { getHomePage } from "@/lib/api/content";
+import { resolveRegion } from "@/lib/region/server";
 
 /**
  * Rendered per request rather than prerendered at build time.
@@ -19,7 +21,16 @@ import { getHomePage } from "@/lib/api/content";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const page = await getHomePage();
+  // The market is resolved first: the teasers are scoped to it server-side, so
+  // every card links to a service that market actually offers rather than to a
+  // 404. Two round trips rather than one, and worth it for links that work.
+  const { active } = await resolveRegion();
+  const page = await getHomePage(active?.slug);
+
+  // Cards link into the visitor's chosen market rather than to an anchor on the
+  // hub, so "how we help" leads somewhere that already reflects their country.
+  const serviceHref = (slug: string) =>
+    active ? `/services/${active.slug}/${slug}` : `/services#${slug}`;
 
   return (
     <>
@@ -79,10 +90,10 @@ export default async function HomePage() {
             {page.services.map((service) => (
               <li key={service.id}>
                 <Link
-                  href={`/services#${service.slug}`}
+                  href={serviceHref(service.slug)}
                   className="sa-card sa-interactive group flex h-full flex-col rounded-lg border border-border bg-bg p-6"
                 >
-                  <ServiceGlyph name={service.name} />
+                  <IconTile name={service.icon_key} className="group-hover:scale-105" />
                   <h3 className="mt-4 font-medium transition-colors duration-200 group-hover:text-primary">
                     {service.name}
                   </h3>
@@ -127,14 +138,21 @@ export default async function HomePage() {
           tone={page.achievements.length > 0 ? "default" : "surface"}
         >
           <ul className="sa-stagger grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {page.key_strengths.map((strength) => (
+            {page.key_strengths.map((strength, index) => (
+              // Not a link and not focusable. The lift on hover is there to
+              // make the card feel alive under the cursor, and deliberately
+              // stops short of a pointer cursor or any other affordance that
+              // would promise somewhere to click.
               <li
                 key={strength.id}
-                className="sa-card group rounded-lg border border-border bg-bg p-6 transition-shadow duration-300 hover:shadow-[var(--sa-shadow-md)]"
+                className="sa-card group rounded-xl border border-border bg-bg p-6"
               >
-                <span aria-hidden className="sa-accent-bar" />
+                <StrengthMark iconKey={strength.icon_key} index={index} />
+                <span aria-hidden className="sa-accent-bar mt-4" />
                 <h3 className="mt-4 font-medium">{strength.title}</h3>
-                <p className="mt-2 text-sm text-muted">{strength.description}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  {strength.description}
+                </p>
               </li>
             ))}
           </ul>

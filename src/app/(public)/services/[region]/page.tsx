@@ -88,7 +88,7 @@ export default async function RegionServicesPage({
               <li key={service.id}>
                 <Link
                   href={`/services/${data.region.slug}/${service.slug}`}
-                  className="flex h-full flex-col sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
+                  className="group flex h-full flex-col sa-card sa-interactive rounded-xl border border-border bg-bg p-5 transition-colors hover:border-primary"
                 >
                   <h2 className="font-medium transition-colors duration-200 group-hover:text-primary">{service.name}</h2>
                   {service.short_description && (

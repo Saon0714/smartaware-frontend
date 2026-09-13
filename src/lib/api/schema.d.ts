@@ -5012,6 +5012,8 @@ export interface operations {
         parameters: {
             query?: {
                 service_limit?: number;
+                /** @description Market slug. Scopes the service teasers to what that market offers. */
+                region?: string | null;
             };
             header?: never;
             path?: never;

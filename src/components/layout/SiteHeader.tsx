@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { LogoLink } from "@/components/brand/Logo";
+import { RegionSelect } from "@/components/layout/RegionSelect";
 
 /**
  * Public site header.
@@ -51,6 +52,9 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <RegionSelect />
+          </div>
           <Link
             href="/login/client"
             className="sa-press hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--sa-shadow-sm)] hover:bg-primary-hover sm:inline-flex"
@@ -90,11 +94,14 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
+            <li className="mt-2 border-t border-border pt-3 sm:hidden">
+              <RegionSelect compact />
+            </li>
             <li>
               <Link
                 href="/login/client"
                 onClick={() => setMobileOpen(false)}
-                className="mt-1 block rounded-md bg-primary px-2 py-2.5 text-center text-sm font-medium text-white"
+                className="mt-2 block rounded-md bg-primary px-2 py-2.5 text-center text-sm font-medium text-white"
               >
                 Client Login
               </Link>

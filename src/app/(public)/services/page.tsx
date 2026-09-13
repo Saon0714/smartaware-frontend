@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { Section } from "@/components/content/Prose";
 import { getServiceHub } from "@/lib/api/services";
+import { resolveRegion } from "@/lib/region/server";
 
 /**
  * Rendered per request rather than prerendered at build time.
@@ -29,12 +30,12 @@ export const metadata: Metadata = {
  *
  * Service pages are region-scoped, because the same category can be named and
  * offered differently per market. Cards therefore link into a market rather
- * than to a global page — the first published region (the UK, our primary
- * market) when a service is offered there, otherwise the first market that
- * does offer it, so no card ever points at a 404.
+ * than to a global page: the one chosen in the header when the service is
+ * offered there, otherwise the first market that does offer it, so no card
+ * ever points at a 404.
  */
 export default async function ServicesPage() {
-  const hub = await getServiceHub();
+  const [hub, { active }] = await Promise.all([getServiceHub(), resolveRegion()]);
   const regionBySlug = new Map(hub.regions.map((region) => [region.slug, region]));
 
   return (
@@ -53,7 +54,12 @@ export default async function ServicesPage() {
               <Link
                 key={region.id}
                 href={`/services/${region.slug}`}
-                className="sa-press rounded-md border border-border bg-bg px-4 py-2.5 text-sm font-medium hover:border-primary hover:text-primary"
+                aria-current={region.slug === active?.slug ? "true" : undefined}
+                className={`sa-press rounded-md border px-4 py-2.5 text-sm font-medium ${
+                  region.slug === active?.slug
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border bg-bg hover:border-primary hover:text-primary"
+                }`}
               >
                 {region.name}
               </Link>
@@ -65,8 +71,10 @@ export default async function ServicesPage() {
       <Section title="All services">
         <ul className="sa-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {hub.categories.map((category) => {
-            const target = category.region_slugs?.[0];
-            const markets = (category.region_slugs ?? [])
+            const available = category.region_slugs ?? [];
+            const target =
+              active && available.includes(active.slug) ? active.slug : available[0];
+            const markets = available
               .map((slug) => regionBySlug.get(slug)?.name)
               .filter(Boolean);
 
@@ -89,7 +97,7 @@ export default async function ServicesPage() {
                 {target ? (
                   <Link
                     href={`/services/${target}/${category.slug}`}
-                    className="flex h-full flex-col sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
+                    className="group flex h-full flex-col sa-card sa-interactive rounded-xl border border-border bg-bg p-5 transition-colors hover:border-primary"
                   >
                     {card}
                   </Link>

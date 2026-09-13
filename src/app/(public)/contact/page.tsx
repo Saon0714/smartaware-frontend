@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Section } from "@/components/content/Prose";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
+import { enquiryPrefill } from "@/lib/enquiry/prefill";
 
 /**
  * Rendered per request rather than prerendered at build time.
@@ -88,8 +89,17 @@ function DetailValue({ detail }: { detail: ContactDetail }) {
   return <span className="whitespace-pre-line">{detail.value}</span>;
 }
 
-export default async function ContactPage() {
-  const page = await getContactPage();
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const [page, params] = await Promise.all([getContactPage(), searchParams]);
+
+  // Set when the visitor arrived from an "Enquire about this" button on a
+  // service page. Everything it fills in stays editable.
+  const prefill = enquiryPrefill(params);
+  const prefilled = Object.keys(prefill).length > 0;
 
   return (
     <>
@@ -148,14 +158,20 @@ export default async function ContactPage() {
           </div>
         )}
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[3fr_2fr]">
+        <div id="enquiry" className="mt-12 grid scroll-mt-24 gap-10 lg:grid-cols-[3fr_2fr]">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">Make an enquiry</h2>
             <p className="mt-2 text-muted">
               Tell us what you need and a member of the team will respond.
             </p>
+            {prefilled && (
+              <p className="mt-4 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-muted">
+                We have filled in what you were looking at. Change anything
+                below before you send it.
+              </p>
+            )}
             <div className="mt-6">
-              <EnquiryForm />
+              <EnquiryForm prefill={prefill} />
             </div>
           </div>
 

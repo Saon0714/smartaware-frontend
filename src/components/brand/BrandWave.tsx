@@ -37,31 +37,3 @@ export function BrandWave({ className = "" }: { className?: string }) {
     </div>
   );
 }
-
-/**
- * A small gradient tile standing in for a service icon.
- *
- * The taxonomy carries an `icon_key` that has never been rendered. Rather than
- * invent an icon set, this derives a consistent two-letter mark from the
- * service name — visual variety that cannot ever be wrong about what a service
- * is.
- */
-export function ServiceGlyph({ name }: { name: string }) {
-  const initials = name
-    .replace(/[^a-zA-Z ]/g, "")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
-
-  return (
-    <span
-      aria-hidden
-      className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white shadow-[var(--sa-shadow-sm)] transition-transform duration-300 group-hover:scale-105"
-      style={{ background: "var(--sa-gradient-brand)" }}
-    >
-      {initials || "SA"}
-    </span>
-  );
-}

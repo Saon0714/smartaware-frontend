@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { Prose } from "@/components/content/Prose";
 import { ApiError } from "@/lib/api/client";
 import { getServiceDetail } from "@/lib/api/services";
+import { enquiryHref } from "@/lib/enquiry/prefill";
+import { RegionScope } from "@/lib/region/RegionProvider";
+import { resolveRegion } from "@/lib/region/server";
 
 /**
  * Rendered per request rather than prerendered at build time.
@@ -57,17 +60,46 @@ export default async function ServiceDetailPage({
   params: Promise<{ region: string; service: string }>;
 }) {
   const { region: regionSlug, service: serviceSlug } = await params;
-  const detail = await load(regionSlug, serviceSlug);
+  const [detail, { regions }] = await Promise.all([
+    load(regionSlug, serviceSlug),
+    resolveRegion(),
+  ]);
   if (!detail) notFound();
 
   // These carry defaults in the schema, so they generate as optional.
   // Normalising once here keeps the markup below free of guards.
-  const bullets = detail.details ?? [];
-  const subcategories = detail.subcategories ?? [];
   const otherRegions = detail.other_regions ?? [];
+
+  // The market being viewed, which is the one in the URL — not whatever the
+  // header's country selector happens to be set to. Used for the breadcrumb
+  // and to prefill Country on an enquiry; the names match the Country field's
+  // options because both are the Region's name.
+  const region = regions.find((candidate) => candidate.slug === regionSlug) ?? null;
+
+  // The specific services under this category.
+  //
+  // Two admin-editable lists feed this: `subcategories`, which exists for
+  // categories that are formally broken down, and `details`, the itemised
+  // "what this includes" list that every seeded category actually uses. They
+  // are the same thing to a visitor, so they are shown as one set, deduplicated
+  // in case an editor enters an item in both. Trailing full stops are trimmed
+  // because these read as headings here rather than as sentences in a list.
+  const seen = new Set<string>();
+  const subServices = [...(detail.subcategories ?? []), ...(detail.details ?? [])]
+    .map((item) => item.trim().replace(/\.$/, ""))
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (!item || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
   return (
     <>
+      {/* Tells the header's country selector where this service actually
+          exists, so switching market never lands on a 404. */}
+      <RegionScope slugs={[regionSlug, ...otherRegions.map((item) => item.slug)]} />
+
       <section className="relative overflow-hidden border-b border-border bg-surface">
         <div aria-hidden className="sa-hero-wash" />
         <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6">
@@ -77,7 +109,7 @@ export default async function ServiceDetailPage({
             </Link>
             <span aria-hidden> / </span>
             <Link href={`/services/${regionSlug}`} className="hover:text-primary">
-              {regionSlug.toUpperCase()}
+              {region?.name ?? regionSlug.toUpperCase()}
             </Link>
             <span aria-hidden> / </span>
             <span>{detail.name}</span>
@@ -93,33 +125,40 @@ export default async function ServiceDetailPage({
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <Prose body={detail.long_description} />
 
-        {bullets.length > 0 && (
-          <section className="mt-10">
-            <h2 className="text-xl font-semibold tracking-tight">What this includes</h2>
-            <ul className="sa-stagger mt-4 grid gap-3 sm:grid-cols-2">
-              {bullets.map((item, index) => (
-                <li key={index} className="flex gap-3 text-muted">
-                  <span
-                    aria-hidden
-                    className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
-                  />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {subcategories.length > 0 && (
-          <section className="mt-10">
-            <h2 className="text-xl font-semibold tracking-tight">Specific services</h2>
-            <ul className="mt-4 flex flex-wrap gap-2">
-              {subcategories.map((name, index) => (
+        {subServices.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xl font-semibold tracking-tight">What we provide</h2>
+            <p className="mt-2 text-sm text-muted">
+              Enquire about any of these and the form will already know what you
+              were looking at — you can change it before sending.
+            </p>
+            <ul className="sa-stagger mt-6 grid gap-4 sm:grid-cols-2">
+              {subServices.map((item) => (
                 <li
-                  key={index}
-                  className="rounded-full border border-border px-3 py-1.5 text-sm text-muted"
+                  key={item}
+                  className="sa-card flex h-full flex-col justify-between gap-4 rounded-xl border border-border bg-bg p-5"
                 >
-                  {name}
+                  <div className="flex gap-3">
+                    <span
+                      aria-hidden
+                      className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
+                      style={{ background: "var(--sa-gradient-brand)" }}
+                    />
+                    <h3 className="font-medium leading-snug">{item}</h3>
+                  </div>
+                  <Link
+                    href={enquiryHref({
+                      service: detail.name,
+                      subService: item,
+                      country: region?.name,
+                    })}
+                    className="sa-press sa-arrow inline-flex w-fit items-center gap-2 rounded-md border border-border px-3.5 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+                  >
+                    Enquire
+                    <span className="sa-arrow-mark" aria-hidden>
+                      →
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -134,7 +173,10 @@ export default async function ServiceDetailPage({
             Tell us what you need and a member of the team will get back to you.
           </p>
           <Link
-            href={detail.cta_url ?? "/contact"}
+            href={
+              detail.cta_url ??
+              enquiryHref({ service: detail.name, country: region?.name })
+            }
             className="sa-press sa-arrow mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white shadow-[var(--sa-shadow-brand)] hover:bg-primary-hover"
           >
             Make an enquiry
