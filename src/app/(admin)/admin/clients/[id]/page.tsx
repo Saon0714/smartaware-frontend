@@ -4,14 +4,16 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { ServiceTags } from "@/components/admin/ServiceTags";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
-import { PageHeader, Select, Textarea } from "@/components/ui/Controls";
+import { Checkbox, PageHeader, Select, Textarea } from "@/components/ui/Controls";
 import { FormBanner, Label } from "@/components/ui/Field";
 import { useSession } from "@/lib/auth/SessionProvider";
 import {
-  assignManager, getClient, listClientAudit, listStaff, setClientStatus,
+  assignManager, getClient, listClientAudit, listClientFilterOptions, listStaff,
+  setClientServices, setClientStatus,
 } from "@/lib/api/admin";
 
 /**
@@ -38,6 +40,9 @@ export default function ClientDetailPage() {
   const client = useAsync(() => getClient(id), id);
   const staff = useAsync(() => listStaff(true), "staff");
   const audit = useAsync(() => listClientAudit(id), id);
+  // Reused for the services picker: the same endpoint that supplies the list
+  // page's filters, so the two can never offer different sets.
+  const options = useAsync(() => listClientFilterOptions(), "client-filters");
 
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -124,6 +129,13 @@ export default function ClientDetailPage() {
                 </div>
               ))}
             </dl>
+            <div className="mt-5">
+              <dt className="text-xs text-muted">Services</dt>
+              <dd className="mt-1.5">
+                <ServiceTags services={record.services} />
+              </dd>
+            </div>
+
             <p className="mt-4 text-xs text-muted">
               Onboarding:{" "}
               {record.onboarding_completed_at
@@ -275,6 +287,49 @@ export default function ClientDetailPage() {
                 Only an administrator can change the assigned manager.
               </p>
             )}
+          </section>
+
+          <section className="sa-card rounded-lg border border-border p-5">
+            <h2 className="font-medium">Services</h2>
+            <p className="mt-1 text-xs text-muted">
+              What this client is engaged for. Drives the services column and
+              filter on the client list.
+            </p>
+
+            {options.loading && <p className="mt-4 text-sm text-muted">Loading…</p>}
+
+            <ul className="mt-4 space-y-2">
+              {(options.data?.services ?? []).map((service) => {
+                const selected = (record.services ?? []).some((s) => s.id === service.id);
+                // An archived service is only offered when this client already
+                // has it — so it can be removed, but never newly sold.
+                if (service.is_archived && !selected) return null;
+                return (
+                  <li key={service.id}>
+                    <Checkbox
+                      id={`service-${service.id}`}
+                      label={
+                        service.is_archived ? `${service.name} (archived)` : service.name
+                      }
+                      checked={selected}
+                      disabled={busy}
+                      onChange={(event) => {
+                        const current = (record.services ?? []).map((s) => s.id);
+                        const next = event.target.checked
+                          ? [...current, service.id]
+                          : current.filter((existing) => existing !== service.id);
+                        void run(
+                          () => setClientServices(id, next),
+                          event.target.checked
+                            ? `Added ${service.name}.`
+                            : `Removed ${service.name}.`,
+                        );
+                      }}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         </div>
       </div>

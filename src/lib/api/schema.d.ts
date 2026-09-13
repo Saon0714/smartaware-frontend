@@ -1740,6 +1740,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/client-filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Filters
+         * @description What the client list can usefully be filtered by.
+         *
+         *     Scoped like the list itself, so a Manager restricted to their own accounts
+         *     is not shown the set of countries SmartAWARE's other clients are in.
+         *
+         *     Not on a path under `/clients/` — that would sit alongside `/clients/{id}`
+         *     and rely on route declaration order to avoid being parsed as a client ID.
+         */
+        get: operations["admin-clients_filters"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/clients/{client_id}": {
         parameters: {
             query?: never;
@@ -2620,6 +2646,8 @@ export interface components {
             /** Last Login At */
             last_login_at: string | null;
             assigned_manager?: components["schemas"]["StaffSummary"] | null;
+            /** Services */
+            services?: components["schemas"]["ClientServiceOut"][];
             /** Company Registration Number */
             company_registration_number: string | null;
             /** Registration Date */
@@ -2642,6 +2670,37 @@ export interface components {
             extra?: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * ClientFiltersOut
+         * @description The values worth filtering the client list by.
+         *
+         *     Countries come from the clients that exist rather than from the markets
+         *     SmartAWARE serves: the column is free text, and offering a country nobody is
+         *     filed under would just be a filter that always returns nothing.
+         */
+        ClientFiltersOut: {
+            /** Countries */
+            countries: string[];
+            /** Services */
+            services: components["schemas"]["ClientServiceOut"][];
+        };
+        /**
+         * ClientServiceOut
+         * @description A service a client is engaged for, as shown in the admin list.
+         */
+        ClientServiceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Is Archived */
+            is_archived: boolean;
         };
         /**
          * ClientStatus
@@ -2731,6 +2790,8 @@ export interface components {
             extra?: {
                 [key: string]: unknown;
             } | null;
+            /** Service Ids */
+            service_ids?: string[] | null;
         };
         /** ContactDetailOut */
         ContactDetailOut: {
@@ -4786,6 +4847,8 @@ export interface components {
             /** Last Login At */
             last_login_at: string | null;
             assigned_manager?: components["schemas"]["StaffSummary"] | null;
+            /** Services */
+            services?: components["schemas"]["ClientServiceOut"][];
         };
     };
     responses: never;
@@ -8887,6 +8950,8 @@ export interface operations {
                 status?: components["schemas"]["ClientStatus"] | null;
                 manager_id?: string | null;
                 unassigned?: boolean;
+                service_id?: string | null;
+                country?: string | null;
                 search?: string | null;
             };
             header?: never;
@@ -8911,6 +8976,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientFiltersOut"];
                 };
             };
         };

@@ -290,11 +290,19 @@ export type AuditEntry = Json<
 >[number];
 
 export type ClientStatus = ClientSummary["status"];
+// `services` has a default server-side, so it generates as optional.
+export type ClientService = NonNullable<ClientSummary["services"]>[number];
+
+export type ClientFilterOptions = Json<
+  ApiPaths["/api/v1/admin/client-filters"]["get"]["responses"][200]
+>;
 
 export interface ClientFilters {
   status?: ClientStatus | "";
   managerId?: string;
   unassigned?: boolean;
+  serviceId?: string;
+  country?: string;
   search?: string;
 }
 
@@ -303,10 +311,23 @@ export function listClients(filters: ClientFilters = {}): Promise<ClientSummary[
   if (filters.status) params.set("status", filters.status);
   if (filters.unassigned) params.set("unassigned", "true");
   else if (filters.managerId) params.set("manager_id", filters.managerId);
+  if (filters.serviceId) params.set("service_id", filters.serviceId);
+  if (filters.country) params.set("country", filters.country);
   if (filters.search?.trim()) params.set("search", filters.search.trim());
   const query = params.toString();
   return apiFetch<ClientSummary[]>(`/admin/clients${query ? `?${query}` : ""}`);
 }
+
+/** The countries and services worth filtering by — scoped like the list itself. */
+export const listClientFilterOptions = () =>
+  apiFetch<ClientFilterOptions>("/admin/client-filters");
+
+/** Replaces the whole set. An empty array clears them. */
+export const setClientServices = (id: string, serviceIds: string[]) =>
+  apiFetch<ClientDetail>(`/admin/clients/${id}`, {
+    method: "PATCH",
+    body: { service_ids: serviceIds },
+  });
 
 export const getClient = (id: string) =>
   apiFetch<ClientDetail>(`/admin/clients/${id}`);
