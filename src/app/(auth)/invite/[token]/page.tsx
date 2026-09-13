@@ -110,9 +110,23 @@ export default function AcceptInvitePage() {
     <div className="sa-card rounded-lg border border-border bg-bg p-8">
       <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
       <p className="mt-2 text-sm text-muted">
-        Setting up the portal for <strong className="text-text">{state.invite.email}</strong>
+        {state.invite.role === "client"
+          ? "Setting up the Client Portal for "
+          : "Setting up your SmartAWARE staff account for "}
+        <strong className="text-text">{state.invite.email}</strong>
         {state.invite.company_name ? ` (${state.invite.company_name})` : ""}.
       </p>
+
+      {/* A new manager arrives knowing nothing about how the portal works.
+          Saying it here saves them signing in to an empty screen and
+          wondering whether something is broken. */}
+      {state.invite.role === "manager" && (
+        <p className="mt-3 rounded-lg border border-border bg-surface p-4 text-sm text-muted">
+          You will see the clients SmartAWARE tags you to, along with their
+          tasks, documents and notes. If the portal looks empty when you first
+          sign in, an administrator has not assigned you any clients yet.
+        </p>
+      )}
 
       {/* Shown, not offered. What the account covers was agreed with
           SmartAWARE before the invitation was sent, so there is no control

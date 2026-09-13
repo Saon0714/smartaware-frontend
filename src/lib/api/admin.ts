@@ -353,6 +353,22 @@ export const listClientAudit = (id: string) =>
 export const listStaff = (managersOnly = true) =>
   apiFetch<StaffSummary[]>(`/admin/staff?managers_only=${managersOnly}`);
 
+/**
+ * Tag a manager to exactly this set of clients.
+ *
+ * Replaces rather than adds — a client left out is taken off them. The server
+ * writes only the differences, so re-saving an unchanged set records nothing.
+ */
+export const setManagerClients = (
+  managerId: string,
+  clientIds: string[],
+  note?: string,
+) =>
+  apiFetch<ClientSummary[]>(`/admin/staff/${managerId}/clients`, {
+    method: "PUT",
+    body: { client_ids: clientIds, note: note?.trim() || null },
+  });
+
 // --- Invitations -------------------------------------------------------------------
 
 export type Invite = Json<

@@ -1847,6 +1847,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/staff/{user_id}/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Manager Clients
+         * @description The accounts this manager is looking after.
+         *
+         *     Scoped like every other listing, so a Manager permitted to see this cannot
+         *     learn about accounts outside their own reach by asking about a colleague.
+         */
+        get: operations["admin-clients_manager_clients"];
+        /**
+         * Set Manager Clients
+         * @description Tag a manager to a set of clients in one go.
+         *
+         *     Admin only — Section 6.1 gives Managers no say in their own allocation.
+         *
+         *     The same assignment the client page performs, applied per client, so each
+         *     move is audited individually and a client taken from another manager records
+         *     who lost it. Only the differences are written: re-sending an unchanged set
+         *     is a no-op rather than a page of identical audit entries.
+         */
+        put: operations["admin-clients_set_manager_clients"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/clients/{client_id}/audit": {
         parameters: {
             query?: never;
@@ -3347,6 +3381,7 @@ export interface components {
              * Format: email
              */
             email: string;
+            role: components["schemas"]["UserRole"];
             /** Company Name */
             company_name: string | null;
             /**
@@ -3527,10 +3562,27 @@ export interface components {
             /** Note */
             note?: string | null;
         };
+        /**
+         * ManagerClientsRequest
+         * @description The full set of clients a manager should be looking after.
+         *
+         *     Replaces rather than adds: sending a list without a client they currently
+         *     hold takes it off them. Expressed as the whole set because that is the
+         *     question the screen asks — "who does this manager cover?" — and because two
+         *     admins editing at once then conflict visibly instead of silently merging.
+         */
+        ManagerClientsRequest: {
+            /** Client Ids */
+            client_ids?: string[];
+            /** Note */
+            note?: string | null;
+        };
         /** MeOut */
         MeOut: {
             user: components["schemas"]["UserOut"];
             client?: components["schemas"]["app__schemas__auth__ClientSummary"] | null;
+            /** Permissions */
+            permissions?: components["schemas"]["Permission"][];
         };
         /** MessageOut */
         MessageOut: {
@@ -3665,6 +3717,11 @@ export interface components {
             /** Completed At */
             completed_at: string | null;
         };
+        /**
+         * Permission
+         * @enum {string}
+         */
+        Permission: "task:view" | "task:create" | "task:update" | "task:complete" | "task:assign" | "task:delete" | "client:view" | "client:create" | "client:update" | "client:set_status" | "client:assign_manager" | "invite:manage" | "document:view" | "document:upload" | "document:upload_as_staff" | "document:delete" | "invoice:view" | "invoice:manage" | "invoice:reconcile" | "note:view" | "note:manage" | "content:manage" | "faq:manage" | "settings:manage" | "user:manage" | "enquiry:view" | "chat_logs:view" | "audit:view";
         /** PersonSummary */
         PersonSummary: {
             /**
@@ -9175,6 +9232,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_manager_clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__client__ClientSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_set_manager_clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManagerClientsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__client__ClientSummary"][];
                 };
             };
             /** @description Validation Error */

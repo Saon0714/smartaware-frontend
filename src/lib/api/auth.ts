@@ -20,6 +20,9 @@ export type InviteCheckOut = Json<
   ApiPaths["/api/v1/auth/invite/{token}"]["get"]["responses"][200]
 >;
 export type UserRole = UserOut["role"];
+/** The permission names the server reports on /auth/me — a union, so a
+ *  mistyped one fails to compile rather than silently hiding a section. */
+export type Permission = NonNullable<MeOut["permissions"]>[number];
 
 export function login(email: string, password: string): Promise<SessionOut> {
   return apiFetch<SessionOut>("/auth/login", {

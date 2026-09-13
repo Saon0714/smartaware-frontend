@@ -21,7 +21,7 @@ import {
 } from "react";
 
 import * as authApi from "@/lib/api/auth";
-import type { MeOut, UserOut } from "@/lib/api/auth";
+import type { MeOut, Permission, UserOut } from "@/lib/api/auth";
 import { ApiError, setAccessToken } from "@/lib/api/client";
 
 export type SessionStatus = "loading" | "authenticated" | "anonymous";
@@ -30,6 +30,16 @@ interface SessionContextValue {
   status: SessionStatus;
   user: UserOut | null;
   client: MeOut["client"] | null;
+  /** What this account may do, as the server reports it. */
+  permissions: readonly Permission[];
+  /**
+   * Whether the caller holds a permission.
+   *
+   * Used to decide what to put in the navigation, so a Manager is not offered
+   * a section that would only refuse them. It is not a security boundary —
+   * the API authorises every request on its own.
+   */
+  can: (permission: Permission) => boolean;
   signIn: (email: string, password: string) => Promise<UserOut>;
   signOut: () => Promise<void>;
   /** Adopt a session returned by the invite-acceptance endpoint. */
@@ -43,11 +53,13 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [status, setStatus] = useState<SessionStatus>("loading");
   const [user, setUser] = useState<UserOut | null>(null);
   const [client, setClient] = useState<MeOut["client"] | null>(null);
+  const [permissions, setPermissions] = useState<readonly Permission[]>([]);
 
   const clear = useCallback(() => {
     setAccessToken(null);
     setUser(null);
     setClient(null);
+    setPermissions([]);
     setStatus("anonymous");
   }, []);
 
@@ -55,6 +67,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     const me = await authApi.getMe();
     setUser(me.user);
     setClient(me.client ?? null);
+    setPermissions(me.permissions ?? []);
     setStatus("authenticated");
   }, []);
 
@@ -120,15 +133,30 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   }, [clear]);
 
-  const adoptSession = useCallback((accessToken: string, nextUser: UserOut) => {
-    setAccessToken(accessToken);
-    setUser(nextUser);
-    setStatus("authenticated");
-  }, []);
+  const adoptSession = useCallback(
+    (accessToken: string, nextUser: UserOut) => {
+      setAccessToken(accessToken);
+      setUser(nextUser);
+      setStatus("authenticated");
+      // The accept response carries the user but not what they may do, and a
+      // new Manager lands straight in the staff portal — without this their
+      // navigation would be empty until the next page load.
+      void loadProfile().catch(() => undefined);
+    },
+    [loadProfile],
+  );
+
+  const can = useCallback(
+    (permission: Permission) => permissions.includes(permission),
+    [permissions],
+  );
 
   const value = useMemo(
-    () => ({ status, user, client, signIn, signOut, adoptSession, reload: loadProfile }),
-    [status, user, client, signIn, signOut, adoptSession, loadProfile],
+    () => ({
+      status, user, client, permissions, can,
+      signIn, signOut, adoptSession, reload: loadProfile,
+    }),
+    [status, user, client, permissions, can, signIn, signOut, adoptSession, loadProfile],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

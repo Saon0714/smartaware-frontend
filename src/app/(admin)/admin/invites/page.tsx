@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
-import { Badge, Checkbox, EmptyState, PageHeader } from "@/components/ui/Controls";
+import { Badge, Checkbox, EmptyState, PageHeader, Select } from "@/components/ui/Controls";
 import { FormBanner, Input, Label } from "@/components/ui/Field";
 import {
   createInvite, listClientFilterOptions, listInvites, resendInvite, revokeInvite,
@@ -35,6 +35,7 @@ export default function InvitesPage() {
   const invites = useAsync(listInvites, "invites");
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"client" | "manager">("client");
   const [company, setCompany] = useState("");
   const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [lastLink, setLastLink] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export default function InvitesPage() {
     <div>
       <PageHeader
         title="Invitations"
-        description="Client accounts are created by invitation only. There is no public sign-up."
+        description="Client and staff accounts are both created by invitation only. There is no public sign-up."
       />
 
       {invites.error && (
@@ -82,11 +83,13 @@ export default function InvitesPage() {
           setBusy(true);
           invites.setError(null);
           try {
-            const result = await createInvite({
-              email,
-              company_name: company || null,
-              service_ids: serviceIds,
-            });
+            // Company and services belong to a client account. A manager has
+            // neither, and the API refuses services on a staff invitation.
+            const result = await createInvite(
+              role === "manager"
+                ? { email, role }
+                : { email, role, company_name: company || null, service_ids: serviceIds },
+            );
             setEmail("");
             setCompany("");
             setServiceIds([]);
@@ -99,7 +102,7 @@ export default function InvitesPage() {
           }
         }}
       >
-        <h2 className="font-medium">Invite a client</h2>
+        <h2 className="font-medium">Send an invitation</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
             <Label htmlFor="email">
@@ -114,6 +117,25 @@ export default function InvitesPage() {
             />
           </div>
           <div>
+            <Label htmlFor="role">Account type</Label>
+            <Select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "client" | "manager")}
+            >
+              <option value="client">Client — portal access to their own account</option>
+              <option value="manager">Manager — staff portal, for the clients you tag them to</option>
+            </Select>
+            <p className="mt-1 text-xs text-muted">
+              {role === "manager"
+                ? "A manager sees nothing until you tag them to clients on the Team page."
+                : "A client sees only their own tasks, documents and invoices."}
+            </p>
+          </div>
+        </div>
+
+        {role === "client" && (
+          <div className="mt-4 sm:w-1/2 sm:pr-2">
             <Label htmlFor="company">Company name</Label>
             <Input
               id="company"
@@ -124,9 +146,9 @@ export default function InvitesPage() {
               Pre-fills their profile. They can change it.
             </p>
           </div>
-        </div>
+        )}
 
-        <fieldset className="mt-5">
+        <fieldset className={role === "manager" ? "hidden" : "mt-5"}>
           <legend className="text-sm font-medium">Services</legend>
           <p className="mt-1 text-xs text-muted">
             What this client is being signed up for. Applied to their account
@@ -157,7 +179,7 @@ export default function InvitesPage() {
         </fieldset>
 
         <Button type="submit" className="mt-5" loading={busy}>
-          Send invitation
+          {role === "manager" ? "Invite manager" : "Invite client"}
         </Button>
         <p className="mt-3 text-xs text-muted">
           The link can be used once and expires after the configured window.
@@ -196,7 +218,11 @@ export default function InvitesPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium">{invite.email}</p>
                   <InviteStatusBadge status={invite.status} />
-                  {invite.role !== "client" && <Badge tone="warning">{invite.role}</Badge>}
+                  {invite.role !== "client" && (
+                    <Badge tone="warning">
+                      {invite.role === "manager" ? "Manager" : invite.role}
+                    </Badge>
+                  )}
                 </div>
                 <p className="mt-1 text-xs text-muted">
                   {invite.prefill_company_name
