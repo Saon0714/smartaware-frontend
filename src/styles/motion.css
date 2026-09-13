@@ -131,8 +131,21 @@
 }
 
 /* Panels that genuinely lead somewhere. */
-.sa-interactive {
+/* Positioning is declared through :where() so it carries no specificity.
+ *
+ * These utilities only need *a* positioning context for their pseudo-elements,
+ * and `relative` is merely the sensible default. Declaring it as a plain class
+ * ties specificity with Tailwind's own `fixed`, `absolute` and `sticky`
+ * utilities, and because this file is imported after Tailwind, source order
+ * made it win — which silently dropped the fixed chat launcher into normal
+ * flow at the foot of the page. With :where() any explicit positioning
+ * utility takes precedence, as it should.
+ */
+:where(.sa-interactive) {
   position: relative;
+}
+
+.sa-interactive {
   overflow: hidden;
   will-change: transform;
 }
@@ -168,8 +181,11 @@
 
 /* --- Buttons ---------------------------------------------------------------- */
 
-.sa-press {
+:where(.sa-press) {
   position: relative;
+}
+
+.sa-press {
   overflow: hidden;
   transition:
     background-color var(--sa-dur) var(--sa-ease),
@@ -211,8 +227,11 @@
 /* --- Links ------------------------------------------------------------------ */
 
 /* An underline that grows from the left, rather than appearing all at once. */
-.sa-link {
+:where(.sa-link) {
   position: relative;
+}
+
+.sa-link {
   transition: color var(--sa-dur) var(--sa-ease);
 }
 

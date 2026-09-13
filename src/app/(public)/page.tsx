@@ -27,14 +27,14 @@ export default async function HomePage() {
         <div aria-hidden className="sa-hero-wash" />
 
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
-          <p className="sa-fade inline-flex items-center gap-2 rounded-full border border-border bg-bg/80 px-3 py-1 text-xs font-medium tracking-wide text-accent backdrop-blur">
+          {/* <p className="sa-fade inline-flex items-center gap-2 rounded-full border border-border bg-bg/80 px-3 py-1 text-xs font-medium tracking-wide text-accent backdrop-blur">
             <span
               aria-hidden
               className="h-1.5 w-1.5 rounded-full"
               style={{ background: "var(--sa-gradient-brand)" }}
             />
             Established 2016
-          </p>
+          </p> */}
 
           {page.hero?.title && (
             <h1

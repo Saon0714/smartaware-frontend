@@ -81,7 +81,9 @@ export async function SiteFooter() {
       </div>
 
       <div className="border-t border-border">
-        <div className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted sm:px-6">
+        {/* Extra space at the foot on small screens: the floating Smart AI
+            launcher sits bottom-right and would otherwise cover this row. */}
+        <div className="mx-auto max-w-6xl px-4 py-6 pb-20 text-xs text-muted sm:px-6 sm:pb-6">
           <p>&copy; {new Date().getFullYear()} SmartAWARE. All rights reserved.</p>
         </div>
       </div>
