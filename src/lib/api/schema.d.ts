@@ -1799,6 +1799,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List
+         * @description Grouped, so related settings are edited together.
+         */
+        get: operations["admin-settings_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/settings/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get */
+        get: operations["admin-settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-settings_update"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -3472,6 +3510,70 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserOut"];
         };
+        /** SettingGroupOut */
+        SettingGroupOut: {
+            /** Group */
+            group: string;
+            /** Label */
+            label: string;
+            /** Settings */
+            settings: components["schemas"]["SettingOut"][];
+        };
+        /** SettingOut */
+        SettingOut: {
+            /** Key */
+            key: string;
+            /** Value */
+            value: unknown;
+            value_type: components["schemas"]["SettingValueType"];
+            /** Description */
+            description: string | null;
+            /** Group */
+            group: string | null;
+            /** Is Editable */
+            is_editable: boolean;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Updated By Id */
+            updated_by_id: string | null;
+            /**
+             * Control
+             * @default text
+             */
+            control: string;
+            /** Label */
+            label?: string | null;
+            /**
+             * Choices
+             * @default []
+             */
+            choices: {
+                [key: string]: string;
+            }[];
+            /** Minimum */
+            minimum?: number | null;
+            /** Maximum */
+            maximum?: number | null;
+            /** Hint */
+            hint?: string | null;
+            /** Unit */
+            unit?: string | null;
+            /** Confirm */
+            confirm?: string | null;
+        };
+        /** SettingUpdate */
+        SettingUpdate: {
+            /** Value */
+            value: unknown;
+        };
+        /**
+         * SettingValueType
+         * @enum {string}
+         */
+        SettingValueType: "string" | "integer" | "float" | "boolean" | "json";
         /** SocialLinkOut */
         SocialLinkOut: {
             /**
@@ -8231,6 +8333,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TaskOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-settings_list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingGroupOut"][];
+                };
+            };
+        };
+    };
+    "admin-settings_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-settings_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettingUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SettingOut"];
                 };
             };
             /** @description Validation Error */

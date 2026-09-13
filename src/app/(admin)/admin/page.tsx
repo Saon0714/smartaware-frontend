@@ -41,6 +41,11 @@ const AVAILABLE = [
     description: "Submissions from the website contact form.",
   },
   {
+    href: "/admin/settings",
+    title: "Settings",
+    description: "Notification recipients, Smart AI tuning, access rules and payments.",
+  },
+  {
     href: "/admin/invites",
     title: "Invitations",
     description: "Invite clients to the portal.",

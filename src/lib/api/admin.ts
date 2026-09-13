@@ -352,3 +352,19 @@ export const revokeInvite = (id: string) =>
 
 export const resendInvite = (id: string) =>
   apiFetch<InviteCreated>(`/admin/invites/${id}/resend`, { method: "POST" });
+
+// --- Settings ---------------------------------------------------------------------
+
+export type SettingGroup = Json<
+  ApiPaths["/api/v1/admin/settings"]["get"]["responses"][200]
+>[number];
+
+export type Setting = SettingGroup["settings"][number];
+
+export const listSettings = () => apiFetch<SettingGroup[]>("/admin/settings");
+
+export const updateSetting = (key: string, value: unknown) =>
+  apiFetch<Setting>(`/admin/settings/${encodeURIComponent(key)}`, {
+    method: "PATCH",
+    body: { value },
+  });
