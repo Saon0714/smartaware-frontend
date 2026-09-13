@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+
+import { SessionProvider } from "@/lib/auth/SessionProvider";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,7 +18,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <SessionProvider>{children}</SessionProvider>
+      </body>
     </html>
   );
 }
