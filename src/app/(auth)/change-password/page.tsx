@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { FormBanner, Input, Label } from "@/components/ui/Field";
 import { changePassword } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
+import { homeForRole, loginPathForTarget } from "@/lib/auth/destinations";
 import { useSession } from "@/lib/auth/SessionProvider";
 
 const MIN_PASSWORD_LENGTH = 12;
@@ -47,8 +48,9 @@ export default function ChangePasswordPage() {
     setSubmitting(true);
     try {
       await changePassword(current, next);
+      const login = loginPathForTarget(user ? homeForRole(user.role) : "/portal");
       await signOut();
-      router.replace("/login?changed=1");
+      router.replace(`${login}?changed=1`);
     } catch (err) {
       setError(
         err instanceof ApiError ? err.detail : "Could not change your password. Please try again.",

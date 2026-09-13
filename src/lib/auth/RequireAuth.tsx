@@ -9,10 +9,11 @@
  * refuse the requests the page makes.
  */
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import type { UserRole } from "@/lib/api/auth";
+import { loginPathForTarget } from "@/lib/auth/destinations";
 import { useSession } from "@/lib/auth/SessionProvider";
 
 export function RequireAuth({
@@ -24,12 +25,14 @@ export function RequireAuth({
 }) {
   const { status, user } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   const allowed = !roles || (user ? roles.includes(user.role) : false);
 
   useEffect(() => {
     if (status === "anonymous") {
-      router.replace("/login");
+      const login = loginPathForTarget(pathname);
+      router.replace(`${login}?next=${encodeURIComponent(pathname)}`);
       return;
     }
     // A signed-in account bootstrapped by an administrator must set its own
@@ -37,7 +40,7 @@ export function RequireAuth({
     if (status === "authenticated" && user?.must_change_password) {
       router.replace("/change-password");
     }
-  }, [status, user, router]);
+  }, [status, user, router, pathname]);
 
   if (status === "loading") {
     return (

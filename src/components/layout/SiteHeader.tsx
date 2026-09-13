@@ -51,7 +51,7 @@ export function SiteHeader() {
 
         <div className="flex items-center gap-2">
           <Link
-            href="/login"
+            href="/login/client"
             className="hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:inline-block"
           >
             Client Login
@@ -91,7 +91,7 @@ export function SiteHeader() {
             ))}
             <li>
               <Link
-                href="/login"
+                href="/login/client"
                 onClick={() => setMobileOpen(false)}
                 className="mt-1 block rounded-md bg-primary px-2 py-2.5 text-center text-sm font-medium text-white"
               >

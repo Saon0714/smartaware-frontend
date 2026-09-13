@@ -1,11 +1,14 @@
 /**
  * Next.js Proxy (renamed from Middleware in Next.js 16).
  *
- * Redirects anonymous visitors away from portal and admin routes before the
- * page renders, purely so they see the login screen instead of a flash of
- * empty layout.
+ * Must live beside `app/` — with the App Router under `src/`, that means
+ * `src/proxy.ts`. At the repository root it is silently ignored.
  *
- * It checks only that a refresh cookie EXISTS. It cannot validate it — the
+ * Redirects anonymous visitors away from portal and admin routes before the
+ * page renders, so they see a login screen rather than a flash of empty
+ * layout, and land on the tab matching where they were going.
+ *
+ * It checks only that a refresh cookie EXISTS. It cannot validate one — the
  * signing secret lives in the backend — and the Next.js documentation is
  * explicit that Proxy "should not be used as a full session management or
  * authorization solution". The real boundary is the API: every request the
@@ -19,15 +22,16 @@ import type { NextRequest } from "next/server";
 const REFRESH_COOKIE = "smartaware_refresh";
 
 export function proxy(request: NextRequest) {
-  const hasSession = request.cookies.has(REFRESH_COOKIE);
-
-  if (!hasSession) {
-    const login = new URL("/login", request.url);
-    login.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(login);
+  if (request.cookies.has(REFRESH_COOKIE)) {
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  const pathname = request.nextUrl.pathname;
+  const target = pathname.startsWith("/admin") ? "/login/admin" : "/login/client";
+
+  const login = new URL(target, request.url);
+  login.searchParams.set("next", pathname);
+  return NextResponse.redirect(login);
 }
 
 export const config = {

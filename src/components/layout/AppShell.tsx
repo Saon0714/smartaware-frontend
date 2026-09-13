@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { ChatWidgetSlot } from "@/components/chat/ChatWidgetSlot";
+import { loginPathForTarget } from "@/lib/auth/destinations";
 import { useSession } from "@/lib/auth/SessionProvider";
 
 export interface NavItem {
@@ -33,8 +34,9 @@ export function AppShell({
   const router = useRouter();
 
   async function handleSignOut() {
+    const login = loginPathForTarget(pathname);
     await signOut();
-    router.replace("/login");
+    router.replace(login);
   }
 
   return (
