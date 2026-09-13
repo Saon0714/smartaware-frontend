@@ -36,7 +36,7 @@ export default function MyManagerPage() {
 
       <div className="mt-6 max-w-xl">
         {manager ? (
-          <div className="rounded-lg border border-border p-6">
+          <div className="sa-card rounded-lg border border-border p-6">
             <p className="text-lg font-medium">{manager.full_name ?? manager.email}</p>
             <p className="mt-1 text-sm text-muted">Your assigned manager</p>
             <a

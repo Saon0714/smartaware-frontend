@@ -36,7 +36,11 @@ export function BulletList({ items }: { items?: readonly string[] }) {
     <ul className="mt-4 space-y-2">
       {items.map((item, index) => (
         <li key={index} className="flex gap-3 text-muted">
-          <span aria-hidden className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+          <span
+            aria-hidden
+            className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
+            style={{ background: "var(--sa-gradient-brand)" }}
+          />
           <span>{item}</span>
         </li>
       ))}
@@ -57,12 +61,15 @@ export function Section({
 }) {
   return (
     <section className={tone === "surface" ? "border-y border-border bg-surface" : ""}>
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
         {title && (
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
+          <div className="sa-rise">
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
+            <span aria-hidden className="sa-accent-bar mt-3" />
+          </div>
         )}
-        {subtitle && <p className="mt-2 max-w-2xl text-lg text-muted">{subtitle}</p>}
-        <div className={title || subtitle ? "mt-8" : ""}>{children}</div>
+        {subtitle && <p className="sa-rise mt-3 max-w-2xl text-lg text-muted">{subtitle}</p>}
+        <div className={title || subtitle ? "mt-10" : ""}>{children}</div>
       </div>
     </section>
   );

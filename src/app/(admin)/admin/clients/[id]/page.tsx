@@ -105,7 +105,7 @@ export default function ClientDetailPage() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[3fr_2fr]">
         <div className="space-y-6">
-          <section className="rounded-lg border border-border p-5">
+          <section className="sa-card rounded-lg border border-border p-5">
             <h2 className="font-medium">Profile</h2>
             <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
               {[
@@ -132,7 +132,7 @@ export default function ClientDetailPage() {
             </p>
           </section>
 
-          <section className="rounded-lg border border-border p-5">
+          <section className="sa-card rounded-lg border border-border p-5">
             <h2 className="font-medium">History</h2>
             <p className="mt-1 text-xs text-muted">
               Status changes and manager reassignments, with who made them.
@@ -163,7 +163,7 @@ export default function ClientDetailPage() {
         </div>
 
         <div className="space-y-6">
-          <section className="rounded-lg border border-border p-5">
+          <section className="sa-card rounded-lg border border-border p-5">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-medium">Account status</h2>
               <StatusBadge status={record.status} />
@@ -236,7 +236,7 @@ export default function ClientDetailPage() {
             )}
           </section>
 
-          <section className="rounded-lg border border-border p-5">
+          <section className="sa-card rounded-lg border border-border p-5">
             <h2 className="font-medium">Assigned manager</h2>
             <p className="mt-2 text-sm">
               {record.assigned_manager

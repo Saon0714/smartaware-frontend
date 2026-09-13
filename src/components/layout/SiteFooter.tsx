@@ -21,7 +21,12 @@ export async function SiteFooter() {
   ]);
 
   return (
-    <footer className="mt-16 border-t border-border bg-surface">
+    <footer className="relative mt-16 overflow-hidden border-t border-border bg-surface">
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: "var(--sa-gradient-brand)", opacity: 0.5 }}
+      />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <Logo variant="full" height={64} />
@@ -39,7 +44,7 @@ export async function SiteFooter() {
               <li key={region.id}>
                 <Link
                   href={`/services/${region.slug}`}
-                  className="text-muted transition-colors hover:text-primary"
+                  className="sa-link text-muted hover:text-primary"
                 >
                   {region.name}
                 </Link>
@@ -52,12 +57,12 @@ export async function SiteFooter() {
           <h2 className="text-sm font-medium">Company</h2>
           <ul className="mt-3 space-y-2 text-sm">
             <li>
-              <Link href="/about" className="text-muted transition-colors hover:text-primary">
+              <Link href="/about" className="sa-link text-muted hover:text-primary">
                 About Us
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="text-muted transition-colors hover:text-primary">
+              <Link href="/contact" className="sa-link text-muted hover:text-primary">
                 Contact Us
               </Link>
             </li>
@@ -65,7 +70,7 @@ export async function SiteFooter() {
               <li key={page.slug}>
                 <Link
                   href={`/${page.slug}`}
-                  className="text-muted transition-colors hover:text-primary"
+                  className="sa-link text-muted hover:text-primary"
                 >
                   {page.title}
                 </Link>

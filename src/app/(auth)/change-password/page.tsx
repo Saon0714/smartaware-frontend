@@ -60,7 +60,7 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-bg p-8">
+    <div className="sa-card rounded-lg border border-border bg-bg p-8">
       <h1 className="text-2xl font-semibold tracking-tight">
         {user?.must_change_password ? "Set your password" : "Change password"}
       </h1>

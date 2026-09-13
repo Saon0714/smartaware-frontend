@@ -29,7 +29,7 @@ export function SiteHeader() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-bg/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-border bg-bg/85 shadow-[var(--sa-shadow-xs)] backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <LogoLink variant="wordmark" height={38} priority />
 
@@ -39,8 +39,10 @@ export function SiteHeader() {
               key={item.href}
               href={item.href}
               aria-current={isActive(item.href) ? "page" : undefined}
-              className={`rounded-md px-3 py-2 text-sm transition-colors hover:bg-surface ${
-                isActive(item.href) ? "font-medium text-primary" : "text-text"
+              className={`relative rounded-md px-3 py-2 text-sm transition-colors duration-200 after:absolute after:inset-x-3 after:bottom-1 after:h-0.5 after:origin-right after:scale-x-0 after:rounded-full after:bg-[image:var(--sa-gradient-brand)] after:transition-transform after:duration-300 after:content-[''] hover:text-primary hover:after:origin-left hover:after:scale-x-100 ${
+                isActive(item.href)
+                  ? "font-medium text-primary after:origin-left after:scale-x-100"
+                  : "text-text"
               }`}
             >
               {item.label}
@@ -51,7 +53,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/login/client"
-            className="hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:inline-block"
+            className="sa-press hidden rounded-md bg-primary px-4 py-2 text-sm font-medium text-white shadow-[var(--sa-shadow-sm)] hover:bg-primary-hover sm:inline-flex"
           >
             Client Login
           </Link>
@@ -61,7 +63,7 @@ export function SiteHeader() {
             aria-controls="mobile-nav"
             aria-label="Toggle navigation"
             onClick={() => setMobileOpen((open) => !open)}
-            className="rounded-md border border-border p-2 md:hidden"
+            className="rounded-md border border-border p-2 transition-colors duration-200 hover:border-primary md:hidden"
           >
             <span aria-hidden className="block h-0.5 w-5 bg-text" />
             <span aria-hidden className="mt-1 block h-0.5 w-5 bg-text" />
@@ -74,7 +76,7 @@ export function SiteHeader() {
         <nav
           id="mobile-nav"
           aria-label="Primary"
-          className="border-t border-border bg-bg md:hidden"
+          className="sa-panel-in border-t border-border bg-bg shadow-[var(--sa-shadow-md)] md:hidden"
         >
           <ul className="mx-auto max-w-6xl px-4 py-2 sm:px-6">
             {NAV_ITEMS.map((item) => (

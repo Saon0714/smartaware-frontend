@@ -86,7 +86,7 @@ export default function TasksPage() {
             ["Completed", summary.completed],
             ["Total", summary.total],
           ].map(([label, value]) => (
-            <div key={String(label)} className="rounded-lg border border-border p-4">
+            <div key={String(label)} className="sa-card rounded-lg border border-border p-4">
               <dt className="text-xs text-muted">{label}</dt>
               <dd
                 className={`mt-1 text-2xl font-semibold ${
@@ -171,7 +171,7 @@ export default function TasksPage() {
 
       <ul className="mt-6 space-y-2">
         {rows.map((task) => (
-          <li key={task.id} className="rounded-lg border border-border p-4">
+          <li key={task.id} className="sa-card rounded-lg border border-border p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
@@ -305,7 +305,7 @@ function CompleteDialog({
         role="dialog"
         aria-modal="true"
         aria-label="Complete task"
-        className="w-full max-w-lg rounded-lg border border-border bg-bg p-6"
+        className="w-full max-w-lg sa-card rounded-lg border border-border bg-bg p-6"
       >
         <h2 className="text-lg font-semibold tracking-tight">Complete task</h2>
         <p className="mt-1 text-sm text-muted">{task.title}</p>
@@ -369,7 +369,7 @@ function TaskForm({
 
   return (
     <form
-      className="mt-6 rounded-lg border border-border bg-surface p-6"
+      className="mt-6 sa-card rounded-lg border border-border bg-surface p-6"
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit({

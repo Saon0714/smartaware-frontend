@@ -53,7 +53,7 @@ export default async function ServicesPage() {
               <Link
                 key={region.id}
                 href={`/services/${region.slug}`}
-                className="rounded-md border border-border bg-bg px-4 py-2.5 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+                className="sa-press rounded-md border border-border bg-bg px-4 py-2.5 text-sm font-medium hover:border-primary hover:text-primary"
               >
                 {region.name}
               </Link>
@@ -63,7 +63,7 @@ export default async function ServicesPage() {
       </section>
 
       <Section title="All services">
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="sa-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {hub.categories.map((category) => {
             const target = category.region_slugs?.[0];
             const markets = (category.region_slugs ?? [])
@@ -72,7 +72,7 @@ export default async function ServicesPage() {
 
             const card = (
               <>
-                <h2 className="font-medium">{category.name}</h2>
+                <h2 className="font-medium transition-colors duration-200 group-hover:text-primary">{category.name}</h2>
                 {category.short_description && (
                   <p className="mt-2 text-sm text-muted">{category.short_description}</p>
                 )}
@@ -89,7 +89,7 @@ export default async function ServicesPage() {
                 {target ? (
                   <Link
                     href={`/services/${target}/${category.slug}`}
-                    className="flex h-full flex-col rounded-lg border border-border p-5 transition-colors hover:border-primary"
+                    className="flex h-full flex-col sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
                   >
                     {card}
                   </Link>

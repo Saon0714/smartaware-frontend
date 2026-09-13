@@ -37,7 +37,7 @@ export default function LegalListPage() {
           <li key={page.id}>
             <Link
               href={`/admin/content/legal/${page.slug}`}
-              className="flex items-start justify-between gap-4 rounded-lg border border-border p-4 transition-colors hover:border-primary"
+              className="flex items-start justify-between gap-4 sa-card sa-interactive sa-card rounded-lg border border-border p-4 transition-colors hover:border-primary"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">

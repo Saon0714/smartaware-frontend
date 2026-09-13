@@ -51,7 +51,7 @@ export function EnquiryForm() {
 
   if (loadError) {
     return (
-      <p className="rounded-lg border border-border p-6 text-sm text-muted">
+      <p className="sa-card rounded-lg border border-border p-6 text-sm text-muted">
         {loadError}
       </p>
     );

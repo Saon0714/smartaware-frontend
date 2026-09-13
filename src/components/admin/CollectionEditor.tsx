@@ -106,7 +106,7 @@ export function CollectionEditor({ spec }: { spec: CollectionSpec }) {
           {rows.map((row, index) => (
             <li
               key={row.id}
-              className="flex items-start gap-4 rounded-lg border border-border p-4"
+              className="flex items-start gap-4 sa-card rounded-lg border border-border p-4"
             >
               <div className="flex shrink-0 flex-col gap-1">
                 <button
@@ -218,7 +218,7 @@ function RowForm({
         }
         onSubmit(payload);
       }}
-      className="rounded-lg border border-border bg-surface p-6"
+      className="sa-card rounded-lg border border-border bg-surface p-6"
     >
       <h2 className="font-medium">{row ? "Edit entry" : spec.addLabel}</h2>
 

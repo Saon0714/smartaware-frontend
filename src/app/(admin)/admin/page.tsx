@@ -77,7 +77,7 @@ export default function AdminHomePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
+            className="sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
           >
             <h2 className="font-medium">{item.title}</h2>
             <p className="mt-1 text-sm text-muted">{item.description}</p>

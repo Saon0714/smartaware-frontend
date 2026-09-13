@@ -108,7 +108,7 @@ export default async function ContactPage() {
         {page.details.length > 0 ? (
           <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {page.details.map((detail) => (
-              <div key={detail.id} className="rounded-lg border border-border p-6">
+              <div key={detail.id} className="sa-card rounded-lg border border-border p-6">
                 <dt className="text-sm font-medium text-muted">
                   {TYPE_LABELS[detail.detail_type] ?? detail.label}
                 </dt>
@@ -159,7 +159,7 @@ export default async function ContactPage() {
             </div>
           </div>
 
-          <aside className="rounded-lg border border-border bg-surface p-6">
+          <aside className="sa-card rounded-lg border border-border bg-surface p-6">
             <h3 className="font-medium">What happens next</h3>
             <ol className="mt-3 space-y-3 text-sm text-muted">
               <li>1. We review your enquiry and match it to the right specialist.</li>

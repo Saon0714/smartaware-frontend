@@ -76,7 +76,7 @@ export default function RegionsAdminPage() {
               setCreating(false);
             }
           }}
-          className="mt-6 rounded-lg border border-border bg-surface p-6"
+          className="mt-6 sa-card rounded-lg border border-border bg-surface p-6"
         >
           <h2 className="font-medium">Add a market</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -149,7 +149,7 @@ export default function RegionsAdminPage() {
         {(data ?? []).map((region) => (
           <li
             key={region.id}
-            className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border p-4"
+            className="flex flex-wrap items-center justify-between gap-4 sa-card rounded-lg border border-border p-4"
           >
             <div>
               <div className="flex items-center gap-2">

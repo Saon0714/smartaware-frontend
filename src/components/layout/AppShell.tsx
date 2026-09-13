@@ -41,7 +41,9 @@ export function AppShell({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // `sa-workspace` switches off entrance animation for the interfaces staff
+    // and clients actually work in, while keeping hover feedback.
+    <div className="sa-workspace flex min-h-screen flex-col">
       <header className="border-b border-border bg-bg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">
@@ -60,7 +62,7 @@ export function AppShell({
             <button
               type="button"
               onClick={handleSignOut}
-              className="rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:bg-surface"
+              className="sa-press rounded-md border border-border px-3 py-1.5 text-sm hover:border-primary hover:text-primary"
             >
               Sign out
             </button>
@@ -79,10 +81,10 @@ export function AppShell({
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                    className={`relative block rounded-md px-3 py-2 text-sm transition-all duration-200 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-[image:var(--sa-gradient-brand)] before:transition-transform before:duration-200 before:content-[''] ${
                       active
-                        ? "bg-surface font-medium text-primary"
-                        : "text-text hover:bg-surface"
+                        ? "bg-surface font-medium text-primary before:scale-y-100"
+                        : "text-text before:scale-y-0 hover:bg-surface hover:pl-4 hover:before:scale-y-100"
                     }`}
                   >
                     {item.label}

@@ -75,7 +75,11 @@ export function LogoLink({
   priority = false,
 }: LogoProps & { href?: string }) {
   return (
-    <Link href={href} aria-label="SmartAWARE — home" className="inline-flex items-center">
+    <Link
+      href={href}
+      aria-label="SmartAWARE — home"
+      className="inline-flex items-center transition-transform duration-300 ease-out hover:scale-[1.03]"
+    >
       <Logo variant={variant} height={height} priority={priority} />
     </Link>
   );

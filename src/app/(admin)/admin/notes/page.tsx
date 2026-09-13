@@ -66,7 +66,7 @@ export default function NotesAdminPage() {
 
       {creating && (
         <form
-          className="mt-6 rounded-lg border border-border bg-surface p-6"
+          className="mt-6 sa-card rounded-lg border border-border bg-surface p-6"
           onSubmit={async (event) => {
             event.preventDefault();
             const ok = await run(() => createNote(form));
@@ -169,7 +169,7 @@ export default function NotesAdminPage() {
 
       <ul className="mt-6 space-y-3">
         {rows.map((note) => (
-          <li key={note.id} className="rounded-lg border border-border p-5">
+          <li key={note.id} className="sa-card rounded-lg border border-border p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">

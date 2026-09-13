@@ -59,7 +59,7 @@ export default function MyDocumentsPage() {
         </div>
       )}
 
-      <section className="mt-6 rounded-lg border border-border bg-surface p-6">
+      <section className="mt-6 sa-card rounded-lg border border-border bg-surface p-6">
         <h2 className="font-medium">Upload a document</h2>
         <p className="mt-1 text-sm text-muted">
           Business, tax, accounting or supporting documents.
@@ -118,7 +118,7 @@ function DocumentList({
         {documents.map((document) => (
           <li
             key={document.id}
-            className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border p-4"
+            className="flex flex-wrap items-center justify-between gap-4 sa-card rounded-lg border border-border p-4"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">

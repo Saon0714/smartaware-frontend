@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/tokens.css";
+@import "../styles/motion.css";
 
 /* Expose the design tokens to Tailwind utilities (bg-primary, text-muted, …)
  * so components never hardcode a hex value. */
@@ -21,4 +22,21 @@ body {
   background: var(--sa-color-bg);
   color: var(--sa-color-text);
   font-family: var(--sa-font-sans);
+  /* Warmer rendering, so the heavier type below does not look coarse. */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings sit tighter and darker than the browser default. Part of answering
+ * "not too minimalistic" is typographic weight, not only movement. */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+/* A visible, branded focus ring everywhere. Keyboard users get the same
+ * quality of feedback as the hover states below. */
+:focus-visible {
+  outline: 2px solid var(--sa-color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

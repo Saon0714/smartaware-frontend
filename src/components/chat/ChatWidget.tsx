@@ -48,7 +48,7 @@ export function ChatWidget() {
 
   useEffect(() => {
     if (open) {
-      endRef.current?.scrollIntoView({ block: "end" });
+      endRef.current?.scrollIntoView({ block: "end", behavior: "smooth" });
       inputRef.current?.focus();
     }
   }, [open, messages]);
@@ -99,9 +99,16 @@ export function ChatWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls="smart-ai-panel"
-        className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-medium text-white shadow-lg transition-colors hover:bg-primary-hover"
+        className="sa-press fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-white shadow-[var(--sa-shadow-brand)]"
+        style={{ background: "var(--sa-gradient-brand)" }}
       >
-        <span aria-hidden>{open ? "✕" : "💬"}</span>
+        <span
+          aria-hidden
+          className="inline-block transition-transform duration-300 ease-out"
+          style={{ transform: open ? "rotate(90deg)" : "none" }}
+        >
+          {open ? "✕" : "💬"}
+        </span>
         {open ? "Close" : "Ask Smart AI"}
       </button>
 
@@ -110,26 +117,29 @@ export function ChatWidget() {
           id="smart-ai-panel"
           role="dialog"
           aria-label="Smart AI assistant"
-          className="fixed bottom-20 right-5 z-50 flex h-[min(32rem,75vh)] w-[min(24rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-2xl"
+          className="sa-panel-in fixed bottom-20 right-5 z-50 flex h-[min(32rem,75vh)] w-[min(24rem,calc(100vw-2.5rem))] origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-[var(--sa-shadow-lg)]"
         >
-          <header className="border-b border-border bg-surface px-4 py-3">
+          <header className="relative border-b border-border bg-surface px-4 py-3">
+            <span
+              aria-hidden
+              className="absolute inset-x-0 top-0 h-0.5"
+              style={{ background: "var(--sa-gradient-brand)" }}
+            />
             <p className="text-sm font-medium">Smart AI</p>
-            <p className="text-xs text-muted">
-              Answers general questions from our FAQ
-            </p>
+            <p className="text-xs text-muted">Answers general questions from our FAQ</p>
           </header>
 
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={message.role === "user" ? "text-right" : "text-left"}
+                className={`sa-panel-in ${message.role === "user" ? "text-right" : "text-left"}`}
               >
                 <div
-                  className={`inline-block max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm ${
+                  className={`inline-block max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm shadow-[var(--sa-shadow-xs)] ${
                     message.role === "user"
-                      ? "bg-primary text-white"
-                      : "border border-border bg-surface"
+                      ? "rounded-br-sm bg-primary text-white"
+                      : "rounded-bl-sm border border-border bg-surface"
                   }`}
                 >
                   {message.content}
@@ -138,10 +148,10 @@ export function ChatWidget() {
                   <p className="mt-1.5 text-xs">
                     <Link
                       href="/contact"
-                      className="text-primary underline underline-offset-4"
+                      className="sa-link sa-arrow text-primary"
                       onClick={() => setOpen(false)}
                     >
-                      Contact SmartAWARE →
+                      Contact SmartAWARE <span className="sa-arrow-mark" aria-hidden>→</span>
                     </Link>
                   </p>
                 )}
@@ -149,12 +159,30 @@ export function ChatWidget() {
             ))}
 
             {busy && (
-              <p className="text-left text-sm text-muted" aria-live="polite">
-                Smart AI is typing…
+              <p
+                className="flex items-center gap-1.5 text-left text-sm text-muted"
+                aria-live="polite"
+              >
+                Smart AI is typing
+                {/* Three dots easing in turn: it communicates waiting more
+                    honestly than a static label, and stops the moment the
+                    answer arrives. */}
+                <span className="inline-flex gap-0.5">
+                  {[0, 1, 2].map((dot) => (
+                    <span
+                      key={dot}
+                      className="h-1 w-1 rounded-full bg-muted"
+                      style={{
+                        animation: "sa-fade 900ms ease-in-out infinite alternate",
+                        animationDelay: `${dot * 160}ms`,
+                      }}
+                    />
+                  ))}
+                </span>
               </p>
             )}
             {error && (
-              <p role="alert" className="text-sm text-danger">
+              <p role="alert" className="sa-panel-in text-sm text-danger">
                 {error}
               </p>
             )}
@@ -171,12 +199,12 @@ export function ChatWidget() {
                 placeholder="Ask a question…"
                 aria-label="Your question"
                 maxLength={1000}
-                className="min-w-0 flex-1 rounded-md border border-border bg-bg px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="min-w-0 flex-1 rounded-md border border-border bg-bg px-3 py-2 text-sm outline-none transition-[border-color,box-shadow] duration-200 focus:border-primary focus:ring-4 focus:ring-primary/12"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
+                className="sa-press rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover disabled:opacity-50"
               >
                 Send
               </button>

@@ -70,7 +70,7 @@ export default function FaqAdminPage() {
       )}
 
       {status.data && (
-        <div className="mt-4 rounded-lg border border-border bg-surface p-4 text-sm">
+        <div className="mt-4 sa-card rounded-lg border border-border bg-surface p-4 text-sm">
           <p className="font-medium">Search index</p>
           <p className="mt-1 text-muted">
             {status.data.indexed} of {status.data.total} entries indexed.
@@ -123,7 +123,7 @@ export default function FaqAdminPage() {
             entry.is_published &&
             (!entry.indexed_at || entry.updated_at > entry.indexed_at);
           return (
-            <li key={entry.id} className="rounded-lg border border-border p-4">
+            <li key={entry.id} className="sa-card rounded-lg border border-border p-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
@@ -214,7 +214,7 @@ function FaqForm({
           is_published: form.is_published,
         });
       }}
-      className="rounded-lg border border-border bg-surface p-6"
+      className="sa-card rounded-lg border border-border bg-surface p-6"
     >
       <h2 className="font-medium">{entry ? "Edit entry" : "Add an FAQ entry"}</h2>
 

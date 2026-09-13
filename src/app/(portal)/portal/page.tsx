@@ -17,15 +17,15 @@ export default function PortalHomePage() {
       </p>
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-border p-5">
+        <div className="sa-card rounded-lg border border-border p-5">
           <dt className="text-sm text-muted">Client reference</dt>
           <dd className="mt-1 font-medium">{client?.client_ref ?? "—"}</dd>
         </div>
-        <div className="rounded-lg border border-border p-5">
+        <div className="sa-card rounded-lg border border-border p-5">
           <dt className="text-sm text-muted">Account status</dt>
           <dd className="mt-1 font-medium capitalize">{client?.status ?? "—"}</dd>
         </div>
-        <div className="rounded-lg border border-border p-5">
+        <div className="sa-card rounded-lg border border-border p-5">
           <dt className="text-sm text-muted">Onboarding</dt>
           <dd className="mt-1 font-medium">
             {client?.onboarding_completed_at ? "Complete" : "Not started"}
@@ -33,7 +33,7 @@ export default function PortalHomePage() {
         </div>
       </dl>
 
-      <div className="mt-8 rounded-lg border border-border p-5">
+      <div className="mt-8 sa-card rounded-lg border border-border p-5">
         <h2 className="font-medium">Work status</h2>
         <p className="mt-1 text-sm text-muted">
           See what SmartAWARE is working on for you and what has been completed.
@@ -46,7 +46,7 @@ export default function PortalHomePage() {
         </Link>
       </div>
 
-      <div className="mt-4 rounded-lg border border-border p-5">
+      <div className="mt-4 sa-card rounded-lg border border-border p-5">
         <h2 className="font-medium">Documents</h2>
         <p className="mt-1 text-sm text-muted">
           Send documents to SmartAWARE and download what they have shared with
@@ -74,7 +74,7 @@ export default function PortalHomePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
+            className="sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
           >
             <h2 className="font-medium">{item.title}</h2>
             <p className="mt-1 text-sm text-muted">{item.text}</p>

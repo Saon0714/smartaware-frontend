@@ -94,7 +94,7 @@ export default function ServicesAdminPage() {
               setCreating(false);
             }
           }}
-          className="mt-6 rounded-lg border border-border bg-surface p-6"
+          className="mt-6 sa-card rounded-lg border border-border bg-surface p-6"
         >
           <h2 className="font-medium">Add a service</h2>
           <div className="mt-4 space-y-4">
@@ -146,7 +146,7 @@ export default function ServicesAdminPage() {
             return (
               <li
                 key={service.id}
-                className="flex items-start gap-4 rounded-lg border border-border p-4"
+                className="flex items-start gap-4 sa-card rounded-lg border border-border p-4"
               >
                 {!service.is_archived && (
                   <div className="flex shrink-0 flex-col gap-1">

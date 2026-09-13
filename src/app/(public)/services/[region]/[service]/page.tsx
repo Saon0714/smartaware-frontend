@@ -68,8 +68,9 @@ export default async function ServiceDetailPage({
 
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+      <section className="relative overflow-hidden border-b border-border bg-surface">
+        <div aria-hidden className="sa-hero-wash" />
+        <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <nav aria-label="Breadcrumb" className="text-sm text-muted">
             <Link href="/services" className="hover:text-primary">
               Services
@@ -82,7 +83,7 @@ export default async function ServiceDetailPage({
             <span>{detail.name}</span>
           </nav>
 
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">{detail.name}</h1>
+          <h1 className="sa-rise mt-3 text-4xl font-semibold tracking-tight">{detail.name}</h1>
           {detail.short_description && (
             <p className="mt-4 max-w-2xl text-lg text-muted">{detail.short_description}</p>
           )}
@@ -95,7 +96,7 @@ export default async function ServiceDetailPage({
         {bullets.length > 0 && (
           <section className="mt-10">
             <h2 className="text-xl font-semibold tracking-tight">What this includes</h2>
-            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            <ul className="sa-stagger mt-4 grid gap-3 sm:grid-cols-2">
               {bullets.map((item, index) => (
                 <li key={index} className="flex gap-3 text-muted">
                   <span
@@ -125,7 +126,7 @@ export default async function ServiceDetailPage({
           </section>
         )}
 
-        <section className="mt-12 rounded-lg border border-border bg-surface p-8">
+        <section className="mt-12 sa-card rounded-lg border border-border bg-surface p-8">
           <h2 className="text-xl font-semibold tracking-tight">
             {detail.cta_label ?? "Discuss your requirements"}
           </h2>
@@ -134,9 +135,10 @@ export default async function ServiceDetailPage({
           </p>
           <Link
             href={detail.cta_url ?? "/contact"}
-            className="mt-5 inline-block rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            className="sa-press sa-arrow mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white shadow-[var(--sa-shadow-brand)] hover:bg-primary-hover"
           >
             Make an enquiry
+            <span className="sa-arrow-mark" aria-hidden>→</span>
           </Link>
         </section>
 
@@ -150,7 +152,7 @@ export default async function ServiceDetailPage({
                 <li key={region.id}>
                   <Link
                     href={`/services/${region.slug}/${detail.slug}`}
-                    className="rounded-md border border-border px-3 py-1.5 text-sm transition-colors hover:border-primary hover:text-primary"
+                    className="sa-press rounded-md border border-border px-3 py-1.5 text-sm hover:border-primary hover:text-primary"
                   >
                     {region.name}
                   </Link>

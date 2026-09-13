@@ -44,7 +44,7 @@ export default function ContentHubPage() {
           <Link
             key={section.href}
             href={section.href}
-            className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
+            className="sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
           >
             <h2 className="font-medium">{section.title}</h2>
             <p className="mt-1 text-sm text-muted">{section.description}</p>
@@ -57,7 +57,7 @@ export default function ContentHubPage() {
             <Link
               key={key}
               href={`/admin/content/${key}`}
-              className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
+              className="sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
             >
               <h2 className="font-medium">{spec.title}</h2>
               <p className="mt-1 text-sm text-muted">{spec.description}</p>

@@ -83,14 +83,14 @@ export default async function RegionServicesPage({
 
       <Section>
         {data.services.length > 0 ? (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="sa-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.services.map((service) => (
               <li key={service.id}>
                 <Link
                   href={`/services/${data.region.slug}/${service.slug}`}
-                  className="flex h-full flex-col rounded-lg border border-border p-5 transition-colors hover:border-primary"
+                  className="flex h-full flex-col sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
                 >
-                  <h2 className="font-medium">{service.name}</h2>
+                  <h2 className="font-medium transition-colors duration-200 group-hover:text-primary">{service.name}</h2>
                   {service.short_description && (
                     <p className="mt-2 text-sm text-muted">{service.short_description}</p>
                   )}

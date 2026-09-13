@@ -37,7 +37,7 @@ function AudienceToggle({ active }: { active: LoginAudience }) {
     <div
       role="tablist"
       aria-label="Choose account type"
-      className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface p-1"
+      className="grid grid-cols-2 gap-1 sa-card rounded-lg border border-border bg-surface p-1"
     >
       {tabs.map((tab) => {
         const selected = tab.key === active;
@@ -111,7 +111,7 @@ export function LoginForm({ audience }: { audience: LoginAudience }) {
   const copy = COPY[audience];
 
   return (
-    <div className="rounded-lg border border-border bg-bg p-8">
+    <div className="sa-card rounded-lg border border-border bg-bg p-8">
       <AudienceToggle active={audience} />
 
       <h1 className="mt-6 text-2xl font-semibold tracking-tight">{copy.heading}</h1>

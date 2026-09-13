@@ -1,0 +1,360 @@
+/* SmartAWARE motion and depth system.
+ *
+ * The brief was "animated, not too minimalistic". The constraint pulling the
+ * other way is what this firm does: clients arrive here to check the status of
+ * their tax affairs and to upload financial records. Motion that reads as
+ * playful would undermine that, so every rule below is deliberately restrained:
+ *
+ *   - Small amplitude. Translations of 2-6px, scales of 1.01-1.03. Enough to
+ *     feel responsive, never enough to feel bouncy.
+ *   - Fast. 150-260ms for interaction, up to 700ms for a one-off entrance.
+ *   - Ease-out only. No overshoot, no elastic, no bounce — those read as toys.
+ *   - Compositor-friendly properties (transform, opacity) so nothing janks.
+ *   - Public pages animate more than the portal and admin, which staff and
+ *     clients use for real work where repeated motion becomes irritating.
+ *
+ * Entrance animations are pure CSS with `animation-fill-mode: both` rather than
+ * JavaScript and IntersectionObserver. That matters: a JS-driven reveal that
+ * starts at opacity 0 leaves the page blank if the script fails, and these are
+ * the server-rendered pages search engines read. With CSS, the worst case is
+ * that content simply appears.
+ */
+
+:root {
+  /* Expo-out: quick to start, settles softly. Reads precise rather than cute. */
+  --sa-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --sa-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --sa-dur-fast: 150ms;
+  --sa-dur: 220ms;
+  --sa-dur-slow: 420ms;
+  --sa-dur-entrance: 640ms;
+
+  /* Elevation tinted with the brand blue rather than pure black, which keeps
+   * shadows from looking grey and dead against the warm white surface. */
+  --sa-shadow-xs: 0 1px 2px rgba(6, 60, 90, 0.05);
+  --sa-shadow-sm: 0 1px 3px rgba(6, 60, 90, 0.07), 0 1px 2px rgba(6, 60, 90, 0.04);
+  --sa-shadow-md: 0 4px 12px rgba(6, 60, 90, 0.08), 0 2px 4px rgba(6, 60, 90, 0.04);
+  --sa-shadow-lg: 0 12px 28px rgba(6, 60, 90, 0.10), 0 4px 8px rgba(6, 60, 90, 0.05);
+  --sa-shadow-brand: 0 10px 24px rgba(51, 160, 43, 0.16);
+
+  --sa-gradient-brand: linear-gradient(
+    120deg,
+    var(--sa-green-500) 0%,
+    var(--sa-green-600) 45%,
+    var(--sa-blue-500) 100%
+  );
+  --sa-gradient-subtle: linear-gradient(
+    180deg,
+    var(--sa-neutral-0) 0%,
+    var(--sa-neutral-50) 100%
+  );
+}
+
+/* --- Keyframes ------------------------------------------------------------ */
+
+@keyframes sa-rise {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes sa-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sa-scale-in {
+  from { opacity: 0; transform: scale(0.96) translate3d(0, 8px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes sa-sweep {
+  from { transform: translateX(-120%) skewX(-18deg); }
+  to   { transform: translateX(220%) skewX(-18deg); }
+}
+
+/* A slow drift for the hero wash. Long and low-contrast enough to register as
+ * depth rather than as something moving. */
+@keyframes sa-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(2%, -2%, 0) scale(1.06); }
+}
+
+@keyframes sa-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Entrance ------------------------------------------------------------- */
+
+.sa-rise {
+  animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) both;
+}
+
+.sa-fade {
+  animation: sa-fade var(--sa-dur-entrance) var(--sa-ease-out) both;
+}
+
+/* Where the browser supports it, entrance is driven by scroll position instead
+ * of page load, so content further down animates as it is reached. Everywhere
+ * else the animation simply runs on load and has finished by the time the
+ * reader scrolls to it — invisible either way, never broken. */
+@supports (animation-timeline: view()) {
+  .sa-rise,
+  .sa-fade {
+    animation-timeline: view();
+    animation-range: entry 0% cover 22%;
+  }
+}
+
+/* Children enter in sequence. Capped at eight so a long list never leaves the
+ * reader waiting on a staircase of delays. */
+.sa-stagger > * { animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) both; }
+.sa-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.sa-stagger > *:nth-child(2) { animation-delay: 60ms; }
+.sa-stagger > *:nth-child(3) { animation-delay: 120ms; }
+.sa-stagger > *:nth-child(4) { animation-delay: 180ms; }
+.sa-stagger > *:nth-child(5) { animation-delay: 240ms; }
+.sa-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.sa-stagger > *:nth-child(7) { animation-delay: 340ms; }
+.sa-stagger > *:nth-child(n + 8) { animation-delay: 380ms; }
+
+/* --- Surfaces -------------------------------------------------------------- */
+
+/* Every panel. Depth only — a static panel that lifts on hover would imply it
+ * can be clicked. */
+.sa-card {
+  box-shadow: var(--sa-shadow-sm);
+  transition:
+    box-shadow var(--sa-dur) var(--sa-ease),
+    border-color var(--sa-dur) var(--sa-ease),
+    transform var(--sa-dur) var(--sa-ease-out);
+}
+
+/* Panels that genuinely lead somewhere. */
+.sa-interactive {
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.sa-interactive:hover {
+  transform: translate3d(0, -3px, 0);
+  box-shadow: var(--sa-shadow-lg);
+}
+
+.sa-interactive:active {
+  transform: translate3d(0, -1px, 0);
+  transition-duration: var(--sa-dur-fast);
+}
+
+/* A brand-coloured edge that draws itself along the top on hover. Cheaper than
+ * animating a border and it cannot shift layout. */
+.sa-interactive::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  height: 2px;
+  width: 100%;
+  background: var(--sa-gradient-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--sa-dur-slow) var(--sa-ease-out);
+}
+
+.sa-interactive:hover::before,
+.sa-interactive:focus-within::before {
+  transform: scaleX(1);
+}
+
+/* --- Buttons ---------------------------------------------------------------- */
+
+.sa-press {
+  position: relative;
+  overflow: hidden;
+  transition:
+    background-color var(--sa-dur) var(--sa-ease),
+    box-shadow var(--sa-dur) var(--sa-ease),
+    transform var(--sa-dur-fast) var(--sa-ease-out);
+}
+
+.sa-press:hover:not(:disabled) {
+  transform: translate3d(0, -1px, 0);
+  box-shadow: var(--sa-shadow-md);
+}
+
+.sa-press:active:not(:disabled) {
+  transform: translate3d(0, 0, 0) scale(0.985);
+}
+
+/* A single light sweep on hover. One pass, not a loop — a repeating shimmer on
+ * a "Submit" button would be a distraction on a tax form. */
+.sa-press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.sa-press:hover:not(:disabled)::after {
+  opacity: 1;
+  animation: sa-sweep 700ms var(--sa-ease-out);
+}
+
+/* --- Links ------------------------------------------------------------------ */
+
+/* An underline that grows from the left, rather than appearing all at once. */
+.sa-link {
+  position: relative;
+  transition: color var(--sa-dur) var(--sa-ease);
+}
+
+.sa-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1.5px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--sa-dur) var(--sa-ease-out);
+}
+
+.sa-link:hover::after,
+.sa-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* A trailing arrow that steps forward on hover. */
+.sa-arrow > .sa-arrow-mark {
+  display: inline-block;
+  transition: transform var(--sa-dur) var(--sa-ease-out);
+}
+
+.sa-arrow:hover > .sa-arrow-mark {
+  transform: translateX(4px);
+}
+
+/* --- Decoration -------------------------------------------------------------- */
+
+/* The wash behind hero sections: two soft brand-coloured blooms drifting very
+ * slowly. Low opacity so it reads as paper texture, not as animation. */
+.sa-hero-wash {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sa-hero-wash::before,
+.sa-hero-wash::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(72px);
+  opacity: 0.32;
+  animation: sa-drift 26s var(--sa-ease) infinite;
+}
+
+.sa-hero-wash::before {
+  width: 34rem;
+  height: 34rem;
+  top: -14rem;
+  right: -8rem;
+  background: var(--sa-green-500);
+}
+
+.sa-hero-wash::after {
+  width: 28rem;
+  height: 28rem;
+  bottom: -16rem;
+  left: -6rem;
+  background: var(--sa-blue-500);
+  animation-delay: -13s;
+}
+
+/* Text filled with the brand gradient, for a single emphasised phrase. */
+.sa-gradient-text {
+  background: var(--sa-gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sa-accent-bar {
+  display: block;
+  width: 3rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--sa-gradient-brand);
+}
+
+.sa-spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: sa-spin 620ms linear infinite;
+}
+
+.sa-panel-in {
+  animation: sa-scale-in var(--sa-dur-slow) var(--sa-ease-out) both;
+}
+
+/* --- Restraint in the working interfaces --------------------------------------
+ *
+ * Staff and clients use the portal and admin for real work, often for long
+ * stretches. Entrance animation belongs on a marketing page someone visits
+ * once, not on a list they refresh forty times a day, so it is switched off
+ * here while hover feedback is kept.
+ */
+.sa-workspace .sa-rise,
+.sa-workspace .sa-fade,
+.sa-workspace .sa-stagger > * {
+  animation: none;
+}
+
+.sa-workspace .sa-interactive:hover {
+  transform: translate3d(0, -2px, 0);
+  box-shadow: var(--sa-shadow-md);
+}
+
+/* --- Reduced motion -------------------------------------------------------------
+ *
+ * Not optional. Vestibular disorders make this genuinely unpleasant, and the
+ * delays must be neutralised too — otherwise a staggered grid would sit blank
+ * for the length of its delay before appearing.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .sa-hero-wash::before,
+  .sa-hero-wash::after {
+    animation: none !important;
+  }
+
+  .sa-interactive:hover,
+  .sa-press:hover:not(:disabled) {
+    transform: none;
+  }
+}

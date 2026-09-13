@@ -39,7 +39,7 @@ export default function MyNotesPage() {
 
       <ul className="mt-6 space-y-3">
         {rows.map((note) => (
-          <li key={note.id} className="rounded-lg border border-border p-5">
+          <li key={note.id} className="sa-card rounded-lg border border-border p-5">
             {note.title && <h2 className="font-medium">{note.title}</h2>}
             <p className="mt-2 whitespace-pre-wrap text-sm text-muted">
               {note.content}

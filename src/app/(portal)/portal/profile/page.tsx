@@ -50,11 +50,11 @@ export default function MyProfilePage() {
       )}
 
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-border p-4">
+        <div className="sa-card rounded-lg border border-border p-4">
           <dt className="text-xs text-muted">Client reference</dt>
           <dd className="mt-1 font-mono">{record.client_ref}</dd>
         </div>
-        <div className="rounded-lg border border-border p-4">
+        <div className="sa-card rounded-lg border border-border p-4">
           <dt className="text-xs text-muted">Onboarding</dt>
           <dd className="mt-1">
             {record.onboarding_completed_at

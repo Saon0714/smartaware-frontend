@@ -85,7 +85,7 @@ export default function AcceptInvitePage() {
 
   if (state.kind === "invalid") {
     return (
-      <div className="rounded-lg border border-border bg-bg p-8">
+      <div className="sa-card rounded-lg border border-border bg-bg p-8">
         <h1 className="text-xl font-semibold tracking-tight">Invitation unavailable</h1>
         <p className="mt-3 text-sm text-muted">{state.message}</p>
         <div className="mt-6 flex gap-3">
@@ -107,7 +107,7 @@ export default function AcceptInvitePage() {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-bg p-8">
+    <div className="sa-card rounded-lg border border-border bg-bg p-8">
       <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
       <p className="mt-2 text-sm text-muted">
         Setting up the portal for <strong className="text-text">{state.invite.email}</strong>
