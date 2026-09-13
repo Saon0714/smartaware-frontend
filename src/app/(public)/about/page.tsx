@@ -51,12 +51,20 @@ export default async function AboutPage() {
 
       {page.milestones.length > 0 && (
         <Section title="Our journey">
-          <ol className="sa-stagger relative space-y-8 border-l border-border pl-8">
+          {/* The padding sits on each item, not the list, and each item is
+              explicitly relative. The marker previously resolved against the
+              list, which only worked while nothing between them was
+              transformed — the staggered entrance animation transforms every
+              item, and a transformed element becomes the containing block for
+              its absolutely positioned descendants, so the marker jumped
+              inward onto the year. Anchoring it to the item it belongs to
+              makes the position independent of any animation. */}
+          <ol className="sa-stagger space-y-8 border-l border-border">
             {page.milestones.map((milestone) => (
-              <li key={milestone.id}>
+              <li key={milestone.id} className="relative pl-8">
                 <span
                   aria-hidden
-                  className="absolute -left-[7px] mt-1.5 h-3.5 w-3.5 rounded-full border-2 border-bg shadow-[var(--sa-shadow-sm)]"
+                  className="absolute -left-[7px] top-[3px] h-3.5 w-3.5 rounded-full border-2 border-bg shadow-[var(--sa-shadow-sm)]"
                   style={{ background: "var(--sa-gradient-brand)" }}
                 />
                 <p className="text-sm font-medium text-primary">{milestone.year_label}</p>
