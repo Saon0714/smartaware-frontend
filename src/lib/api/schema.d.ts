@@ -424,6 +424,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portal/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My documents */
+        get: operations["portal-documents_my_documents"];
+        put?: never;
+        /**
+         * Upload a document
+         * @description Spec 5.3.E.
+         *
+         *     A client uploads only to their own account — the target is taken from their
+         *     scope, never from the request, so there is no client_id to tamper with.
+         */
+        post: operations["portal-documents_upload_document"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/documents/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My document counts */
+        get: operations["portal-documents_my_document_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/documents/{document_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get a download link
+         * @description Issue a short-lived link, after checking the caller may have it.
+         *
+         *     The scope check happens here, not at the storage layer — a signed URL is
+         *     only ever handed out for a document the caller has already been authorised
+         *     to read.
+         */
+        get: operations["portal-documents_request_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/documents/{document_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download the file
+         * @description Stream the bytes.
+         *
+         *     Used when the storage backend cannot issue a signed link, which is the case
+         *     in local development. Authorisation is identical either way.
+         */
+        get: operations["portal-documents_download_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/invites": {
         parameters: {
             query?: never;
@@ -1837,6 +1925,102 @@ export interface paths {
         patch: operations["admin-settings_update"];
         trace?: never;
     };
+    "/api/v1/admin/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-documents_list"];
+        put?: never;
+        /**
+         * Upload
+         * @description Share a document with a client (Section 5.3.F), and notify them.
+         */
+        post: operations["admin-documents_upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/documents/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Counts */
+        get: operations["admin-documents_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/documents/{document_id}/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download */
+        get: operations["admin-documents_download"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/documents/{document_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Content */
+        get: operations["admin-documents_content"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/documents/{document_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Archive
+         * @description Admin only, and an archive rather than a destruction.
+         *
+         *     A client's tax records are exactly the thing not to delete on a single
+         *     click, and Section 9 wants document actions traceable — which a removed row
+         *     and a deleted object make impossible.
+         */
+        delete: operations["admin-documents_archive"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2025,6 +2209,25 @@ export interface components {
              * @default 0
              */
             sort_order: number;
+        };
+        /** Body_admin-documents_upload */
+        "Body_admin-documents_upload": {
+            /** File */
+            file: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** @default general */
+            doc_type: components["schemas"]["DocumentType"];
+        };
+        /** Body_portal-documents_upload_document */
+        "Body_portal-documents_upload_document": {
+            /** File */
+            file: string;
+            /** @default general */
+            doc_type: components["schemas"]["DocumentType"];
         };
         /** CategoryAvailabilityGrid */
         CategoryAvailabilityGrid: {
@@ -2502,6 +2705,74 @@ export interface components {
             sort_order?: number | null;
             /** Is Published */
             is_published?: boolean | null;
+        };
+        /** DocumentCounts */
+        DocumentCounts: {
+            /** From Client */
+            from_client: number;
+            /** From Smartaware */
+            from_smartaware: number;
+            /** Total */
+            total: number;
+        };
+        /**
+         * DocumentDirection
+         * @enum {string}
+         */
+        DocumentDirection: "client_to_smartaware" | "smartaware_to_client";
+        /** DocumentOut */
+        DocumentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            direction: components["schemas"]["DocumentDirection"];
+            doc_type: components["schemas"]["DocumentType"];
+            /** File Name */
+            file_name: string;
+            /** Content Type */
+            content_type: string | null;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /** Version */
+            version: number;
+            /** Supersedes Id */
+            supersedes_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Uploaded By Name */
+            uploaded_by_name?: string | null;
+            /**
+             * Is Superseded
+             * @default false
+             */
+            is_superseded: boolean;
+        };
+        /**
+         * DocumentType
+         * @enum {string}
+         */
+        DocumentType: "general" | "invoice";
+        /**
+         * DownloadOut
+         * @description Either a signed URL, or a flag telling the caller to stream instead.
+         */
+        DownloadOut: {
+            /** Url */
+            url: string | null;
+            /** File Name */
+            file_name: string;
+            /** Expires In */
+            expires_in?: number | null;
         };
         /** EnquiryAccepted */
         EnquiryAccepted: {
@@ -3618,6 +3889,54 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /** StaffDocumentOut */
+        StaffDocumentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            direction: components["schemas"]["DocumentDirection"];
+            doc_type: components["schemas"]["DocumentType"];
+            /** File Name */
+            file_name: string;
+            /** Content Type */
+            content_type: string | null;
+            /** Size Bytes */
+            size_bytes: number | null;
+            /** Version */
+            version: number;
+            /** Supersedes Id */
+            supersedes_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Uploaded By Name */
+            uploaded_by_name?: string | null;
+            /**
+             * Is Superseded
+             * @default false
+             */
+            is_superseded: boolean;
+            /** Client Ref */
+            client_ref: string;
+            /** Client Company Name */
+            client_company_name: string | null;
+            /** Uploaded By Email */
+            uploaded_by_email?: string | null;
+            /**
+             * Is Archived
+             * @default false
+             */
+            is_archived: boolean;
+        };
         /**
          * StaffSummary
          * @description A manager or admin, as shown in assignment controls.
@@ -4642,6 +4961,150 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ClientTaskOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-documents_my_documents": {
+        parameters: {
+            query?: {
+                direction?: components["schemas"]["DocumentDirection"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-documents_upload_document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_portal-documents_upload_document"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-documents_my_document_counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentCounts"];
+                };
+            };
+        };
+    };
+    "portal-documents_request_download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-documents_download_content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
@@ -8419,6 +8882,184 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SettingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-documents_list": {
+        parameters: {
+            query?: {
+                client_id?: string | null;
+                direction?: components["schemas"]["DocumentDirection"] | null;
+                doc_type?: components["schemas"]["DocumentType"] | null;
+                include_archived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDocumentOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-documents_upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_admin-documents_upload"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-documents_counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DocumentCounts"];
+                };
+            };
+        };
+    };
+    "admin-documents_download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DownloadOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-documents_content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-documents_archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                document_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffDocumentOut"];
                 };
             };
             /** @description Validation Error */

@@ -46,8 +46,22 @@ export default function PortalHomePage() {
         </Link>
       </div>
 
+      <div className="mt-4 rounded-lg border border-border p-5">
+        <h2 className="font-medium">Documents</h2>
+        <p className="mt-1 text-sm text-muted">
+          Send documents to SmartAWARE and download what they have shared with
+          you.
+        </p>
+        <Link
+          href="/portal/documents"
+          className="mt-3 inline-block text-sm text-primary underline underline-offset-4"
+        >
+          View my documents
+        </Link>
+      </div>
+
       <p className="mt-4 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
-        Documents, invoices and notes arrive in later chunks.
+        Invoices and notes arrive in later chunks.
       </p>
     </div>
   );

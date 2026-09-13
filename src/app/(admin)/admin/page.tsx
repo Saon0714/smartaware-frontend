@@ -41,6 +41,11 @@ const AVAILABLE = [
     description: "Submissions from the website contact form.",
   },
   {
+    href: "/admin/documents",
+    title: "Documents",
+    description: "Files clients have sent in, and documents shared with them.",
+  },
+  {
     href: "/admin/settings",
     title: "Settings",
     description: "Notification recipients, Smart AI tuning, access rules and payments.",
