@@ -10,8 +10,13 @@ import { BrandWave } from "@/components/brand/BrandWave";
  * where the next page added would miss it again, as the services and contact
  * pages did — it lives here and every public page uses it.
  *
- * The bottom padding is generous on purpose: the wave is absolutely positioned
- * along the bottom edge and stands 40-56px tall, so content needs to clear it.
+ * The wave sits in normal flow, after the content, rather than being pinned to
+ * the section's bottom edge. Pinned, it drew over whatever was underneath, and
+ * keeping it clear meant reserving enough bottom padding to cover the tallest
+ * it could ever be — a promise that holds only until a heading wraps, a button
+ * row grows, or someone enlarges their text. In flow it takes its own height at
+ * the foot of the section and cannot cross the content at any width, zoom or
+ * font size. It looks the same; it just cannot go wrong.
  */
 export function PageHero({
   children,
@@ -24,15 +29,16 @@ export function PageHero({
   size?: "default" | "large";
   width?: string;
 }) {
-  const top = size === "large" ? "pt-20 sm:pt-24" : "pt-14 sm:pt-16";
+  const padding =
+    size === "large" ? "pt-20 pb-16 sm:pt-24 sm:pb-20" : "pt-14 pb-12 sm:pt-16 sm:pb-14";
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-surface">
       <div aria-hidden className="sa-hero-wash" />
-      <div className={`relative mx-auto ${width} px-4 pb-28 sm:px-6 sm:pb-32 ${top}`}>
+      <div className={`relative mx-auto ${width} px-4 sm:px-6 ${padding}`}>
         {children}
       </div>
-      <BrandWave className="absolute inset-x-0 bottom-0" />
+      <BrandWave className="relative block" />
     </section>
   );
 }
