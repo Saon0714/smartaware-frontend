@@ -226,3 +226,47 @@ export const updateFormField = (fieldId: string, body: Record<string, unknown>) 
 
 export const deactivateFormField = (fieldId: string) =>
   apiFetch<FormFieldRow>(`/admin/forms/fields/${fieldId}`, { method: "DELETE" });
+
+// --- FAQ and chat transcripts ------------------------------------------------------
+
+export type FaqEntry = Json<
+  ApiPaths["/api/v1/admin/faq"]["get"]["responses"][200]
+>[number];
+
+export type FaqIndexStatus = Json<
+  ApiPaths["/api/v1/admin/faq-index/status"]["get"]["responses"][200]
+>;
+
+export type ChatSessionSummary = Json<
+  ApiPaths["/api/v1/admin/chat-sessions"]["get"]["responses"][200]
+>[number];
+
+export type ChatSessionDetail = Json<
+  ApiPaths["/api/v1/admin/chat-sessions/{session_id}"]["get"]["responses"][200]
+>;
+
+export const listFaq = (includeDeleted = false) =>
+  apiFetch<FaqEntry[]>(`/admin/faq${includeDeleted ? "?include_deleted=true" : ""}`);
+
+export const createFaq = (body: Record<string, unknown>) =>
+  apiFetch<FaqEntry>("/admin/faq", { method: "POST", body });
+
+export const updateFaq = (id: string, body: Record<string, unknown>) =>
+  apiFetch<FaqEntry>(`/admin/faq/${id}`, { method: "PATCH", body });
+
+export const deleteFaq = (id: string) =>
+  apiFetch<FaqEntry>(`/admin/faq/${id}`, { method: "DELETE" });
+
+export const restoreFaq = (id: string) =>
+  apiFetch<FaqEntry>(`/admin/faq/${id}/restore`, { method: "POST" });
+
+export const getFaqIndexStatus = () =>
+  apiFetch<FaqIndexStatus>("/admin/faq-index/status");
+
+export const listChatSessions = (escalatedOnly = false) =>
+  apiFetch<ChatSessionSummary[]>(
+    `/admin/chat-sessions${escalatedOnly ? "?escalated_only=true" : ""}`,
+  );
+
+export const getChatSession = (id: string) =>
+  apiFetch<ChatSessionDetail>(`/admin/chat-sessions/${id}`);

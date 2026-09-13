@@ -20,6 +20,8 @@ const NAV: readonly NavItem[] = [
   { href: "/admin/enquiries", label: "Enquiries" },
   { href: "/admin/services", label: "Services" },
   { href: "/admin/regions", label: "Markets" },
+  { href: "/admin/faq", label: "FAQ (Smart AI)" },
+  { href: "/admin/chat-logs", label: "Smart AI Transcripts" },
   { href: "/admin/content", label: "Website Content" },
   { href: "/admin/settings", label: "Settings" },
 ];

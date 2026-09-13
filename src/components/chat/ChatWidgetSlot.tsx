@@ -1,13 +1,23 @@
+"use client";
+
+import dynamic from "next/dynamic";
+
 /**
  * Mount point for the Smart AI chatbot.
  *
- * The spec requires the widget on every public page AND every portal page, so
- * the slot is placed in the shared shells from the start and the real widget
- * drops into it in Chunk 6 without touching any layout.
+ * Spec Section 4 requires the widget on every public page AND every portal
+ * page, so the slot sits in the shared shells and this is the only place that
+ * decides what fills it.
  *
- * It renders nothing today. A disabled launcher button would suggest a feature
- * that is not there yet.
+ * Loaded lazily and client-side only: the widget is interactive, below the
+ * fold and not part of the content a crawler needs, so it should not delay
+ * first paint or appear in server-rendered HTML.
  */
+const ChatWidget = dynamic(
+  () => import("@/components/chat/ChatWidget").then((m) => m.ChatWidget),
+  { ssr: false },
+);
+
 export function ChatWidgetSlot() {
-  return null;
+  return <ChatWidget />;
 }
