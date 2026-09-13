@@ -80,31 +80,6 @@
   50%      { transform: translate3d(2%, -2%, 0) scale(1.06); }
 }
 
-/* The hero wave. Travel is exactly one wavelength (360 user units of a
- * 4320-wide periodic path), so the resting position is indistinguishable from
- * the start and nothing can slide into view.
- *
- * One wavelength rather than four: apparent speed is distance over time, and
- * the drift reads as a gentle swell at this distance where four wavelengths
- * looked like the wave was being dragged. The path stays three viewports wide,
- * which costs nothing and leaves room to lengthen the travel again. */
-@keyframes sa-wave-travel {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-360px); }
-}
-
-/* A bob whose amplitude decays to nothing. This is what makes the wave settle
- * rather than simply stop: real water loses energy, it does not halt. CSS has
- * no easing that decays, so the decay is written into the keyframe values. */
-@keyframes sa-wave-settle {
-  0%   { transform: translateY(4.5px); }
-  28%  { transform: translateY(-2.8px); }
-  52%  { transform: translateY(1.6px); }
-  72%  { transform: translateY(-0.8px); }
-  88%  { transform: translateY(0.3px); }
-  100% { transform: translateY(0); }
-}
-
 @keyframes sa-spin {
   to { transform: rotate(360deg); }
 }
@@ -348,38 +323,6 @@
     animation: sa-scale-in var(--sa-dur-slow) var(--sa-ease-out) both;
   }
 
-  /* --- Hero wave -------------------------------------------------------------- */
-
-  /* Inside SVG a CSS transform length is one user unit, so translateX(-1440px) is
-   * 1440 viewBox units. transform-box is set explicitly rather than relying on the
-   * default, which has differed between specifications. */
-  .sa-wave-travel,
-  .sa-wave-travel-slow,
-  .sa-wave-settle,
-  .sa-wave-settle-slow {
-    transform-box: view-box;
-    transform-origin: center;
-  }
-
-  /* Decelerating, so the motion dies away instead of being switched off. Runs
-   * once — a wave that rolls forever competes with the page for attention. */
-  .sa-wave-travel {
-    animation: sa-wave-travel 2.8s cubic-bezier(0.25, 0.7, 0.35, 1) both;
-  }
-
-  .sa-wave-travel-slow {
-    animation: sa-wave-travel 3.4s cubic-bezier(0.25, 0.7, 0.35, 1) both;
-  }
-
-  .sa-wave-settle {
-    animation: sa-wave-settle 2s var(--sa-ease) both;
-  }
-
-  .sa-wave-settle-slow {
-    animation: sa-wave-settle 2.4s var(--sa-ease) both;
-  }
-
-
   /* --- Restraint in the working interfaces --------------------------------------
    *
    * Staff and clients use the portal and admin for real work, often for long
@@ -420,9 +363,6 @@
   .sa-hero-wash::after {
     animation: none !important;
   }
-
-  /* The wave is left to snap to its end state rather than being disabled: that
-   * state is the settled wave, which is exactly what should be shown. */
 
   .sa-interactive:hover,
   .sa-press:hover:not(:disabled) {
