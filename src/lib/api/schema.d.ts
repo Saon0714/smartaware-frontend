@@ -3354,6 +3354,8 @@ export interface components {
              * Format: date-time
              */
             expires_at: string;
+            /** Services */
+            services?: components["schemas"]["ServiceRef"][];
         };
         /** InviteCreateRequest */
         InviteCreateRequest: {
@@ -3366,6 +3368,8 @@ export interface components {
             role: components["schemas"]["UserRole"];
             /** Company Name */
             company_name?: string | null;
+            /** Service Ids */
+            service_ids?: string[];
         };
         /** InviteCreatedOut */
         InviteCreatedOut: {
@@ -3403,6 +3407,8 @@ export interface components {
             created_at: string;
             /** Prefill Company Name */
             prefill_company_name: string | null;
+            /** Services */
+            services?: components["schemas"]["ServiceRef"][];
         };
         /**
          * InviteStatus
@@ -4069,6 +4075,21 @@ export interface components {
             regions: components["schemas"]["RegionOut"][];
             /** Categories */
             categories: components["schemas"]["ServiceHubCategory"][];
+        };
+        /**
+         * ServiceRef
+         * @description A service category, named just enough to display.
+         */
+        ServiceRef: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
         };
         /** ServiceSubcategoryOut */
         ServiceSubcategoryOut: {

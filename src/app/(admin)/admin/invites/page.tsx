@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
-import { Badge, EmptyState, PageHeader } from "@/components/ui/Controls";
+import { Badge, Checkbox, EmptyState, PageHeader } from "@/components/ui/Controls";
 import { FormBanner, Input, Label } from "@/components/ui/Field";
-import { createInvite, listInvites, resendInvite, revokeInvite } from "@/lib/api/admin";
+import {
+  createInvite, listClientFilterOptions, listInvites, resendInvite, revokeInvite,
+} from "@/lib/api/admin";
 
 /**
  * Invitations — spec Sections 5.1 and 6.2.
@@ -14,6 +16,12 @@ import { createInvite, listInvites, resendInvite, revokeInvite } from "@/lib/api
  * There is no public sign-up, so this is the only route to a client account.
  * Status is derived server-side, which matters for expiry: nothing runs at the
  * moment a link lapses, so "expired" is computed on read rather than stored.
+ *
+ * The services a client is engaged for are chosen here, before the account
+ * exists. That is a commercial decision rather than a preference, so the
+ * invitee is shown it and given no way to alter it — holding it on the
+ * invitation is what makes that true, since nothing they submit at sign-up
+ * reaches it.
  */
 
 function InviteStatusBadge({ status }: { status: string }) {
@@ -28,7 +36,13 @@ export default function InvitesPage() {
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
+  const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [lastLink, setLastLink] = useState<string | null>(null);
+
+  const options = useAsync(() => listClientFilterOptions(), "client-filters");
+  // Archived services are withheld: an existing client may still be engaged for
+  // one, but nobody new can be sold it — and the API refuses it anyway.
+  const services = (options.data?.services ?? []).filter((s) => !s.is_archived);
 
   const rows = invites.data ?? [];
 
@@ -71,9 +85,11 @@ export default function InvitesPage() {
             const result = await createInvite({
               email,
               company_name: company || null,
+              service_ids: serviceIds,
             });
             setEmail("");
             setCompany("");
+            setServiceIds([]);
             setLastLink(result.invite_url ?? null);
             await invites.reload();
           } catch (err) {
@@ -109,7 +125,38 @@ export default function InvitesPage() {
             </p>
           </div>
         </div>
-        <Button type="submit" className="mt-4" loading={busy}>
+
+        <fieldset className="mt-5">
+          <legend className="text-sm font-medium">Services</legend>
+          <p className="mt-1 text-xs text-muted">
+            What this client is being signed up for. Applied to their account
+            when they accept. They are shown it and cannot change it — adjust it
+            here, or on their record afterwards.
+          </p>
+          {options.loading ? (
+            <p className="mt-3 text-sm text-muted">Loading…</p>
+          ) : (
+            <div className="mt-3 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
+              {services.map((service) => (
+                <Checkbox
+                  key={service.id}
+                  id={`invite-service-${service.id}`}
+                  label={service.name}
+                  checked={serviceIds.includes(service.id)}
+                  onChange={(event) =>
+                    setServiceIds((current) =>
+                      event.target.checked
+                        ? [...current, service.id]
+                        : current.filter((existing) => existing !== service.id),
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
+        </fieldset>
+
+        <Button type="submit" className="mt-5" loading={busy}>
           Send invitation
         </Button>
         <p className="mt-3 text-xs text-muted">
@@ -163,6 +210,18 @@ export default function InvitesPage() {
                     ? ` · accepted ${new Date(invite.used_at).toLocaleDateString("en-GB")}`
                     : ""}
                 </p>
+                {(invite.services ?? []).length > 0 && (
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {(invite.services ?? []).map((service) => (
+                      <li
+                        key={service.id}
+                        className="rounded-full border border-primary/25 bg-primary/5 px-2 py-0.5 text-xs text-primary"
+                      >
+                        {service.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div className="flex shrink-0 gap-2">

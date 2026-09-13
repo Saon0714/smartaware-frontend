@@ -114,6 +114,28 @@ export default function AcceptInvitePage() {
         {state.invite.company_name ? ` (${state.invite.company_name})` : ""}.
       </p>
 
+      {/* Shown, not offered. What the account covers was agreed with
+          SmartAWARE before the invitation was sent, so there is no control
+          here — and nothing this form submits could change it. */}
+      {(state.invite.services ?? []).length > 0 && (
+        <div className="mt-5 rounded-lg border border-border bg-surface p-4">
+          <p className="text-sm font-medium">Your account will be set up for</p>
+          <ul className="mt-2 flex flex-wrap gap-1.5">
+            {(state.invite.services ?? []).map((service) => (
+              <li
+                key={service.id}
+                className="rounded-full border border-primary/25 bg-primary/5 px-2.5 py-1 text-xs text-primary"
+              >
+                {service.name}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-xs text-muted">
+            Need something else? Speak to SmartAWARE and they will update it.
+          </p>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="mt-6 space-y-4" noValidate>
         {error && <FormBanner tone="error">{error}</FormBanner>}
 
