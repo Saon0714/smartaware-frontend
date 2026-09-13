@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
@@ -32,10 +33,26 @@ function InviteStatusBadge({ status }: { status: string }) {
 }
 
 export default function InvitesPage() {
+  // useSearchParams needs a boundary: this route is prerendered, and reading
+  // the query string is what makes it wait for the request.
+  return (
+    <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
+      <Invitations />
+    </Suspense>
+  );
+}
+
+function Invitations() {
+  const params = useSearchParams();
   const invites = useAsync(listInvites, "invites");
   const [busy, setBusy] = useState(false);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"client" | "manager">("client");
+  // Seeded from the link that brought us here. "Invite a manager" on the Team
+  // page should not land on a form set to Client — the choice was already made
+  // by the button that was pressed.
+  const [role, setRole] = useState<"client" | "manager">(
+    params.get("role") === "manager" ? "manager" : "client",
+  );
   const [company, setCompany] = useState("");
   const [serviceIds, setServiceIds] = useState<string[]>([]);
   const [lastLink, setLastLink] = useState<string | null>(null);

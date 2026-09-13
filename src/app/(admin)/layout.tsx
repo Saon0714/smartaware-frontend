@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { AppShell, type NavItem } from "@/components/layout/AppShell";
+import { AppShell, activeNavHref, type NavItem } from "@/components/layout/AppShell";
 import type { Permission } from "@/lib/api/auth";
 import { RequireAuth } from "@/lib/auth/RequireAuth";
 import { useSession } from "@/lib/auth/SessionProvider";
@@ -60,12 +60,11 @@ function StaffShell({ children }: { children: ReactNode }) {
 
   const items = NAV.filter((item) => !item.needs || can(item.needs));
 
-  // The most specific entry covering this path — "/admin" prefixes everything,
-  // so the longest match is the one that describes where we actually are.
-  const section = NAV.filter(
-    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
-  ).sort((a, b) => b.href.length - a.href.length)[0];
-
+  // Matched against the full table, not the filtered one: a section this
+  // account cannot see still has to be recognised, or it would fall through to
+  // "no entry, therefore allowed".
+  const href = activeNavHref(pathname, NAV);
+  const section = NAV.find((item) => item.href === href);
   const permitted = !section?.needs || can(section.needs);
 
   return (

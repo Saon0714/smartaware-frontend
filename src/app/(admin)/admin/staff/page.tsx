@@ -56,7 +56,7 @@ export default function StaffPage() {
         description="Managers, and the clients each of them covers."
         actions={
           <Link
-            href="/admin/invites"
+            href="/admin/invites?role=manager"
             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
           >
             Invite a manager

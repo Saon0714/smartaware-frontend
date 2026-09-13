@@ -15,6 +15,28 @@ export interface NavItem {
 }
 
 /**
+ * The navigation entry a path belongs to, or null.
+ *
+ * The longest match wins. Every section sits under the portal's own root, so a
+ * plain prefix test marks "Overview" active on every page in the portal —
+ * `/admin/staff` starts with `/admin`. Matching on a trailing slash keeps
+ * `/admin/clients` from claiming `/admin/clients-archive`, and comparing
+ * lengths picks the most specific entry rather than the first one listed.
+ */
+export function activeNavHref(
+  pathname: string,
+  items: readonly NavItem[],
+): string | null {
+  const matches = items.filter(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`),
+  );
+  if (matches.length === 0) return null;
+  return matches.reduce((best, item) =>
+    item.href.length > best.href.length ? item : best,
+  ).href;
+}
+
+/**
  * Shared shell for the Customer Portal and Admin Portal.
  *
  * The navigation it receives is chosen per-portal by the caller. That is a
@@ -33,6 +55,7 @@ export function AppShell({
   const { user, client, signOut } = useSession();
   const pathname = usePathname();
   const router = useRouter();
+  const activeHref = activeNavHref(pathname, navItems);
 
   async function handleSignOut() {
     const login = loginPathForTarget(pathname);
@@ -74,8 +97,7 @@ export function AppShell({
         <nav aria-label={title} className="hidden w-56 shrink-0 md:block">
           <ul className="space-y-1">
             {navItems.map((item) => {
-              const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active = item.href === activeHref;
               return (
                 <li key={item.href}>
                   <Link
