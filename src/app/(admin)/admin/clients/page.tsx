@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-import { ServiceTags } from "@/components/admin/ServiceTags";
+import { ServicesCell } from "@/components/admin/ServicesCell";
 import { StatusCell } from "@/components/admin/StatusCell";
 import { useAsync } from "@/components/admin/useAsync";
 import { Select } from "@/components/ui/Controls";
@@ -186,7 +186,16 @@ export default function ClientsPage() {
                     <p className="text-xs text-muted">{client.user_email}</p>
                   </td>
                   <td className="py-3 pr-4">
-                    <ServiceTags services={client.services} limit={3} />
+                    <ServicesCell
+                      clientId={client.id}
+                      services={client.services}
+                      options={services}
+                      onChanged={() =>
+                        Promise.all([clients.reload(), options.reload()]).then(
+                          () => undefined,
+                        )
+                      }
+                    />
                   </td>
                   <td className="py-3 pr-4">
                     {client.country || <span className="text-muted">—</span>}

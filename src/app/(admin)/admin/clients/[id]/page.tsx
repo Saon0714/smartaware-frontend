@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-import { ServiceTags } from "@/components/admin/ServiceTags";
+import { ServicesEditor } from "@/components/admin/ServicesEditor";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
-import { Checkbox, PageHeader, Select, Textarea } from "@/components/ui/Controls";
+import { PageHeader, Select, Textarea } from "@/components/ui/Controls";
 import { FormBanner, Label } from "@/components/ui/Field";
 import { useSession } from "@/lib/auth/SessionProvider";
 import {
   assignManager, getClient, listClientAudit, listClientFilterOptions, listStaff,
-  setClientServices, setClientStatus,
+  setClientStatus,
 } from "@/lib/api/admin";
 
 /**
@@ -129,19 +129,37 @@ export default function ClientDetailPage() {
                 </div>
               ))}
             </dl>
-            <div className="mt-5">
-              <dt className="text-xs text-muted">Services</dt>
-              <dd className="mt-1.5">
-                <ServiceTags services={record.services} />
-              </dd>
-            </div>
-
             <p className="mt-4 text-xs text-muted">
               Onboarding:{" "}
               {record.onboarding_completed_at
                 ? `completed ${new Date(record.onboarding_completed_at).toLocaleDateString("en-GB")}`
                 : "not started"}
             </p>
+          </section>
+
+          <section className="sa-card rounded-lg border border-border p-5">
+            <h2 className="font-medium">Services</h2>
+            <p className="mt-1 text-xs text-muted">
+              What this client is engaged for. Drives the services column and
+              filter on the client list. Set when they were invited; change it
+              here at any time.
+            </p>
+            <div className="mt-4">
+              {options.loading ? (
+                <p className="text-sm text-muted">Loading…</p>
+              ) : (
+                <ServicesEditor
+                  clientId={id}
+                  services={record.services}
+                  options={options.data?.services ?? []}
+                  onSaved={async () => {
+                    client.setError(null);
+                    await client.reload();
+                    setNotice("Services updated.");
+                  }}
+                />
+              )}
+            </div>
           </section>
 
           <section className="sa-card rounded-lg border border-border p-5">
@@ -289,48 +307,6 @@ export default function ClientDetailPage() {
             )}
           </section>
 
-          <section className="sa-card rounded-lg border border-border p-5">
-            <h2 className="font-medium">Services</h2>
-            <p className="mt-1 text-xs text-muted">
-              What this client is engaged for. Drives the services column and
-              filter on the client list.
-            </p>
-
-            {options.loading && <p className="mt-4 text-sm text-muted">Loading…</p>}
-
-            <ul className="mt-4 space-y-2">
-              {(options.data?.services ?? []).map((service) => {
-                const selected = (record.services ?? []).some((s) => s.id === service.id);
-                // An archived service is only offered when this client already
-                // has it — so it can be removed, but never newly sold.
-                if (service.is_archived && !selected) return null;
-                return (
-                  <li key={service.id}>
-                    <Checkbox
-                      id={`service-${service.id}`}
-                      label={
-                        service.is_archived ? `${service.name} (archived)` : service.name
-                      }
-                      checked={selected}
-                      disabled={busy}
-                      onChange={(event) => {
-                        const current = (record.services ?? []).map((s) => s.id);
-                        const next = event.target.checked
-                          ? [...current, service.id]
-                          : current.filter((existing) => existing !== service.id);
-                        void run(
-                          () => setClientServices(id, next),
-                          event.target.checked
-                            ? `Added ${service.name}.`
-                            : `Removed ${service.name}.`,
-                        );
-                      }}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
         </div>
       </div>
     </div>
