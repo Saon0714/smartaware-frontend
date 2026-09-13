@@ -2,12 +2,32 @@
  * A section divider echoing the wave in the SmartAWARE mark.
  *
  * Decorative, so it is hidden from assistive technology. The gradient is the
- * brand green flowing into the brand blue, matching the logo's own movement —
- * it gives a section boundary some character without adding another animation.
+ * brand green flowing into the brand blue, matching the logo's own movement.
+ *
+ * On arrival the wave travels and settles, then stops. Three details make that
+ * read as water rather than as a sliding image:
+ *
+ *   - The path is periodic and three viewports wide, and the travel distance is
+ *     exactly four wavelengths. Nothing can slide into view or leave a gap, and
+ *     the resting position is indistinguishable from the starting one.
+ *   - Travel decelerates rather than ending abruptly, so the motion dies away
+ *     like momentum in water instead of being switched off.
+ *   - Two layers move at different speeds and opposite phase. Parallax is what
+ *     gives a flat gradient the impression of depth.
+ *
+ * It runs once. A permanently rolling wave would pull attention away from the
+ * page for as long as someone stayed on it.
  */
-export function BrandWave({ className = "" }: { className?: string }) {
+export function BrandWave({
+  className = "",
+  animate = true,
+}: {
+  className?: string;
+  /** Opt out where a still divider is wanted. */
+  animate?: boolean;
+}) {
   return (
-    <div aria-hidden className={`pointer-events-none select-none ${className}`}>
+    <div aria-hidden className={`pointer-events-none select-none overflow-hidden ${className}`}>
       <svg
         viewBox="0 0 1440 80"
         preserveAspectRatio="none"
@@ -21,18 +41,27 @@ export function BrandWave({ className = "" }: { className?: string }) {
             <stop offset="100%" stopColor="var(--sa-blue-500)" />
           </linearGradient>
         </defs>
-        <path
-          d="M0 44c180-34 340 22 520 22s300-56 480-56 260 40 440 30v40H0z"
-          fill="url(#sa-wave)"
-          opacity="0.10"
-        />
-        <path
-          d="M0 54c200-30 320 18 540 18s320-48 500-48 240 34 400 26"
-          fill="none"
-          stroke="url(#sa-wave)"
-          strokeWidth="2"
-          opacity="0.45"
-        />
+
+        {/* Back layer: slower and deeper, so it lags behind the crest line. */}
+        <g className={animate ? "sa-wave-travel-slow" : undefined}>
+          <g className={animate ? "sa-wave-settle-slow" : undefined}>
+            <path d="M0 40 q90 40 180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 L4320 80 L0 80 Z" fill="url(#sa-wave)" opacity="0.10" />
+          </g>
+        </g>
+
+        {/* Front layer: the crest line the eye actually follows. */}
+        <g className={animate ? "sa-wave-travel" : undefined}>
+          <g className={animate ? "sa-wave-settle" : undefined}>
+            <path
+              d="M0 48 q90 -28 180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0 t180 0"
+              fill="none"
+              stroke="url(#sa-wave)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.45"
+            />
+          </g>
+        </g>
       </svg>
     </div>
   );
