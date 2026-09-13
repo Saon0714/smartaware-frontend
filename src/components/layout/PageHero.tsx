@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { BrandWave } from "@/components/brand/BrandWave";
+import { BrandRibbon } from "@/components/brand/BrandRibbon";
 
 /**
  * The top of a public page.
@@ -10,13 +10,13 @@ import { BrandWave } from "@/components/brand/BrandWave";
  * where the next page added would miss it again, as the services and contact
  * pages did — it lives here and every public page uses it.
  *
- * The wave sits in normal flow, after the content, rather than being pinned to
- * the section's bottom edge. Pinned, it drew over whatever was underneath, and
- * keeping it clear meant reserving enough bottom padding to cover the tallest
- * it could ever be — a promise that holds only until a heading wraps, a button
- * row grows, or someone enlarges their text. In flow it takes its own height at
- * the foot of the section and cannot cross the content at any width, zoom or
- * font size. It looks the same; it just cannot go wrong.
+ * The ribbon sits in normal flow, after the content, rather than being pinned
+ * to the section's bottom edge. Pinned, it drew over whatever was underneath,
+ * and keeping it clear meant reserving enough bottom padding to cover the
+ * tallest it could ever be — a promise that holds only until a heading wraps, a
+ * button row grows, or someone enlarges their text. In flow it takes its own
+ * height at the foot of the section and cannot cross the content at any width,
+ * zoom or font size.
  */
 export function PageHero({
   children,
@@ -38,7 +38,7 @@ export function PageHero({
       <div className={`relative mx-auto ${width} px-4 sm:px-6 ${padding}`}>
         {children}
       </div>
-      <BrandWave className="relative block" />
+      <BrandRibbon className="relative block" />
     </section>
   );
 }
