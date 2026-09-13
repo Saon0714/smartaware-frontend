@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useSession } from "@/lib/auth/SessionProvider";
 
 export default function PortalHomePage() {
@@ -31,8 +33,21 @@ export default function PortalHomePage() {
         </div>
       </dl>
 
-      <p className="mt-8 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
-        Tasks, documents, invoices and notes arrive in later chunks.
+      <div className="mt-8 rounded-lg border border-border p-5">
+        <h2 className="font-medium">Work status</h2>
+        <p className="mt-1 text-sm text-muted">
+          See what SmartAWARE is working on for you and what has been completed.
+        </p>
+        <Link
+          href="/portal/tasks"
+          className="mt-3 inline-block text-sm text-primary underline underline-offset-4"
+        >
+          View my tasks
+        </Link>
+      </div>
+
+      <p className="mt-4 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
+        Documents, invoices and notes arrive in later chunks.
       </p>
     </div>
   );

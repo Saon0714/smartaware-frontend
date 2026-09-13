@@ -26,6 +26,11 @@ const AVAILABLE = [
     description: "Countries with their own services page.",
   },
   {
+    href: "/admin/tasks",
+    title: "Tasks",
+    description: "Work in progress across your clients, and completion records.",
+  },
+  {
     href: "/admin/faq",
     title: "FAQ (Smart AI)",
     description: "The knowledge the chatbot answers from, and its index status.",
