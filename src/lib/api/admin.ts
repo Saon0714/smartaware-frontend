@@ -191,3 +191,38 @@ export const updateRegion = (id: string, body: Record<string, unknown>) =>
 
 export const deleteRegion = (id: string) =>
   apiFetch<void>(`/admin/regions/${id}`, { method: "DELETE" });
+
+// --- Enquiries -------------------------------------------------------------------
+
+export type Enquiry = Json<
+  ApiPaths["/api/v1/admin/enquiries"]["get"]["responses"][200]
+>[number];
+
+export type FormFieldRow = Json<
+  ApiPaths["/api/v1/admin/forms/{form_key}"]["get"]["responses"][200]
+>["fields"][number];
+
+export const listEnquiries = (handled?: boolean) =>
+  apiFetch<Enquiry[]>(
+    `/admin/enquiries${handled === undefined ? "" : `?handled=${handled}`}`,
+  );
+
+export const updateEnquiry = (id: string, body: Record<string, unknown>) =>
+  apiFetch<Enquiry>(`/admin/enquiries/${id}`, { method: "PATCH", body });
+
+export const getAdminForm = (formKey: string) =>
+  apiFetch<{ key: string; name: string; description: string | null; fields: FormFieldRow[] }>(
+    `/admin/forms/${encodeURIComponent(formKey)}`,
+  );
+
+export const createFormField = (formKey: string, body: Record<string, unknown>) =>
+  apiFetch<FormFieldRow>(`/admin/forms/${encodeURIComponent(formKey)}/fields`, {
+    method: "POST",
+    body,
+  });
+
+export const updateFormField = (fieldId: string, body: Record<string, unknown>) =>
+  apiFetch<FormFieldRow>(`/admin/forms/fields/${fieldId}`, { method: "PATCH", body });
+
+export const deactivateFormField = (fieldId: string) =>
+  apiFetch<FormFieldRow>(`/admin/forms/fields/${fieldId}`, { method: "DELETE" });

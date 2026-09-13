@@ -316,6 +316,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/forms/{form_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * A form's field definition
+         * @description The frontend renders whatever this returns.
+         *
+         *     Adding, removing or relabelling a field is therefore an Admin Portal edit,
+         *     with no frontend change and no deploy.
+         */
+        get: operations["public-enquiries_get_form"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/enquiries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit an enquiry */
+        post: operations["public-enquiries_submit_enquiry"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/invites": {
         parameters: {
             query?: never;
@@ -1254,6 +1294,99 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/enquiries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-enquiries_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/enquiries/{enquiry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get */
+        get: operations["admin-enquiries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-enquiries_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/forms/{form_key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Form */
+        get: operations["admin-enquiries_get_form"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/forms/{form_key}/fields": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Field */
+        post: operations["admin-enquiries_create_field"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/forms/fields/{field_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Deactivate Field
+         * @description Deactivated rather than deleted.
+         *
+         *     Past enquiries store the answer under this key, and removing the row would
+         *     leave those submissions with an unlabelled value.
+         */
+        delete: operations["admin-enquiries_deactivate_field"];
+        options?: never;
+        head?: never;
+        /** Update Field */
+        patch: operations["admin-enquiries_update_field"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1658,6 +1791,177 @@ export interface components {
             sort_order?: number | null;
             /** Is Published */
             is_published?: boolean | null;
+        };
+        /** EnquiryAccepted */
+        EnquiryAccepted: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Message */
+            message: string;
+        };
+        /**
+         * EnquiryCreate
+         * @description A submission.
+         *
+         *     Answers arrive as a free-form mapping because the field list is data. The
+         *     server validates it against the live definition rather than trusting a
+         *     fixed shape.
+         */
+        EnquiryCreate: {
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
+            /**
+             * Website
+             * @description Leave empty.
+             */
+            website?: string | null;
+        };
+        /** EnquiryOut */
+        EnquiryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Form Key */
+            form_key: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /** Name */
+            name: string | null;
+            /** Email */
+            email: string | null;
+            /** Phone */
+            phone: string | null;
+            /** Country */
+            country: string | null;
+            /** Company Name */
+            company_name: string | null;
+            /** Service Required */
+            service_required: string | null;
+            /** Is Handled */
+            is_handled: boolean;
+            /** Internal Note */
+            internal_note: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** EnquiryUpdate */
+        EnquiryUpdate: {
+            /** Is Handled */
+            is_handled?: boolean | null;
+            /** Internal Note */
+            internal_note?: string | null;
+        };
+        /** FormDefinitionOut */
+        FormDefinitionOut: {
+            /** Key */
+            key: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Fields */
+            fields: components["schemas"]["FormFieldOut"][];
+        };
+        /** FormFieldOut */
+        FormFieldOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            field_type: components["schemas"]["FormFieldType"];
+            /** Placeholder */
+            placeholder: string | null;
+            /** Help Text */
+            help_text: string | null;
+            /** Is Required */
+            is_required: boolean;
+            /** Options */
+            options: unknown[] | null;
+            /** Validation */
+            validation: {
+                [key: string]: unknown;
+            } | null;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /**
+         * FormFieldType
+         * @enum {string}
+         */
+        FormFieldType: "text" | "textarea" | "email" | "phone" | "number" | "date" | "select" | "multiselect" | "checkbox" | "radio" | "country";
+        /** FormFieldWrite */
+        FormFieldWrite: {
+            /** Key */
+            key: string;
+            /** Label */
+            label: string;
+            field_type: components["schemas"]["FormFieldType"];
+            /** Placeholder */
+            placeholder?: string | null;
+            /** Help Text */
+            help_text?: string | null;
+            /**
+             * Is Required
+             * @default false
+             */
+            is_required: boolean;
+            /** Options */
+            options?: unknown[] | null;
+            /** Validation */
+            validation?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /** FormFieldWritePatch */
+        FormFieldWritePatch: {
+            /** Key */
+            key?: string | null;
+            /** Label */
+            label?: string | null;
+            field_type?: components["schemas"]["FormFieldType"] | null;
+            /** Placeholder */
+            placeholder?: string | null;
+            /** Help Text */
+            help_text?: string | null;
+            /** Is Required */
+            is_required?: boolean | null;
+            /** Options */
+            options?: unknown[] | null;
+            /** Validation */
+            validation?: {
+                [key: string]: unknown;
+            } | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Active */
+            is_active?: boolean | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -3074,6 +3378,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RegionalServiceDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "public-enquiries_get_form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                form_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormDefinitionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "public-enquiries_submit_enquiry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnquiryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnquiryAccepted"];
                 };
             };
             /** @description Validation Error */
@@ -5768,6 +6136,235 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AvailabilityOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_list": {
+        parameters: {
+            query?: {
+                handled?: boolean | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnquiryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnquiryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                enquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EnquiryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnquiryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_get_form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                form_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormDefinitionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_create_field": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                form_key: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormFieldWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormFieldOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_deactivate_field": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                field_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormFieldOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-enquiries_update_field": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                field_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FormFieldWritePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FormFieldOut"];
                 };
             };
             /** @description Validation Error */

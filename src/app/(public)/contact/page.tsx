@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Section } from "@/components/content/Prose";
+import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
 
 /**
@@ -28,8 +29,8 @@ export const metadata: Metadata = {
  *
  * Details are seeded as unpublished placeholders and only appear once
  * SmartAWARE enters real ones, so the page never shows an invented address or
- * phone number as though it were genuine. Until then it explains how to reach
- * the firm via the enquiry form, which arrives in Chunk 5.
+ * phone number as though it were genuine. The enquiry form works regardless,
+ * so a visitor always has a way to make contact.
  */
 
 const TYPE_LABELS: Record<string, string> = {
@@ -147,9 +148,29 @@ export default async function ContactPage() {
           </div>
         )}
 
-        <p className="mt-10 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
-          The enquiry form arrives in Chunk 5.
-        </p>
+        <div className="mt-12 grid gap-10 lg:grid-cols-[3fr_2fr]">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight">Make an enquiry</h2>
+            <p className="mt-2 text-muted">
+              Tell us what you need and a member of the team will respond.
+            </p>
+            <div className="mt-6">
+              <EnquiryForm />
+            </div>
+          </div>
+
+          <aside className="rounded-lg border border-border bg-surface p-6">
+            <h3 className="font-medium">What happens next</h3>
+            <ol className="mt-3 space-y-3 text-sm text-muted">
+              <li>1. We review your enquiry and match it to the right specialist.</li>
+              <li>2. A member of the team contacts you to discuss your requirements.</li>
+              <li>3. If we proceed, you receive a portal invitation by email.</li>
+            </ol>
+            <p className="mt-4 text-xs text-muted">
+              SmartAWARE Client Portal accounts are created by invitation only.
+            </p>
+          </aside>
+        </div>
       </Section>
     </>
   );

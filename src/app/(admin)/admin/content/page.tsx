@@ -20,6 +20,11 @@ const SECTIONS = [
       "Homepage hero, About Us introduction, vision, mission and the data protection statement.",
   },
   {
+    href: "/admin/content/form",
+    title: "Enquiry Form",
+    description: "The fields shown on the website contact form.",
+  },
+  {
     href: "/admin/content/legal",
     title: "Legal Pages",
     description: "Privacy policy, cookie policy and terms of service.",
