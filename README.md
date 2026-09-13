@@ -49,6 +49,22 @@ Endpoint modules in `src/lib/api/` derive their types from that schema rather
 than declaring them (see `health.ts` for the pattern), so a backend field
 rename surfaces as a TypeScript error.
 
+## Rendering
+
+Public pages are server-rendered per request rather than prerendered at build
+time. They are assembled entirely from the API, so static generation would make
+every build — CI, preview deploys, rollbacks — depend on a reachable backend and
+fail outright without one. It would also delay content edits until the next
+revalidation. Server rendering still delivers complete HTML to crawlers, which
+is what the SEO requirement actually needs.
+
+`npm run build` therefore does **not** require a running backend. Only
+`npm run gen:api` does, and that has an offline form.
+
+The portal and admin areas are client-rendered behind the session, since the
+server has no way to know who the viewer is — the access token lives in memory
+and the refresh token in an httpOnly cookie.
+
 ## Architecture notes
 
 **The role-based UI is a convenience, not a security boundary.** Route guards

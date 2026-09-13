@@ -6,7 +6,19 @@ import { Prose } from "@/components/content/Prose";
 import { ApiError } from "@/lib/api/client";
 import { getServiceDetail } from "@/lib/api/services";
 
-export const revalidate = 300;
+/**
+ * Rendered per request rather than prerendered at build time.
+ *
+ * These pages are assembled entirely from the API, so static generation would
+ * make every build — including CI builds, preview deploys and rollbacks —
+ * depend on a reachable backend, and fail outright when it is not. It would
+ * also mean a content edit waited for the revalidation window before appearing.
+ *
+ * Server rendering still delivers complete HTML to crawlers, which is what the
+ * SEO requirement actually needs. If traffic later justifies caching, a CDN
+ * cache header or a move back to ISR is a small, isolated change.
+ */
+export const dynamic = "force-dynamic";
 
 async function load(regionSlug: string, serviceSlug: string) {
   try {

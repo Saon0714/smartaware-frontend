@@ -3,9 +3,21 @@ import { notFound } from "next/navigation";
 
 import { Prose } from "@/components/content/Prose";
 import { ApiError } from "@/lib/api/client";
-import { getLegalPage, listLegalPages } from "@/lib/api/content";
+import { getLegalPage } from "@/lib/api/content";
 
-export const revalidate = 300;
+/**
+ * Rendered per request rather than prerendered at build time.
+ *
+ * These pages are assembled entirely from the API, so static generation would
+ * make every build — including CI builds, preview deploys and rollbacks —
+ * depend on a reachable backend, and fail outright when it is not. It would
+ * also mean a content edit waited for the revalidation window before appearing.
+ *
+ * Server rendering still delivers complete HTML to crawlers, which is what the
+ * SEO requirement actually needs. If traffic later justifies caching, a CDN
+ * cache header or a move back to ISR is a small, isolated change.
+ */
+export const dynamic = "force-dynamic";
 
 /**
  * Legal pages — privacy policy, cookie policy, terms.
@@ -22,17 +34,6 @@ async function loadPage(slug: string) {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
-  }
-}
-
-export async function generateStaticParams() {
-  try {
-    const pages = await listLegalPages();
-    return pages.map((page) => ({ legalSlug: page.slug }));
-  } catch {
-    // The backend may be unavailable at build time; these pages are rendered
-    // on demand instead.
-    return [];
   }
 }
 

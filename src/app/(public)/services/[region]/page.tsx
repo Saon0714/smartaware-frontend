@@ -4,9 +4,21 @@ import { notFound } from "next/navigation";
 
 import { Section } from "@/components/content/Prose";
 import { ApiError } from "@/lib/api/client";
-import { getRegionServices, listRegions } from "@/lib/api/services";
+import { getRegionServices } from "@/lib/api/services";
 
-export const revalidate = 300;
+/**
+ * Rendered per request rather than prerendered at build time.
+ *
+ * These pages are assembled entirely from the API, so static generation would
+ * make every build — including CI builds, preview deploys and rollbacks —
+ * depend on a reachable backend, and fail outright when it is not. It would
+ * also mean a content edit waited for the revalidation window before appearing.
+ *
+ * Server rendering still delivers complete HTML to crawlers, which is what the
+ * SEO requirement actually needs. If traffic later justifies caching, a CDN
+ * cache header or a move back to ISR is a small, isolated change.
+ */
+export const dynamic = "force-dynamic";
 
 async function load(regionSlug: string) {
   try {
@@ -14,15 +26,6 @@ async function load(regionSlug: string) {
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) return null;
     throw error;
-  }
-}
-
-export async function generateStaticParams() {
-  try {
-    const regions = await listRegions();
-    return regions.map((region) => ({ region: region.slug }));
-  } catch {
-    return [];
   }
 }
 
