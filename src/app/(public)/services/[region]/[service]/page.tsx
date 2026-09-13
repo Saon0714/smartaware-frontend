@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Prose } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { ApiError } from "@/lib/api/client";
 import { getServiceDetail } from "@/lib/api/services";
 import { enquiryHref } from "@/lib/enquiry/prefill";
@@ -100,9 +101,7 @@ export default async function ServiceDetailPage({
           exists, so switching market never lands on a 404. */}
       <RegionScope slugs={[regionSlug, ...otherRegions.map((item) => item.slug)]} />
 
-      <section className="relative overflow-hidden border-b border-border bg-surface">
-        <div aria-hidden className="sa-hero-wash" />
-        <div className="relative mx-auto max-w-4xl px-4 py-16 sm:px-6">
+      <PageHero width="max-w-4xl">
           <nav aria-label="Breadcrumb" className="text-sm text-muted">
             <Link href="/services" className="hover:text-primary">
               Services
@@ -115,12 +114,18 @@ export default async function ServiceDetailPage({
             <span>{detail.name}</span>
           </nav>
 
-          <h1 className="sa-rise mt-3 text-4xl font-semibold tracking-tight">{detail.name}</h1>
+          <h1 className="sa-rise mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+            {detail.name}
+          </h1>
           {detail.short_description && (
-            <p className="mt-4 max-w-2xl text-lg text-muted">{detail.short_description}</p>
+            <p
+              className="sa-rise mt-4 max-w-2xl text-lg text-muted"
+              style={{ animationDelay: "80ms" }}
+            >
+              {detail.short_description}
+            </p>
           )}
-        </div>
-      </section>
+      </PageHero>
 
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <Prose body={detail.long_description} />

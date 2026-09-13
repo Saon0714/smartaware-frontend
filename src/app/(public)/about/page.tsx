@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
-import { BrandWave } from "@/components/brand/BrandWave";
 import { IconTile, StrengthMark } from "@/components/brand/Icon";
 import { BulletList, Prose, Section } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { getAboutPage } from "@/lib/api/content";
 
 /**
@@ -44,21 +44,17 @@ export default async function AboutPage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border bg-surface">
-        <div aria-hidden className="sa-hero-wash" />
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <h1 className="sa-rise text-4xl font-semibold tracking-tight sm:text-5xl">
-            {page.intro?.title ?? "About SmartAWARE"}
-          </h1>
-          {page.intro?.subtitle && (
-            <p className="sa-rise mt-3 text-lg text-accent" style={{ animationDelay: "80ms" }}>
-              {page.intro.subtitle}
-            </p>
-          )}
-          <Prose body={page.intro?.body} className="sa-rise mt-6 max-w-3xl" />
-        </div>
-        <BrandWave className="absolute inset-x-0 bottom-0" />
-      </section>
+      <PageHero>
+        <h1 className="sa-rise text-4xl font-semibold tracking-tight sm:text-5xl">
+          {page.intro?.title ?? "About SmartAWARE"}
+        </h1>
+        {page.intro?.subtitle && (
+          <p className="sa-rise mt-3 text-lg text-accent" style={{ animationDelay: "80ms" }}>
+            {page.intro.subtitle}
+          </p>
+        )}
+        <Prose body={page.intro?.body} className="sa-rise mt-6 max-w-3xl" />
+      </PageHero>
 
       {/* --- Vision and mission: the page's two anchor statements, given the
               weight of a pair of feature panels rather than two paragraphs. --- */}

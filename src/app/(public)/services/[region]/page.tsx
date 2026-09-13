@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Section } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { ApiError } from "@/lib/api/client";
 import { getRegionServices } from "@/lib/api/services";
 
@@ -63,8 +64,7 @@ export default async function RegionServicesPage({
 
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <PageHero>
           <nav aria-label="Breadcrumb" className="text-sm text-muted">
             <Link href="/services" className="hover:text-primary">
               Services
@@ -72,14 +72,16 @@ export default async function RegionServicesPage({
             <span aria-hidden> / </span>
             <span>{data.region.name}</span>
           </nav>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight">
+          <h1 className="sa-rise mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
             {data.region.display_name}
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted">
+          <p
+            className="sa-rise mt-4 max-w-2xl text-lg text-muted"
+            style={{ animationDelay: "80ms" }}
+          >
             Services we offer to clients in {data.region.name}.
           </p>
-        </div>
-      </section>
+      </PageHero>
 
       <Section>
         {data.services.length > 0 ? (

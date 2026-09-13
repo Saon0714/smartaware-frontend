@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { Section } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
 import { enquiryPrefill } from "@/lib/enquiry/prefill";
@@ -103,16 +104,19 @@ export default async function ContactPage({
 
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h1 className="text-4xl font-semibold tracking-tight">Contact Us</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted">
-            We support individuals and businesses with tax, accounting and
-            compliance requirements across the United Kingdom, India, the UAE
-            and Oman.
-          </p>
-        </div>
-      </section>
+      <PageHero>
+        <h1 className="sa-rise text-4xl font-semibold tracking-tight sm:text-5xl">
+          Contact Us
+        </h1>
+        <p
+          className="sa-rise mt-4 max-w-2xl text-lg text-muted"
+          style={{ animationDelay: "80ms" }}
+        >
+          We support individuals and businesses with tax, accounting and
+          compliance requirements across the United Kingdom, India, the UAE and
+          Oman.
+        </p>
+      </PageHero>
 
       <Section>
         {page.details.length > 0 ? (

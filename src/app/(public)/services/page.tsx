@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Section } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { getServiceHub } from "@/lib/api/services";
 import { resolveRegion } from "@/lib/region/server";
 
@@ -40,16 +41,21 @@ export default async function ServicesPage() {
 
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h1 className="text-4xl font-semibold tracking-tight">Our Services</h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted">
+      <PageHero>
+          <h1 className="sa-rise text-4xl font-semibold tracking-tight sm:text-5xl">
+            Our Services
+          </h1>
+          <p className="sa-rise mt-4 max-w-2xl text-lg text-muted" style={{ animationDelay: "80ms" }}>
             Tax, accounting and compliance support for individuals and
             businesses. Services vary by market — choose a country to see what
             we offer there.
           </p>
 
-          <nav aria-label="Markets" className="mt-8 flex flex-wrap gap-3">
+          <nav
+            aria-label="Markets"
+            className="sa-rise mt-8 flex flex-wrap gap-3"
+            style={{ animationDelay: "160ms" }}
+          >
             {hub.regions.map((region) => (
               <Link
                 key={region.id}
@@ -65,8 +71,7 @@ export default async function ServicesPage() {
               </Link>
             ))}
           </nav>
-        </div>
-      </section>
+      </PageHero>
 
       <Section title="All services">
         <ul className="sa-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

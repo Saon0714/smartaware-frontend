@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { Prose } from "@/components/content/Prose";
+import { PageHero } from "@/components/layout/PageHero";
 import { ApiError } from "@/lib/api/client";
 import { getLegalPage } from "@/lib/api/content";
 
@@ -57,18 +58,25 @@ export default async function LegalPageRoute({
   if (!page) notFound();
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-      <h1 className="text-3xl font-semibold tracking-tight">{page.title}</h1>
-      {(page.version || page.effective_from) && (
-        <p className="mt-2 text-sm text-muted">
-          {page.version ? `Version ${page.version}` : null}
-          {page.version && page.effective_from ? " · " : null}
-          {page.effective_from
-            ? `Effective ${new Date(page.effective_from).toLocaleDateString("en-GB")}`
-            : null}
-        </p>
-      )}
-      <Prose body={page.body} className="mt-8" />
-    </article>
+    <>
+      <PageHero width="max-w-3xl">
+        <h1 className="sa-rise text-3xl font-semibold tracking-tight sm:text-4xl">
+          {page.title}
+        </h1>
+        {(page.version || page.effective_from) && (
+          <p className="sa-rise mt-3 text-sm text-muted" style={{ animationDelay: "80ms" }}>
+            {page.version ? `Version ${page.version}` : null}
+            {page.version && page.effective_from ? " · " : null}
+            {page.effective_from
+              ? `Effective ${new Date(page.effective_from).toLocaleDateString("en-GB")}`
+              : null}
+          </p>
+        )}
+      </PageHero>
+
+      <article className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+        <Prose body={page.body} />
+      </article>
+    </>
   );
 }

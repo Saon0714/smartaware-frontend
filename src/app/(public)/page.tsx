@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import { BrandWave } from "@/components/brand/BrandWave";
 import { IconTile, StrengthMark } from "@/components/brand/Icon";
+import { PageHero } from "@/components/layout/PageHero";
 import { Prose, Section } from "@/components/content/Prose";
 import { getHomePage } from "@/lib/api/content";
 import { resolveRegion } from "@/lib/region/server";
@@ -34,22 +34,10 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden border-b border-border bg-surface">
-        <div aria-hidden className="sa-hero-wash" />
-
-        <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
-          {/* <p className="sa-fade inline-flex items-center gap-2 rounded-full border border-border bg-bg/80 px-3 py-1 text-xs font-medium tracking-wide text-accent backdrop-blur">
-            <span
-              aria-hidden
-              className="h-1.5 w-1.5 rounded-full"
-              style={{ background: "var(--sa-gradient-brand)" }}
-            />
-            Established 2016
-          </p> */}
-
+      <PageHero size="large">
           {page.hero?.title && (
             <h1
-              className="sa-rise mt-5 max-w-3xl text-4xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl"
+              className="sa-rise max-w-3xl text-4xl font-semibold leading-[1.1] sm:text-5xl lg:text-6xl"
               style={{ animationDelay: "60ms" }}
             >
               {page.hero.title}
@@ -79,10 +67,7 @@ export default async function HomePage() {
               Our services
             </Link>
           </div>
-        </div>
-
-        <BrandWave className="absolute inset-x-0 bottom-0" />
-      </section>
+      </PageHero>
 
       {page.services.length > 0 && (
         <Section title="How we help">
