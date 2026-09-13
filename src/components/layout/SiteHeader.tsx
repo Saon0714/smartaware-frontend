@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { LogoLink } from "@/components/brand/Logo";
+
 /**
  * Public site header.
  *
@@ -29,10 +31,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-bg/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="text-lg text-primary">Smart</span>
-          <span className="-ml-2 text-lg text-accent">AWARE</span>
-        </Link>
+        <LogoLink variant="wordmark" height={38} priority />
 
         <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
           {NAV_ITEMS.map((item) => (

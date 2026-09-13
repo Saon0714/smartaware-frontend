@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { LogoLink } from "@/components/brand/Logo";
 import { ChatWidgetSlot } from "@/components/chat/ChatWidgetSlot";
 import { loginPathForTarget } from "@/lib/auth/destinations";
 import { useSession } from "@/lib/auth/SessionProvider";
@@ -44,10 +45,7 @@ export function AppShell({
       <header className="border-b border-border bg-bg">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <Link href="/" className="font-semibold tracking-tight">
-              <span className="text-primary">Smart</span>
-              <span className="text-accent">AWARE</span>
-            </Link>
+            <LogoLink variant="wordmark" height={34} priority />
             <span aria-hidden className="text-border">|</span>
             <span className="text-sm text-muted">{title}</span>
           </div>

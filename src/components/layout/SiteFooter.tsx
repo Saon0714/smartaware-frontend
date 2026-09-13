@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { Logo } from "@/components/brand/Logo";
+
 /**
  * Public site footer.
  *
@@ -27,10 +29,7 @@ export function SiteFooter() {
     <footer className="mt-16 border-t border-border bg-surface">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="font-semibold tracking-tight">
-            <span className="text-primary">Smart</span>
-            <span className="text-accent">AWARE</span>
-          </p>
+          <Logo variant="full" height={64} />
           <p className="mt-3 max-w-sm text-sm text-muted">
             Professional tax, accounting and compliance advisory services for
             individuals and businesses in the United Kingdom, India, the UAE and
