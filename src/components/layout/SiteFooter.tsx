@@ -2,29 +2,23 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
 import { listLegalPages } from "@/lib/api/content";
+import { listRegions } from "@/lib/api/services";
 
 /**
  * Public site footer.
  *
- * Legal links are fetched rather than hardcoded, so the three seeded
- * placeholders stay invisible until SmartAWARE writes and publishes them —
- * a footer link to an unwritten privacy policy would be worse than no link.
- *
- * The region list is still static; it becomes API-driven in Chunk 4 along with
- * the services pages.
+ * Both the region list and the legal links are fetched rather than hardcoded,
+ * so opening a market or publishing a policy is data entry. A footer link to an
+ * unwritten privacy policy would be worse than no link.
  */
-
-const REGIONS = [
-  { slug: "uk", label: "United Kingdom" },
-  { slug: "india", label: "India" },
-  { slug: "uae", label: "United Arab Emirates" },
-  { slug: "oman", label: "Oman" },
-] as const;
 
 export async function SiteFooter() {
   // The footer renders on every page, including when the API is unreachable.
-  // Losing the legal links is acceptable; taking the whole site down is not.
-  const legalPages = await listLegalPages().catch(() => []);
+  // Losing these links is acceptable; taking the whole site down is not.
+  const [legalPages, regions] = await Promise.all([
+    listLegalPages().catch(() => []),
+    listRegions().catch(() => []),
+  ]);
 
   return (
     <footer className="mt-16 border-t border-border bg-surface">
@@ -41,13 +35,13 @@ export async function SiteFooter() {
         <div>
           <h2 className="text-sm font-medium">Services by region</h2>
           <ul className="mt-3 space-y-2 text-sm">
-            {REGIONS.map((region) => (
-              <li key={region.slug}>
+            {regions.map((region) => (
+              <li key={region.id}>
                 <Link
                   href={`/services/${region.slug}`}
                   className="text-muted transition-colors hover:text-primary"
                 >
-                  {region.label}
+                  {region.name}
                 </Link>
               </li>
             ))}

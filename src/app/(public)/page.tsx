@@ -55,7 +55,7 @@ export default async function HomePage() {
             {page.services.map((service) => (
               <li key={service.id}>
                 <Link
-                  href={`/services/${service.slug}`}
+                  href={`/services#${service.slug}`}
                   className="flex h-full flex-col rounded-lg border border-border p-5 transition-colors hover:border-primary"
                 >
                   <h3 className="font-medium">{service.name}</h3>

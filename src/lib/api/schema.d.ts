@@ -245,6 +245,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Published regions */
+        get: operations["public-services_list_regions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Services hub
+         * @description Every published category, and the markets that offer each.
+         */
+        get: operations["public-services_services_hub"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/regions/{region_slug}/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Services offered in one market */
+        get: operations["public-services_region_services"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/regions/{region_slug}/services/{service_slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A service as offered in one market */
+        get: operations["public-services_region_service_detail"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/invites": {
         parameters: {
             query?: never;
@@ -956,6 +1027,233 @@ export interface paths {
         patch: operations["admin-legal_update"];
         trace?: never;
     };
+    "/api/v1/admin/regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-regions_list"];
+        put?: never;
+        /** Create */
+        post: operations["admin-regions_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/regions/{region_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete */
+        delete: operations["admin-regions_delete"];
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-regions_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-services_list"];
+        put?: never;
+        /** Create */
+        post: operations["admin-services_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get */
+        get: operations["admin-services_get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete
+         * @description Archive by default; hard-delete only when nothing references it.
+         */
+        delete: operations["admin-services_delete"];
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-services_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}/restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Restore */
+        post: operations["admin-services_restore"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reorder */
+        post: operations["admin-services_reorder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}/details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Details */
+        get: operations["admin-services_list_details"];
+        put?: never;
+        /** Create Detail */
+        post: operations["admin-services_create_detail"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/details/{detail_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Detail */
+        delete: operations["admin-services_delete_detail"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}/subcategories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Subcategories */
+        get: operations["admin-services_list_subcategories"];
+        put?: never;
+        /** Create Subcategory */
+        post: operations["admin-services_create_subcategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/subcategories/{subcategory_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Archive Subcategory
+         * @description Archived, not deleted — tasks reference subcategories too.
+         */
+        delete: operations["admin-services_archive_subcategory"];
+        options?: never;
+        head?: never;
+        /** Update Subcategory */
+        patch: operations["admin-services_update_subcategory"];
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}/availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Availability
+         * @description One row per region, including markets with no row yet.
+         *
+         *     The grid always shows every region so an editor can see what is switched
+         *     off, not merely what happens to have been configured.
+         */
+        get: operations["admin-services_availability"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/services/{category_id}/availability/{region_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set Availability
+         * @description Upsert, so toggling a grid cell works whether or not a row exists.
+         */
+        put: operations["admin-services_set_availability"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1043,6 +1341,93 @@ export interface components {
             sort_order?: number | null;
             /** Is Published */
             is_published?: boolean | null;
+        };
+        /** AvailabilityOut */
+        AvailabilityOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /**
+             * Region Id
+             * Format: uuid
+             */
+            region_id: string;
+            /** Is Offered */
+            is_offered: boolean;
+            /** Name Override */
+            name_override: string | null;
+            /** Short Description Override */
+            short_description_override: string | null;
+            /** Long Description Override */
+            long_description_override: string | null;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /**
+         * AvailabilityWrite
+         * @description Upserted per (category, region) pair.
+         */
+        AvailabilityWrite: {
+            /**
+             * Is Offered
+             * @default true
+             */
+            is_offered: boolean;
+            /** Name Override */
+            name_override?: string | null;
+            /** Short Description Override */
+            short_description_override?: string | null;
+            /** Long Description Override */
+            long_description_override?: string | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+        };
+        /** CategoryAvailabilityGrid */
+        CategoryAvailabilityGrid: {
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Category Slug */
+            category_slug: string;
+            /** Category Name */
+            category_name: string;
+            /** Regions */
+            regions: components["schemas"]["CategoryAvailabilityRow"][];
+        };
+        /**
+         * CategoryAvailabilityRow
+         * @description One cell of the admin availability grid.
+         */
+        CategoryAvailabilityRow: {
+            /**
+             * Region Id
+             * Format: uuid
+             */
+            region_id: string;
+            /** Region Slug */
+            region_slug: string;
+            /** Region Name */
+            region_name: string;
+            /** Is Offered */
+            is_offered: boolean;
+            /** Name Override */
+            name_override: string | null;
+            /** Short Description Override */
+            short_description_override: string | null;
+            /** Sort Order */
+            sort_order: number;
         };
         /** ChangePasswordRequest */
         ChangePasswordRequest: {
@@ -1605,6 +1990,144 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /** RegionOut */
+        RegionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Display Name */
+            display_name: string;
+            /** Currency Code */
+            currency_code: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Is Published */
+            is_published: boolean;
+            /** Meta Title */
+            meta_title: string | null;
+            /** Meta Description */
+            meta_description: string | null;
+        };
+        /** RegionServicesOut */
+        RegionServicesOut: {
+            region: components["schemas"]["RegionOut"];
+            /** Services */
+            services: components["schemas"]["RegionalServiceSummary"][];
+        };
+        /** RegionWrite */
+        RegionWrite: {
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Display Name */
+            display_name: string;
+            /** Currency Code */
+            currency_code?: string | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Published
+             * @default true
+             */
+            is_published: boolean;
+            /** Meta Title */
+            meta_title?: string | null;
+            /** Meta Description */
+            meta_description?: string | null;
+        };
+        /** RegionWritePatch */
+        RegionWritePatch: {
+            /** Slug */
+            slug?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Currency Code */
+            currency_code?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Published */
+            is_published?: boolean | null;
+            /** Meta Title */
+            meta_title?: string | null;
+            /** Meta Description */
+            meta_description?: string | null;
+        };
+        /** RegionalServiceDetail */
+        RegionalServiceDetail: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Short Description */
+            short_description: string | null;
+            /** Icon Key */
+            icon_key: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Long Description */
+            long_description: string | null;
+            /** Cta Label */
+            cta_label: string | null;
+            /** Cta Url */
+            cta_url: string | null;
+            /** Meta Title */
+            meta_title: string | null;
+            /** Meta Description */
+            meta_description: string | null;
+            /** Details */
+            details?: string[];
+            /**
+             * Subcategories
+             * @description Published subcategories offered in this market.
+             */
+            subcategories?: string[];
+            /**
+             * Other Regions
+             * @description Other markets offering this service.
+             */
+            other_regions?: components["schemas"]["RegionOut"][];
+        };
+        /**
+         * RegionalServiceSummary
+         * @description A service as offered in one market, with overrides already applied.
+         *
+         *     The frontend never has to know an override existed — it receives the name
+         *     and wording that market should show.
+         */
+        RegionalServiceSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Short Description */
+            short_description: string | null;
+            /** Icon Key */
+            icon_key: string | null;
+            /** Sort Order */
+            sort_order: number;
+        };
         /**
          * ReorderRequest
          * @description Ordered ids. Position in the list becomes sort_order.
@@ -1612,6 +2135,224 @@ export interface components {
         ReorderRequest: {
             /** Ids */
             ids: string[];
+        };
+        /** ServiceCategoryOut */
+        ServiceCategoryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Short Description */
+            short_description: string | null;
+            /** Icon Key */
+            icon_key: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Long Description */
+            long_description: string | null;
+            /** Cta Label */
+            cta_label: string | null;
+            /** Cta Url */
+            cta_url: string | null;
+            /** Is Published */
+            is_published: boolean;
+            /** Is Archived */
+            is_archived: boolean;
+            /** Meta Title */
+            meta_title: string | null;
+            /** Meta Description */
+            meta_description: string | null;
+            /** Details */
+            details?: components["schemas"]["ServiceDetailOut"][];
+            /** Subcategories */
+            subcategories?: components["schemas"]["ServiceSubcategoryOut"][];
+        };
+        /** ServiceCategoryWrite */
+        ServiceCategoryWrite: {
+            /** Name */
+            name: string;
+            /**
+             * Slug
+             * @description Derived from the name when omitted.
+             */
+            slug?: string | null;
+            /** Short Description */
+            short_description?: string | null;
+            /** Long Description */
+            long_description?: string | null;
+            /** Icon Key */
+            icon_key?: string | null;
+            /** Cta Label */
+            cta_label?: string | null;
+            /** Cta Url */
+            cta_url?: string | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Published
+             * @default true
+             */
+            is_published: boolean;
+            /** Meta Title */
+            meta_title?: string | null;
+            /** Meta Description */
+            meta_description?: string | null;
+        };
+        /** ServiceCategoryWritePatch */
+        ServiceCategoryWritePatch: {
+            /** Name */
+            name?: string | null;
+            /**
+             * Slug
+             * @description Derived from the name when omitted.
+             */
+            slug?: string | null;
+            /** Short Description */
+            short_description?: string | null;
+            /** Long Description */
+            long_description?: string | null;
+            /** Icon Key */
+            icon_key?: string | null;
+            /** Cta Label */
+            cta_label?: string | null;
+            /** Cta Url */
+            cta_url?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Published */
+            is_published?: boolean | null;
+            /** Meta Title */
+            meta_title?: string | null;
+            /** Meta Description */
+            meta_description?: string | null;
+        };
+        /** ServiceDetailOut */
+        ServiceDetailOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Text */
+            text: string;
+            /** Sort Order */
+            sort_order: number;
+        };
+        /** ServiceDetailWrite */
+        ServiceDetailWrite: {
+            /** Text */
+            text: string;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+        };
+        /**
+         * ServiceHubCategory
+         * @description A category on the /services hub, with the markets offering it.
+         */
+        ServiceHubCategory: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Short Description */
+            short_description: string | null;
+            /** Icon Key */
+            icon_key: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Region Slugs */
+            region_slugs?: string[];
+        };
+        /** ServiceHubOut */
+        ServiceHubOut: {
+            /** Regions */
+            regions: components["schemas"]["RegionOut"][];
+            /** Categories */
+            categories: components["schemas"]["ServiceHubCategory"][];
+        };
+        /** ServiceSubcategoryOut */
+        ServiceSubcategoryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /** Slug */
+            slug: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Sort Order */
+            sort_order: number;
+            /** Is Published */
+            is_published: boolean;
+            /** Is Archived */
+            is_archived: boolean;
+        };
+        /** ServiceSubcategoryWrite */
+        ServiceSubcategoryWrite: {
+            /** Name */
+            name: string;
+            /**
+             * Slug
+             * @description Derived from the name when omitted.
+             */
+            slug?: string | null;
+            /** Description */
+            description?: string | null;
+            /**
+             * Sort Order
+             * @default 0
+             */
+            sort_order: number;
+            /**
+             * Is Published
+             * @default false
+             */
+            is_published: boolean;
+        };
+        /** ServiceSubcategoryWritePatch */
+        ServiceSubcategoryWritePatch: {
+            /** Name */
+            name?: string | null;
+            /**
+             * Slug
+             * @description Derived from the name when omitted.
+             */
+            slug?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Sort Order */
+            sort_order?: number | null;
+            /** Is Published */
+            is_published?: boolean | null;
         };
         /**
          * ServiceTeaser
@@ -2230,6 +2971,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LegalPageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "public-services_list_regions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"][];
+                };
+            };
+        };
+    };
+    "public-services_services_hub": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceHubOut"];
+                };
+            };
+        };
+    };
+    "public-services_region_services": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                region_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionServicesOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "public-services_region_service_detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                region_slug: string;
+                service_slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionalServiceDetail"];
                 };
             };
             /** @description Validation Error */
@@ -4285,6 +5129,645 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LegalPageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-regions_list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"][];
+                };
+            };
+        };
+    };
+    "admin-regions_create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-regions_delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                region_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-regions_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                region_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegionWritePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_list": {
+        parameters: {
+            query?: {
+                include_archived?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceCategoryWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_delete": {
+        parameters: {
+            query?: {
+                /** @description Permanently delete. Refused if any task references it. */
+                hard?: boolean;
+            };
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceCategoryWritePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_restore": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReorderRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceCategoryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_list_details": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceDetailOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_create_detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceDetailWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceDetailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_delete_detail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                detail_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_list_subcategories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceSubcategoryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_create_subcategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceSubcategoryWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceSubcategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_archive_subcategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subcategory_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceSubcategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_update_subcategory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                subcategory_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ServiceSubcategoryWritePatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ServiceSubcategoryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryAvailabilityGrid"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-services_set_availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category_id: string;
+                region_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AvailabilityWrite"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvailabilityOut"];
                 };
             };
             /** @description Validation Error */
