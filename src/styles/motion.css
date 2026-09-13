@@ -13,11 +13,20 @@
  *   - Public pages animate more than the portal and admin, which staff and
  *     clients use for real work where repeated motion becomes irritating.
  *
- * Entrance animations are pure CSS with `animation-fill-mode: both` rather than
- * JavaScript and IntersectionObserver. That matters: a JS-driven reveal that
- * starts at opacity 0 leaves the page blank if the script fails, and these are
- * the server-rendered pages search engines read. With CSS, the worst case is
- * that content simply appears.
+ * Entrance animations are pure CSS rather than JavaScript and an
+ * IntersectionObserver. That matters: a JS-driven reveal that starts at
+ * opacity 0 leaves the page blank if the script fails, and these are the
+ * server-rendered pages search engines read. With CSS, the worst case is that
+ * content simply appears.
+ *
+ * They fill `backwards`, not `both`. Backwards is what stops a staggered item
+ * flashing into view before its delay elapses, which is the whole reason a fill
+ * mode is needed. Forwards additionally keeps the final frame applied for ever
+ * — and an animated value outranks an ordinary declaration in the cascade, so
+ * the animation's closing `transform: none` silently beat every `:hover`
+ * transform on the same element. Cards that were also stagger children simply
+ * did not move. The end frame and the element's resting style are identical, so
+ * releasing control when the animation finishes changes nothing visually.
  */
 
 :root {
@@ -36,6 +45,7 @@
   --sa-shadow-sm: 0 1px 3px rgba(6, 60, 90, 0.07), 0 1px 2px rgba(6, 60, 90, 0.04);
   --sa-shadow-md: 0 4px 12px rgba(6, 60, 90, 0.08), 0 2px 4px rgba(6, 60, 90, 0.04);
   --sa-shadow-lg: 0 12px 28px rgba(6, 60, 90, 0.10), 0 4px 8px rgba(6, 60, 90, 0.05);
+  --sa-shadow-xl: 0 20px 44px rgba(6, 60, 90, 0.14), 0 8px 14px rgba(6, 60, 90, 0.07);
   --sa-shadow-brand: 0 10px 24px rgba(51, 160, 43, 0.16);
 
   --sa-gradient-brand: linear-gradient(
@@ -97,11 +107,11 @@
   /* --- Entrance ------------------------------------------------------------- */
 
   .sa-rise {
-    animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) both;
+    animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) backwards;
   }
 
   .sa-fade {
-    animation: sa-fade var(--sa-dur-entrance) var(--sa-ease-out) both;
+    animation: sa-fade var(--sa-dur-entrance) var(--sa-ease-out) backwards;
   }
 
   /* Where the browser supports it, entrance is driven by scroll position instead
@@ -118,7 +128,7 @@
 
   /* Children enter in sequence. Capped at eight so a long list never leaves the
    * reader waiting on a staircase of delays. */
-  .sa-stagger > * { animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) both; }
+  .sa-stagger > * { animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) backwards; }
   .sa-stagger > *:nth-child(1) { animation-delay: 0ms; }
   .sa-stagger > *:nth-child(2) { animation-delay: 60ms; }
   .sa-stagger > *:nth-child(3) { animation-delay: 120ms; }
@@ -145,10 +155,21 @@
       transform var(--sa-dur) var(--sa-ease-out);
   }
 
+  /* A 2px nudge with a soft shadow was too slight to register as anything —
+   * the card moved, but only if you were watching for it. Lifting further and
+   * scaling very slightly is what actually reads as the card coming forward:
+   * the scale is doing most of the work, because a size change is noticed at
+   * the edges of vision in a way a few pixels of travel is not. */
   .sa-card:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow: var(--sa-shadow-md);
-    border-color: color-mix(in srgb, var(--sa-color-primary) 22%, var(--sa-color-border));
+    transform: translate3d(0, -5px, 0) scale(1.012);
+    /* The brand tint is an inset ring rather than a border-color. Cards carry
+     * Tailwind's `border-border`, and a utility is unlayered, so it beats
+     * anything declared in a layer no matter how specific — the border-color
+     * this used to set never once applied. Shadow does apply, so the ring is
+     * drawn there, immediately inside the real border. */
+    box-shadow:
+      var(--sa-shadow-lg),
+      inset 0 0 0 1px color-mix(in srgb, var(--sa-color-primary) 40%, transparent);
   }
 
   /* Panels that genuinely lead somewhere. */
@@ -158,13 +179,17 @@
     will-change: transform;
   }
 
+  /* Still clearly ahead of a static card: the same gesture, further. Both sit
+   * inside the 2-6px / 1.01-1.03 budget this file opens with. */
   .sa-interactive:hover {
-    transform: translate3d(0, -3px, 0);
-    box-shadow: var(--sa-shadow-lg);
+    transform: translate3d(0, -6px, 0) scale(1.02);
+    box-shadow:
+      var(--sa-shadow-xl),
+      inset 0 0 0 1px color-mix(in srgb, var(--sa-color-primary) 55%, transparent);
   }
 
   .sa-interactive:active {
-    transform: translate3d(0, -1px, 0);
+    transform: translate3d(0, -1px, 0) scale(1.004);
     transition-duration: var(--sa-dur-fast);
   }
 
@@ -331,7 +356,7 @@
   }
 
   .sa-panel-in {
-    animation: sa-scale-in var(--sa-dur-slow) var(--sa-ease-out) both;
+    animation: sa-scale-in var(--sa-dur-slow) var(--sa-ease-out) backwards;
   }
 
   /* --- Restraint in the working interfaces --------------------------------------
@@ -347,14 +372,21 @@
     animation: none;
   }
 
-  .sa-workspace .sa-interactive:hover {
-    transform: translate3d(0, -2px, 0);
-    box-shadow: var(--sa-shadow-md);
+  /* Calmer inside the portals, where the same grids are looked at all day and
+   * a full-size pop becomes wearing. No scale here for the same reason — but
+   * no longer motionless, which read as the hover simply not working. */
+  .sa-workspace .sa-card:hover {
+    transform: translate3d(0, -3px, 0);
+    box-shadow:
+      var(--sa-shadow-lg),
+      inset 0 0 0 1px color-mix(in srgb, var(--sa-color-primary) 30%, transparent);
   }
 
-  .sa-workspace .sa-card:hover {
-    transform: none;
-    box-shadow: var(--sa-shadow-md);
+  .sa-workspace .sa-interactive:hover {
+    transform: translate3d(0, -4px, 0);
+    box-shadow:
+      var(--sa-shadow-lg),
+      inset 0 0 0 1px color-mix(in srgb, var(--sa-color-primary) 45%, transparent);
   }
 }
 
