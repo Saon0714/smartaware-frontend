@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# smartaware-frontend
 
-## Getting Started
+Next.js frontend for the SmartAWARE public website, Customer Portal and Admin
+Portal.
 
-First, run the development server:
+This is a **standalone repository**. The backend (`smartaware-backend`) is a
+separate repo with a separate deploy. This app talks to it purely over HTTP —
+there are no shared packages and no local imports across the two repos. The
+only contract is the backend's OpenAPI schema, from which this repo generates
+its TypeScript client.
+
+## Requirements
+
+- Node.js 20+
+- A running `smartaware-backend` (default `http://localhost:8000`)
+
+## Local setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
+npm install
+npm run gen:api        # generate the typed client from the backend schema
+npm run dev            # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Commands
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run typecheck` | `tsc --noEmit` (strict) |
+| `npm run lint` | ESLint |
+| `npm run gen:api` | Regenerate the API client from a running backend |
+| `npm run gen:api -- ../smartaware-backend/openapi.json` | Regenerate from an exported file (no server needed) |
+| `npm run gen:api:check` | Regenerate and fail if the result differs — use in CI |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## The API contract
 
-## Learn More
+`src/lib/api/schema.d.ts` is **generated** by `openapi-typescript` from the
+backend's `/openapi.json`. Never edit it by hand.
 
-To learn more about Next.js, take a look at the following resources:
+It *is* committed, so builds and CI never require a live backend. To keep it
+honest, `npm run gen:api:check` regenerates and fails on any diff — run it in
+CI so a backend change the frontend hasn't absorbed breaks the build instead of
+breaking production.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Endpoint modules in `src/lib/api/` derive their types from that schema rather
+than declaring them (see `health.ts` for the pattern), so a backend field
+rename surfaces as a TypeScript error.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Architecture notes
 
-## Deploy on Vercel
+**The role-based UI is a convenience, not a security boundary.** Route guards
+and conditional rendering exist so users aren't shown things they can't use.
+Every actual permission and client-data scope is enforced by the backend. Next's
+Proxy (`proxy.ts`, formerly middleware) is used only for optimistic redirects —
+the Next.js docs are explicit that it is not a session or authorization layer.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Auth.** The refresh token is an httpOnly cookie set by the backend; the
+short-lived access token is held in memory only. Nothing durable goes into
+`localStorage`, so an XSS bug cannot steal a lasting session. This requires the
+backend's `CORS_ALLOWED_ORIGINS` to name this origin exactly, and in production
+both apps must sit under one registrable domain (`app.` / `api.`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Content is not hardcoded.** FAQ, services, About Us copy, contact details,
+form fields and wizard questions are fetched from the backend and edited in the
+Admin Portal.
+
+**Design tokens.** Brand colours and typography live in `src/styles/tokens.css`
+and are exposed to Tailwind as semantic utilities (`bg-primary`, `text-muted`).
+Components reference those, never raw hex values. The current palette was
+sampled from the supplied logo artwork and is pending confirmation of the
+official brand HEX codes.
+
+## Next.js version
+
+This project runs **Next.js 16**, which renames `middleware.ts` to `proxy.ts`
+and makes route `params` a `Promise` that must be awaited. `AGENTS.md` (and the
+docs bundled in `node_modules/next/dist/docs/`) are the authority — consult them
+rather than relying on older Next.js knowledge.

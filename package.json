@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "gen:api": "bash scripts/generate-api.sh",
+    "gen:api:check": "bash scripts/generate-api.sh && git diff --exit-code src/lib/api/schema.d.ts"
   },
   "dependencies": {
     "next": "16.3.5",
@@ -20,7 +23,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "openapi-typescript": "^7.13.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

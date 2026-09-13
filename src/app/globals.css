@@ -1,26 +1,24 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Expose the design tokens to Tailwind utilities (bg-primary, text-muted, …)
+ * so components never hardcode a hex value. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: var(--sa-color-bg);
+  --color-surface: var(--sa-color-surface);
+  --color-border: var(--sa-color-border);
+  --color-text: var(--sa-color-text);
+  --color-muted: var(--sa-color-text-muted);
+  --color-primary: var(--sa-color-primary);
+  --color-primary-hover: var(--sa-color-primary-hover);
+  --color-accent: var(--sa-color-accent);
+  --color-danger: var(--sa-danger-500);
+  --color-success: var(--sa-success-500);
+  --font-sans: var(--sa-font-sans);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--sa-color-bg);
+  color: var(--sa-color-text);
+  font-family: var(--sa-font-sans);
 }

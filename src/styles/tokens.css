@@ -1,0 +1,49 @@
+/* SmartAWARE design tokens.
+ *
+ * Brand colours were sampled from the supplied logo artwork
+ * (SmartAWARE Logo/Logo_SmartAWARE (1).jpg). They are a close read, not an
+ * official brand specification — spec Section 3.3 expects SmartAWARE to supply
+ * HEX codes and fonts. Everything visual references these variables, so
+ * swapping in the official palette is a one-file change.
+ *
+ * TODO(SmartAWARE): confirm brand HEX codes and typeface.
+ */
+:root {
+  /* Sampled from logo artwork */
+  --sa-green-500: #33a02b;
+  --sa-blue-500: #0678b4;
+
+  /* Derived ramps (tints/shades of the two sampled hues) */
+  --sa-green-50: #eef7ed;
+  --sa-green-600: #2b8724;
+  --sa-green-700: #226c1d;
+  --sa-blue-50: #e8f2f9;
+  --sa-blue-600: #05669a;
+  --sa-blue-700: #04527c;
+
+  --sa-neutral-0: #ffffff;
+  --sa-neutral-50: #f7f8f8;
+  --sa-neutral-100: #eceeef;
+  --sa-neutral-300: #c8ccce;
+  --sa-neutral-500: #6b7378;
+  --sa-neutral-700: #3a4145;
+  --sa-neutral-900: #171a1c;
+
+  --sa-danger-500: #c0392b;
+  --sa-warning-500: #b8860b;
+  --sa-success-500: var(--sa-green-500);
+
+  /* Semantic roles — components use these, never the raw ramps above. */
+  --sa-color-bg: var(--sa-neutral-0);
+  --sa-color-surface: var(--sa-neutral-50);
+  --sa-color-border: var(--sa-neutral-100);
+  --sa-color-text: var(--sa-neutral-900);
+  --sa-color-text-muted: var(--sa-neutral-500);
+  --sa-color-primary: var(--sa-green-500);
+  --sa-color-primary-hover: var(--sa-green-600);
+  --sa-color-accent: var(--sa-blue-500);
+
+  /* TODO(SmartAWARE): replace once the brand typeface is supplied. */
+  --sa-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
