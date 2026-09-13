@@ -80,23 +80,28 @@
   50%      { transform: translate3d(2%, -2%, 0) scale(1.06); }
 }
 
-/* The hero wave. Travel is exactly four wavelengths (1440 user units of a
+/* The hero wave. Travel is exactly one wavelength (360 user units of a
  * 4320-wide periodic path), so the resting position is indistinguishable from
- * the start and nothing can slide into view. */
+ * the start and nothing can slide into view.
+ *
+ * One wavelength rather than four: apparent speed is distance over time, and
+ * the drift reads as a gentle swell at this distance where four wavelengths
+ * looked like the wave was being dragged. The path stays three viewports wide,
+ * which costs nothing and leaves room to lengthen the travel again. */
 @keyframes sa-wave-travel {
   from { transform: translateX(0); }
-  to   { transform: translateX(-1440px); }
+  to   { transform: translateX(-360px); }
 }
 
 /* A bob whose amplitude decays to nothing. This is what makes the wave settle
  * rather than simply stop: real water loses energy, it does not halt. CSS has
  * no easing that decays, so the decay is written into the keyframe values. */
 @keyframes sa-wave-settle {
-  0%   { transform: translateY(7px); }
-  28%  { transform: translateY(-4.5px); }
-  52%  { transform: translateY(2.6px); }
-  72%  { transform: translateY(-1.4px); }
-  88%  { transform: translateY(0.6px); }
+  0%   { transform: translateY(4.5px); }
+  28%  { transform: translateY(-2.8px); }
+  52%  { transform: translateY(1.6px); }
+  72%  { transform: translateY(-0.8px); }
+  88%  { transform: translateY(0.3px); }
   100% { transform: translateY(0); }
 }
 
@@ -359,19 +364,19 @@
   /* Decelerating, so the motion dies away instead of being switched off. Runs
    * once — a wave that rolls forever competes with the page for attention. */
   .sa-wave-travel {
-    animation: sa-wave-travel 5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: sa-wave-travel 2.8s cubic-bezier(0.25, 0.7, 0.35, 1) both;
   }
 
   .sa-wave-travel-slow {
-    animation: sa-wave-travel 7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: sa-wave-travel 3.4s cubic-bezier(0.25, 0.7, 0.35, 1) both;
   }
 
   .sa-wave-settle {
-    animation: sa-wave-settle 3s var(--sa-ease) both;
+    animation: sa-wave-settle 2s var(--sa-ease) both;
   }
 
   .sa-wave-settle-slow {
-    animation: sa-wave-settle 3.8s var(--sa-ease) both;
+    animation: sa-wave-settle 2.4s var(--sa-ease) both;
   }
 
 
