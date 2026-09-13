@@ -6,6 +6,11 @@ import { useSession } from "@/lib/auth/SessionProvider";
 
 const AVAILABLE = [
   {
+    href: "/admin/clients",
+    title: "Clients",
+    description: "Client accounts, their assigned manager and account status.",
+  },
+  {
     href: "/admin/content",
     title: "Website Content",
     description: "About Us copy, team, values, milestones, contact details and legal pages.",

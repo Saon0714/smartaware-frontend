@@ -1518,6 +1518,124 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-clients_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/clients/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get */
+        get: operations["admin-clients_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-clients_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/clients/{client_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Status
+         * @description Admin only.
+         *
+         *     Section 6.2 places this entirely at Admin's discretion, following a
+         *     conversation with the client — it is never automated and never delegated.
+         */
+        post: operations["admin-clients_set_status"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/clients/{client_id}/manager": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Manager
+         * @description Admin only — Section 6.1 gives Managers no say in their own allocation.
+         */
+        post: operations["admin-clients_assign_manager"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/staff": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Staff
+         * @description Staff available for assignment.
+         */
+        get: operations["admin-clients_list_staff"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/clients/{client_id}/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Client Audit
+         * @description What has happened to this account, and who did it.
+         */
+        get: operations["admin-clients_client_audit"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1623,6 +1741,39 @@ export interface components {
             escalated: boolean;
             /** Top Similarity */
             top_similarity: number | null;
+        };
+        /** AuditEntryOut */
+        AuditEntryOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Actor Id */
+            actor_id: string | null;
+            /** Actor Email */
+            actor_email?: string | null;
+            /** Action */
+            action: string;
+            /** Entity Type */
+            entity_type: string;
+            /** Entity Id */
+            entity_id: string | null;
+            /** Old Value */
+            old_value: {
+                [key: string]: unknown;
+            } | null;
+            /** New Value */
+            new_value: {
+                [key: string]: unknown;
+            } | null;
+            /** Reason */
+            reason: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** AvailabilityOut */
         AvailabilityOut: {
@@ -1800,17 +1951,8 @@ export interface components {
          * @enum {string}
          */
         ChatSurface: "public" | "portal";
-        /**
-         * ClientStatus
-         * @description Spec Section 6.2.
-         *
-         *     HOLD and DEACTIVE block login identically; they differ only in business
-         *     meaning (paused vs. ended), which Admin uses for their own reporting.
-         * @enum {string}
-         */
-        ClientStatus: "active" | "hold" | "deactive";
-        /** ClientSummary */
-        ClientSummary: {
+        /** ClientDetail */
+        ClientDetail: {
             /**
              * Id
              * Format: uuid
@@ -1820,9 +1962,97 @@ export interface components {
             client_ref: string;
             /** Company Name */
             company_name: string | null;
+            /** Owner Name */
+            owner_name: string | null;
+            /** Contact Email */
+            contact_email: string | null;
+            /** Country */
+            country: string | null;
             status: components["schemas"]["ClientStatus"];
             /** Onboarding Completed At */
             onboarding_completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /**
+             * User Email
+             * Format: email
+             */
+            user_email: string;
+            /** User Is Active */
+            user_is_active: boolean;
+            /** Last Login At */
+            last_login_at: string | null;
+            assigned_manager?: components["schemas"]["StaffSummary"] | null;
+            /** Company Registration Number */
+            company_registration_number: string | null;
+            /** Registration Date */
+            registration_date: string | null;
+            /** Address Line1 */
+            address_line1: string | null;
+            /** Address Line2 */
+            address_line2: string | null;
+            /** City */
+            city: string | null;
+            /** Region Or County */
+            region_or_county: string | null;
+            /** Postcode */
+            postcode: string | null;
+            /** Contact Phone */
+            contact_phone: string | null;
+            /** Status Note */
+            status_note: string | null;
+            /** Extra */
+            extra?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * ClientStatus
+         * @description Spec Section 6.2.
+         *
+         *     HOLD and DEACTIVE block login identically; they differ only in business
+         *     meaning (paused vs. ended), which Admin uses for their own reporting.
+         * @enum {string}
+         */
+        ClientStatus: "active" | "hold" | "deactive";
+        /** ClientUpdate */
+        ClientUpdate: {
+            /** Company Name */
+            company_name?: string | null;
+            /** Owner Name */
+            owner_name?: string | null;
+            /** Company Registration Number */
+            company_registration_number?: string | null;
+            /** Registration Date */
+            registration_date?: string | null;
+            /** Address Line1 */
+            address_line1?: string | null;
+            /** Address Line2 */
+            address_line2?: string | null;
+            /** City */
+            city?: string | null;
+            /** Region Or County */
+            region_or_county?: string | null;
+            /** Postcode */
+            postcode?: string | null;
+            /** Country */
+            country?: string | null;
+            /** Contact Email */
+            contact_email?: string | null;
+            /** Contact Phone */
+            contact_phone?: string | null;
+            /** Extra */
+            extra?: {
+                [key: string]: unknown;
+            } | null;
         };
         /** ContactDetailOut */
         ContactDetailOut: {
@@ -2477,10 +2707,17 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** ManagerAssignmentRequest */
+        ManagerAssignmentRequest: {
+            /** Manager Id */
+            manager_id?: string | null;
+            /** Note */
+            note?: string | null;
+        };
         /** MeOut */
         MeOut: {
             user: components["schemas"]["UserOut"];
-            client?: components["schemas"]["ClientSummary"] | null;
+            client?: components["schemas"]["app__schemas__auth__ClientSummary"] | null;
         };
         /** MessageOut */
         MessageOut: {
@@ -3052,6 +3289,33 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /**
+         * StaffSummary
+         * @description A manager or admin, as shown in assignment controls.
+         */
+        StaffSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Full Name */
+            full_name: string | null;
+            role: components["schemas"]["UserRole"];
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** StatusChangeRequest */
+        StatusChangeRequest: {
+            status: components["schemas"]["ClientStatus"];
+            /** Note */
+            note: string;
+        };
         /** TeamMemberOut */
         TeamMemberOut: {
             /**
@@ -3221,6 +3485,68 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** ClientSummary */
+        app__schemas__auth__ClientSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Client Ref */
+            client_ref: string;
+            /** Company Name */
+            company_name: string | null;
+            status: components["schemas"]["ClientStatus"];
+            /** Onboarding Completed At */
+            onboarding_completed_at: string | null;
+        };
+        /**
+         * ClientSummary
+         * @description A row in the client list.
+         *
+         *     Section 6.2 requires the assigned manager to be visible alongside each
+         *     user, so it is part of the list payload rather than a second lookup.
+         */
+        app__schemas__client__ClientSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Client Ref */
+            client_ref: string;
+            /** Company Name */
+            company_name: string | null;
+            /** Owner Name */
+            owner_name: string | null;
+            /** Contact Email */
+            contact_email: string | null;
+            /** Country */
+            country: string | null;
+            status: components["schemas"]["ClientStatus"];
+            /** Onboarding Completed At */
+            onboarding_completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * User Id
+             * Format: uuid
+             */
+            user_id: string;
+            /**
+             * User Email
+             * Format: email
+             */
+            user_email: string;
+            /** User Is Active */
+            user_is_active: boolean;
+            /** Last Login At */
+            last_login_at: string | null;
+            assigned_manager?: components["schemas"]["StaffSummary"] | null;
         };
     };
     responses: never;
@@ -6949,6 +7275,238 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ChatSessionDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_list": {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["ClientStatus"] | null;
+                manager_id?: string | null;
+                unassigned?: boolean;
+                search?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["app__schemas__client__ClientSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_set_status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusChangeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_assign_manager": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManagerAssignmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_list_staff": {
+        parameters: {
+            query?: {
+                managers_only?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-clients_client_audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryOut"][];
                 };
             };
             /** @description Validation Error */

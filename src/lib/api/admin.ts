@@ -270,3 +270,85 @@ export const listChatSessions = (escalatedOnly = false) =>
 
 export const getChatSession = (id: string) =>
   apiFetch<ChatSessionDetail>(`/admin/chat-sessions/${id}`);
+
+// --- Clients, staff and invitations -------------------------------------------------
+
+export type ClientSummary = Json<
+  ApiPaths["/api/v1/admin/clients"]["get"]["responses"][200]
+>[number];
+
+export type ClientDetail = Json<
+  ApiPaths["/api/v1/admin/clients/{client_id}"]["get"]["responses"][200]
+>;
+
+export type StaffSummary = Json<
+  ApiPaths["/api/v1/admin/staff"]["get"]["responses"][200]
+>[number];
+
+export type AuditEntry = Json<
+  ApiPaths["/api/v1/admin/clients/{client_id}/audit"]["get"]["responses"][200]
+>[number];
+
+export type ClientStatus = ClientSummary["status"];
+
+export interface ClientFilters {
+  status?: ClientStatus | "";
+  managerId?: string;
+  unassigned?: boolean;
+  search?: string;
+}
+
+export function listClients(filters: ClientFilters = {}): Promise<ClientSummary[]> {
+  const params = new URLSearchParams();
+  if (filters.status) params.set("status", filters.status);
+  if (filters.unassigned) params.set("unassigned", "true");
+  else if (filters.managerId) params.set("manager_id", filters.managerId);
+  if (filters.search?.trim()) params.set("search", filters.search.trim());
+  const query = params.toString();
+  return apiFetch<ClientSummary[]>(`/admin/clients${query ? `?${query}` : ""}`);
+}
+
+export const getClient = (id: string) =>
+  apiFetch<ClientDetail>(`/admin/clients/${id}`);
+
+export const updateClient = (id: string, body: Record<string, unknown>) =>
+  apiFetch<ClientDetail>(`/admin/clients/${id}`, { method: "PATCH", body });
+
+export const setClientStatus = (id: string, status: string, note: string) =>
+  apiFetch<ClientDetail>(`/admin/clients/${id}/status`, {
+    method: "POST",
+    body: { status, note },
+  });
+
+export const assignManager = (id: string, managerId: string | null, note?: string) =>
+  apiFetch<ClientDetail>(`/admin/clients/${id}/manager`, {
+    method: "POST",
+    body: { manager_id: managerId, note: note ?? null },
+  });
+
+export const listClientAudit = (id: string) =>
+  apiFetch<AuditEntry[]>(`/admin/clients/${id}/audit`);
+
+export const listStaff = (managersOnly = true) =>
+  apiFetch<StaffSummary[]>(`/admin/staff?managers_only=${managersOnly}`);
+
+// --- Invitations -------------------------------------------------------------------
+
+export type Invite = Json<
+  ApiPaths["/api/v1/admin/invites"]["get"]["responses"][200]
+>[number];
+
+export type InviteCreated = Json<
+  ApiPaths["/api/v1/admin/invites"]["post"]["responses"][201]
+>;
+
+export const listInvites = () => apiFetch<Invite[]>("/admin/invites");
+
+export const createInvite = (body: Record<string, unknown>) =>
+  apiFetch<InviteCreated>("/admin/invites", { method: "POST", body });
+
+export const revokeInvite = (id: string) =>
+  apiFetch<Invite>(`/admin/invites/${id}/revoke`, { method: "POST" });
+
+export const resendInvite = (id: string) =>
+  apiFetch<InviteCreated>(`/admin/invites/${id}/resend`, { method: "POST" });
