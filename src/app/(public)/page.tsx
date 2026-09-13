@@ -1,45 +1,37 @@
 import Link from "next/link";
 
-import { ApiStatus } from "@/components/ui/ApiStatus";
+import { Prose, Section } from "@/components/content/Prose";
+import { getHomePage } from "@/lib/api/content";
 
 /**
- * Homepage skeleton (Chunk 1).
+ * Homepage.
  *
- * The copy below is SmartAWARE's own approved wording from the Website Content
- * Brief — nothing here is invented. It is rendered statically for now and is
- * replaced in Chunk 3 by the same text fetched from the `content_blocks` and
- * `service_categories` tables, at which point editing it needs no deploy.
- *
- * Deliberately absent: client counts, testimonials, certifications and team
- * members. Those are unverified claims about a real firm and are seeded empty
- * for SmartAWARE to supply.
+ * A Server Component: content is fetched during rendering, so the HTML reaches
+ * search engines fully populated. Nothing here is hardcoded — every string
+ * comes from the database and is editable from the Admin Portal.
  */
 
-const SERVICE_PREVIEW = [
-  "Personal Tax",
-  "Limited Company Accounting",
-  "Bookkeeping",
-  "VAT Services",
-  "Payroll",
-  "CIS Services",
-] as const;
+// Content changes through the Admin Portal without a deploy, so the page is
+// revalidated periodically rather than baked in at build time.
+export const revalidate = 300;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const page = await getHomePage();
+
   return (
     <>
       <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
-          <p className="text-sm font-medium uppercase tracking-wide text-accent">
-            Established 2016
-          </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            Professional UK Tax &amp; Compliance Advisory
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-muted">
-            SmartAWARE is a professional tax, accounting and compliance advisory
-            firm serving individuals, businesses and organisations with their
-            financial and statutory requirements.
-          </p>
+          {page.hero?.title && (
+            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
+              {page.hero.title}
+            </h1>
+          )}
+          {page.hero?.subtitle && (
+            <p className="mt-5 max-w-2xl text-lg text-muted">{page.hero.subtitle}</p>
+          )}
+          <Prose body={page.hero?.body} className="mt-5 max-w-2xl" />
+
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/contact"
@@ -49,7 +41,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/services"
-              className="rounded-md border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-bg"
+              className="rounded-md border border-border bg-bg px-5 py-2.5 text-sm font-medium transition-colors hover:bg-surface"
             >
               Our services
             </Link>
@@ -57,42 +49,80 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 className="text-2xl font-semibold tracking-tight">How we help</h2>
-        <p className="mt-2 max-w-2xl text-muted">
-          Our service categories cover personal tax, company accounting,
-          bookkeeping, VAT, payroll, CIS, business registration, tax advisory
-          and compliance.
-        </p>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICE_PREVIEW.map((service) => (
-            <li
-              key={service}
-              className="rounded-lg border border-border p-5 transition-colors hover:border-primary"
-            >
-              <h3 className="font-medium">{service}</h3>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-6 text-sm text-muted">
-          Services shown per region once confirmed for that market.{" "}
-          <Link href="/services" className="text-primary underline underline-offset-4">
-            View all services
-          </Link>
-        </p>
-      </section>
-
-      <section className="border-t border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="text-2xl font-semibold tracking-tight">Where we work</h2>
-          <p className="mt-2 max-w-2xl text-muted">
-            Our major work is focused on the United Kingdom, with an
-            international presence supporting clients in India, the United Arab
-            Emirates and Oman.
+      {page.services.length > 0 && (
+        <Section title="How we help">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {page.services.map((service) => (
+              <li key={service.id}>
+                <Link
+                  href={`/services/${service.slug}`}
+                  className="flex h-full flex-col rounded-lg border border-border p-5 transition-colors hover:border-primary"
+                >
+                  <h3 className="font-medium">{service.name}</h3>
+                  {service.short_description && (
+                    <p className="mt-2 text-sm text-muted">{service.short_description}</p>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-sm text-muted">
+            <Link href="/services" className="text-primary underline underline-offset-4">
+              View all services
+            </Link>
           </p>
-          <ApiStatus />
-        </div>
-      </section>
+        </Section>
+      )}
+
+      {page.achievements.length > 0 && (
+        <Section tone="surface">
+          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {page.achievements.map((item) => (
+              <div key={item.id}>
+                <dt className="text-sm text-muted">{item.label}</dt>
+                <dd className="mt-1 text-3xl font-semibold tracking-tight text-primary">
+                  {item.value}
+                  {item.unit ? <span className="text-xl">{item.unit}</span> : null}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </Section>
+      )}
+
+      {page.key_strengths.length > 0 && (
+        <Section
+          title="Why clients choose SmartAWARE"
+          tone={page.achievements.length > 0 ? "default" : "surface"}
+        >
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {page.key_strengths.map((strength) => (
+              <li key={strength.id} className="rounded-lg border border-border p-5">
+                <h3 className="font-medium">{strength.title}</h3>
+                <p className="mt-2 text-sm text-muted">{strength.description}</p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {page.testimonials.length > 0 && (
+        <Section title="What our clients say" tone="surface">
+          <ul className="grid gap-6 md:grid-cols-2">
+            {page.testimonials.map((quote) => (
+              <li key={quote.id} className="rounded-lg border border-border bg-bg p-6">
+                <blockquote className="text-muted">&ldquo;{quote.quote}&rdquo;</blockquote>
+                <p className="mt-4 text-sm font-medium">
+                  {quote.author_name}
+                  {quote.author_company ? (
+                    <span className="font-normal text-muted"> · {quote.author_company}</span>
+                  ) : null}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
     </>
   );
 }
