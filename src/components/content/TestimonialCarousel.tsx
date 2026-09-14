@@ -16,10 +16,15 @@ const ADVANCE_MS = 7000;
  * server-rendered for search, and a carousel that mounts a single slide shows a
  * crawler one testimonial out of however many there are.
  *
- * It advances on its own, and stops doing so the moment anyone shows an
- * interest — hover, focus, or a press of the controls. An animation a reader is
- * fighting is worse than none, and a quote that slides away mid-sentence is
- * exactly that.
+ * It advances on its own and keeps going. It used to stop while the pointer was
+ * anywhere over it, which sounds considerate and is not: the card is wide and
+ * centred, so a reader scrolling down the page leaves the cursor sitting on it
+ * and the carousel silently never moves. It reads as broken.
+ *
+ * Keyboard focus still pauses it — being yanked to another slide mid-tab is a
+ * real problem rather than a theoretical one — and the arrows and dots are
+ * there for anyone who wants to stop or steer, which is what WCAG 2.2.2 asks
+ * for.
  *
  * `source` is carried through from the API because these are placeholders until
  * Trustpilot is connected, and a sample review that looks like a real one is
@@ -60,8 +65,6 @@ export function TestimonialCarousel({ items }: { items: readonly Testimonial[] }
       aria-roledescription="carousel"
       aria-label="What our clients say"
       className="relative"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget as Node)) setPaused(false);

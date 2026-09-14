@@ -140,6 +140,15 @@ export function CollectionEditor({ spec }: { spec: CollectionSpec }) {
                   {"is_verified" in row && !row.is_verified && (
                     <Badge tone="warning">Unverified</Badge>
                   )}
+                  {/* The public site shows sample reviews exactly as it will
+                      show real ones, so this list is the only place an editor
+                      can tell them apart. */}
+                  {row.source === "placeholder" && (
+                    <Badge tone="warning">Sample — not a real review</Badge>
+                  )}
+                  {typeof row.source === "string" &&
+                    row.source !== "placeholder" &&
+                    row.source !== "manual" && <Badge>{String(row.source)}</Badge>}
                 </div>
                 {spec.subtitleField && (
                   <p className="mt-1 line-clamp-2 text-sm text-muted">

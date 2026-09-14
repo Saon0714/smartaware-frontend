@@ -102,9 +102,9 @@
  * dips to a trace rather than to nothing: a background that disappears
  * entirely and comes back reads as a fault rather than as movement.
  *
- * Very slow on purpose. A short cycle would undo the work of pushing this
- * behind the content, because motion draws the eye far more readily than
- * colour does. */
+ * Slow on purpose — motion draws the eye far more readily than colour, and this
+ * sits behind the content — but not so slow that nothing appears to be
+ * happening. Eight seconds is four down and four back. */
 @keyframes sa-ribbon-breathe {
   0%,
   100% { opacity: var(--sa-ribbon-alpha); }
@@ -182,7 +182,7 @@
      * forwards, so the handover is clean rather than a fight. */
     animation:
       sa-ribbon-in 1500ms linear 700ms backwards,
-      sa-ribbon-breathe 14s ease-in-out 2200ms infinite;
+      sa-ribbon-breathe 8s ease-in-out 2200ms infinite;
   }
 
   .sa-slide-track {
