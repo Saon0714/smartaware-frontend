@@ -57,11 +57,38 @@ export function Section({
   title?: string | null;
   subtitle?: string | null;
   children: React.ReactNode;
-  tone?: "default" | "surface";
+  /**
+   * `brand` is a softly tinted band — green fading through the surface colour
+   * to blue. It exists so a section can hold white cards: on the plain surface
+   * a white card has only its border to separate it from the page, which reads
+   * as no card at all.
+   */
+  tone?: "default" | "surface" | "brand";
 }) {
   return (
-    <section className={tone === "surface" ? "border-y border-border bg-surface" : ""}>
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
+    <section
+      className={
+        tone === "surface"
+          ? "border-y border-border bg-surface"
+          : tone === "brand"
+            ? "relative overflow-hidden border-y border-border"
+            : ""
+      }
+    >
+      {tone === "brand" && (
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(155deg," +
+              " color-mix(in srgb, var(--sa-green-500) 9%, var(--sa-color-surface)) 0%," +
+              " var(--sa-color-surface) 48%," +
+              " color-mix(in srgb, var(--sa-blue-500) 10%, var(--sa-color-surface)) 100%)",
+          }}
+        />
+      )}
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
         {title && (
           <div className="sa-rise">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>

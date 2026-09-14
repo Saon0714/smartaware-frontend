@@ -74,7 +74,9 @@ export function TestimonialCarousel({ items }: { items: readonly Testimonial[] }
         if (event.key === "ArrowRight") go(index + 1);
       }}
     >
-      <div className="overflow-hidden">
+      {/* Padded, so the card's shadow is not sliced off by the overflow clip
+          that keeps the other slides out of sight. */}
+      <div className="-mx-2 overflow-hidden px-2 py-2">
         <ul
           className="sa-slide-track flex"
           style={{ transform: `translate3d(-${index * 100}%, 0, 0)` }}
@@ -82,38 +84,58 @@ export function TestimonialCarousel({ items }: { items: readonly Testimonial[] }
           {items.map((quote, position) => (
             <li
               key={quote.id}
-              className="w-full shrink-0 px-1"
+              className="flex w-full shrink-0 px-2"
               aria-roledescription="slide"
               aria-label={`${position + 1} of ${count}`}
               // Read out of the flow when off-screen, so a screen reader or a
               // find-in-page does not wander into a quote nobody can see.
               aria-hidden={position === index ? undefined : true}
             >
-              <figure className="sa-card mx-auto max-w-3xl rounded-xl border border-border bg-bg p-8 text-center sm:p-10">
-                {quote.rating ? <Stars rating={quote.rating} /> : null}
-                <blockquote className="mt-5 text-lg leading-relaxed text-muted">
-                  &ldquo;{quote.quote}&rdquo;
+              {/* h-full against a stretched flex row: the quotes differ in
+                  length, and without it the carousel resizes on every slide. */}
+              <figure className="relative mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-border bg-bg p-8 shadow-[var(--sa-shadow-lg)] sm:p-10">
+                {/* The brand edge the other cards on this page carry. */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-1"
+                  style={{ background: "var(--sa-gradient-brand)" }}
+                />
+                <div className="flex items-start justify-between gap-4">
+                  {quote.rating ? <Stars rating={quote.rating} /> : <span />}
+                  {/* Ornament rather than punctuation: large, faint, and sized
+                      to sit inside the card rather than be clipped by it. */}
+                  <span
+                    aria-hidden
+                    className="sa-gradient-text pointer-events-none -mt-2 select-none text-6xl font-semibold leading-none opacity-20"
+                  >
+                    &rdquo;
+                  </span>
+                </div>
+
+                <blockquote className="mt-4 text-lg leading-relaxed text-text sm:text-xl sm:leading-relaxed">
+                  {quote.quote}
                 </blockquote>
-                <figcaption className="mt-6 text-sm">
-                  <span className="font-medium">{quote.author_name}</span>
-                  {quote.author_region ? (
-                    <span className="text-muted"> · {quote.author_region}</span>
-                  ) : null}
-                  {quote.author_company ? (
-                    <p className="mt-1 text-xs text-muted">{quote.author_company}</p>
-                  ) : null}
-                  {quote.source_url ? (
-                    <p className="mt-2 text-xs">
+
+                <figcaption className="mt-auto flex items-center gap-4 pt-8">
+                  <Initials of={quote.author_company ?? quote.author_name} />
+                  <div>
+                    <p className="text-sm font-medium">{quote.author_name}</p>
+                    <p className="text-sm text-muted">
+                      {quote.author_company}
+                      {quote.author_company && quote.author_region ? " · " : ""}
+                      {quote.author_region}
+                    </p>
+                    {quote.source_url ? (
                       <a
                         href={quote.source_url}
                         rel="noopener noreferrer nofollow"
                         target="_blank"
-                        className="text-primary underline underline-offset-4"
+                        className="mt-1 inline-block text-xs text-primary underline underline-offset-4"
                       >
                         Read the review
                       </a>
-                    </p>
-                  ) : null}
+                    ) : null}
+                  </div>
                 </figcaption>
               </figure>
             </li>
@@ -136,9 +158,14 @@ export function TestimonialCarousel({ items }: { items: readonly Testimonial[] }
                   aria-current={position === index ? "true" : undefined}
                   className={`block h-2 rounded-full transition-all duration-300 ${
                     position === index
-                      ? "w-6 bg-primary"
+                      ? "w-7"
                       : "w-2 bg-border hover:bg-muted"
                   }`}
+                  style={
+                    position === index
+                      ? { background: "var(--sa-gradient-brand)" }
+                      : undefined
+                  }
                 />
               </li>
             ))}
@@ -172,7 +199,7 @@ function Arrow({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="sa-press flex h-9 w-9 items-center justify-center rounded-full border border-border bg-bg text-lg leading-none hover:border-primary hover:text-primary"
+      className="sa-press flex h-10 w-10 items-center justify-center rounded-full border border-border bg-bg text-lg leading-none shadow-[var(--sa-shadow-sm)] hover:border-primary hover:text-primary"
     >
       <span aria-hidden>{children}</span>
     </button>
@@ -182,16 +209,40 @@ function Arrow({
 function Stars({ rating }: { rating: number }) {
   const whole = Math.max(0, Math.min(5, Math.round(rating)));
   return (
-    <p className="flex justify-center gap-0.5" aria-label={`Rated ${whole} out of 5`}>
+    <p className="flex gap-1 text-lg" aria-label={`Rated ${whole} out of 5`}>
       {Array.from({ length: 5 }, (_, i) => (
-        <span
-          key={i}
-          aria-hidden
-          className={i < whole ? "text-primary" : "text-border"}
-        >
+        <span key={i} aria-hidden className={i < whole ? "text-primary" : "text-border"}>
           ★
         </span>
       ))}
     </p>
+  );
+}
+
+/**
+ * A monogram standing in for a photograph.
+ *
+ * Testimonials look unanchored without a face beside them, and these have no
+ * photographs — nor will the Trustpilot ones, which carry a display name and
+ * nothing else. Initials give the attribution something to sit against without
+ * inventing a likeness.
+ */
+function Initials({ of }: { of: string }) {
+  const letters = of
+    .replace(/[^a-zA-Z ]/g, "")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+
+  return (
+    <span
+      aria-hidden
+      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-[var(--sa-shadow-sm)]"
+      style={{ background: "var(--sa-gradient-brand)" }}
+    >
+      {letters || "SA"}
+    </span>
   );
 }

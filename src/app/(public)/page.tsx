@@ -175,7 +175,8 @@ export default async function HomePage() {
       {page.testimonials.length > 0 && (
         <Section
           title="What our clients say"
-          tone={coreValues.length > 0 ? "default" : "surface"}
+          subtitle="In their own words, from the markets we work in."
+          tone="brand"
         >
           <TestimonialCarousel items={page.testimonials} />
         </Section>
