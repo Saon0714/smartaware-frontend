@@ -78,12 +78,17 @@
   to   { opacity: 1; transform: none; }
 }
 
-/* A left-to-right reveal, for the brand ribbon under each page heading. Clip
- * rather than scale: scaling would squash the ribbon's curves and then stretch
- * them out, which reads as a rubber band rather than the mark being drawn. */
-@keyframes sa-reveal-x {
-  from { clip-path: inset(0 100% 0 0); opacity: 0.4; }
-  to   { clip-path: inset(0 0 0 0); opacity: 1; }
+/* The brand ribbon arriving. A wipe across the width drew attention to itself
+ * and to the fact that the band is wider than the mark; the ribbons simply
+ * being there, having settled, is quieter and suits a page heading better. */
+@keyframes sa-ribbon-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sa-ribbon-settle {
+  from { transform: translate3d(0, 10px, 0); }
+  to   { transform: none; }
 }
 
 @keyframes sa-sweep {
@@ -136,15 +141,24 @@
 
   /* Children enter in sequence. Capped at eight so a long list never leaves the
    * reader waiting on a staircase of delays. */
-  /* Fills backwards for the reason the other entrances do: the revealed state
-   * is the element's own, so if the animation never runs — reduced motion, an
-   * old browser — the ribbon is simply there. */
-  .sa-ribbon-reveal {
-    animation: sa-reveal-x 900ms var(--sa-ease-out) backwards;
+  /* Fills backwards for the reason the other entrances do: the settled state is
+   * the element's own, so if the animation never runs — reduced motion, an old
+   * browser — the ribbon is simply there.
+   *
+   * Opacity is on the paths so the two can arrive in turn, echoing the mark's
+   * two strokes; the few pixels of travel are on the wrapper, which is an HTML
+   * element where a pixel is a pixel. On an SVG path it would be measured in
+   * user units and scale with the band. */
+  .sa-ribbon-band {
+    animation: sa-ribbon-settle 760ms var(--sa-ease-out) backwards;
   }
 
-  .sa-ribbon-reveal-late {
-    animation: sa-reveal-x 900ms var(--sa-ease-out) 140ms backwards;
+  .sa-ribbon-in {
+    animation: sa-ribbon-in 720ms var(--sa-ease-out) backwards;
+  }
+
+  .sa-ribbon-in-late {
+    animation: sa-ribbon-in 720ms var(--sa-ease-out) 180ms backwards;
   }
 
   .sa-stagger > * { animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) backwards; }
