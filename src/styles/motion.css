@@ -78,17 +78,21 @@
   to   { opacity: 1; transform: none; }
 }
 
-/* The brand ribbon arriving. A wipe across the width drew attention to itself
- * and to the fact that the band is wider than the mark; the ribbons simply
- * being there, having settled, is quieter and suits a page heading better. */
+/* The brand ribbon arriving.
+ *
+ * Linear, and the only thing that changes is opacity. Every other easing here
+ * is front-loaded, which is right for something responding to a click and
+ * wrong for this: expo-out put the ribbon at most of its opacity within a
+ * couple of frames, so it announced itself and then crept. Linear has no
+ * acceleration to notice. Movement was removed for the same reason — a
+ * background element that slides is a background element you look at.
+ *
+ * The end value comes from the element, which carries its resting opacity
+ * inline — see BrandRibbon — so the number is stated once, in one place.
+ */
 @keyframes sa-ribbon-in {
   from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes sa-ribbon-settle {
-  from { transform: translate3d(0, 10px, 0); }
-  to   { transform: none; }
+  to   { opacity: var(--sa-ribbon-alpha); }
 }
 
 @keyframes sa-sweep {
@@ -141,24 +145,22 @@
 
   /* Children enter in sequence. Capped at eight so a long list never leaves the
    * reader waiting on a staircase of delays. */
-  /* Fills backwards for the reason the other entrances do: the settled state is
-   * the element's own, so if the animation never runs — reduced motion, an old
-   * browser — the ribbon is simply there.
+  /* The brand ribbon: a background, and timed like one.
    *
-   * Opacity is on the paths so the two can arrive in turn, echoing the mark's
-   * two strokes; the few pixels of travel are on the wrapper, which is an HTML
-   * element where a pixel is a pixel. On an SVG path it would be measured in
-   * user units and scale with the band. */
+   * It rests well below full strength. At full opacity the mark was the most
+   * saturated thing on the page and took the eye before the heading did, which
+   * is the wrong way round for a page's own decoration.
+   *
+   * The delay lets the heading and its subtitle land first — those finish
+   * around 860ms — so the ribbon develops afterwards rather than competing
+   * with them. Longer than the 700ms this file gives an entrance, deliberately:
+   * that budget is for something the reader is meant to notice.
+   *
+   * Fills backwards, so the delay is held at nothing rather than at full
+   * strength, and so the ribbon is simply there if the animation never runs.
+   */
   .sa-ribbon-band {
-    animation: sa-ribbon-settle 760ms var(--sa-ease-out) backwards;
-  }
-
-  .sa-ribbon-in {
-    animation: sa-ribbon-in 720ms var(--sa-ease-out) backwards;
-  }
-
-  .sa-ribbon-in-late {
-    animation: sa-ribbon-in 720ms var(--sa-ease-out) 180ms backwards;
+    animation: sa-ribbon-in 1500ms linear 700ms backwards;
   }
 
   .sa-stagger > * { animation: sa-rise var(--sa-dur-entrance) var(--sa-ease-out) backwards; }
