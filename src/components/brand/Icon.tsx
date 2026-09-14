@@ -29,7 +29,20 @@ const PATHS: Record<string, string> = {
   "hard-hat": "M4 16a8 8 0 0116 0zM3 16h18v3H3zM9 8a3 3 0 016 0v3",
   clipboard: "M9 4h6v3H9zM7 5H5v16h14V5h-2M9 12h6M9 16h4",
   chart: "M4 20V10M10 20V4M16 20v-7M4 20h16",
+  award: "M12 3a5 5 0 100 10 5 5 0 000-10zM8.5 12.5L7 21l5-2.5L17 21l-1.5-8.5",
+  globe: "M12 3a9 9 0 100 18 9 9 0 000-18zM3.6 9h16.8M3.6 15h16.8M12 3c-2.5 2.4-3.8 5.4-3.8 9s1.3 6.6 3.8 9c2.5-2.4 3.8-5.4 3.8-9S14.5 5.4 12 3z",
+  "map-pin": "M12 21s7-5.2 7-11a7 7 0 10-14 0c0 5.8 7 11 7 11zM12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z",
+  layers: "M12 3l9 4.5-9 4.5-9-4.5zM3 12.5L12 17l9-4.5M3 17L12 21.5 21 17",
+  // A handshake is unreadable at this size — every attempt came out as a
+  // squiggle — so the idea of one-to-one attention is carried by a person with
+  // a tick instead.
+  "user-check": "M10 12a4 4 0 100-8 4 4 0 000 8zM3 21a7 7 0 0111.3-5.5M16 18l2 2 4-4",
+  message: "M4 5h16v11H9l-5 4z",
 };
+
+/** Every icon a content editor may choose. Exported so the Admin Portal offers
+ *  exactly these — a typed key that matches nothing silently falls back. */
+export const ICON_KEYS: readonly string[] = Object.keys(PATHS).sort();
 
 const FALLBACK = "M12 3a9 9 0 100 18 9 9 0 000-18zM12 8v4M12 16h.01";
 

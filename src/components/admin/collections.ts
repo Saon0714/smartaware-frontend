@@ -6,10 +6,15 @@
  * rather than nine near-duplicate screens that would drift apart.
  */
 
+import { ICON_KEYS } from "@/components/brand/Icon";
+
+
 export interface FieldSpec {
   key: string;
   label: string;
-  type: "text" | "textarea" | "number" | "checkbox";
+  type: "text" | "textarea" | "number" | "checkbox" | "choice";
+  /** For `choice`. The empty option is added by the editor. */
+  options?: readonly string[];
   required?: boolean;
   help?: string;
   /** Hidden from the create/edit form but shown in the list. */
@@ -29,6 +34,22 @@ export interface CollectionSpec {
   addLabel: string;
 }
 
+/**
+ * The icon shown beside an item on the website.
+ *
+ * A list rather than free text: the keys are the ones the website actually
+ * draws, and a typo used to fall back to a neutral mark with nothing to say it
+ * had. Offering the real set means an editor cannot pick one that does not
+ * exist, and can see what is available without reading the code.
+ */
+const ICON_FIELD: FieldSpec = {
+  key: "icon_key",
+  label: "Icon",
+  type: "choice",
+  options: ICON_KEYS,
+  help: "Shown beside the title on the website. Leave blank for none.",
+};
+
 const PUBLISH_FIELD: FieldSpec = {
   key: "is_published",
   label: "Published on the website",
@@ -46,7 +67,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
     fields: [
       { key: "title", label: "Title", type: "text", required: true },
       { key: "description", label: "Description", type: "textarea", required: true },
-      { key: "icon_key", label: "Icon key", type: "text", help: "Optional." },
+      ICON_FIELD,
       PUBLISH_FIELD,
     ],
   },
@@ -60,6 +81,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
     fields: [
       { key: "title", label: "Title", type: "text", required: true },
       { key: "description", label: "Description", type: "textarea", required: true },
+      ICON_FIELD,
       PUBLISH_FIELD,
     ],
   },

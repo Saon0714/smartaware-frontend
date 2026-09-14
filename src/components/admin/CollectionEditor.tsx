@@ -5,7 +5,7 @@ import { useState } from "react";
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import type { CollectionSpec, FieldSpec } from "@/components/admin/collections";
 import { Button } from "@/components/ui/Button";
-import { Badge, Checkbox, EmptyState, PageHeader, Textarea } from "@/components/ui/Controls";
+import { Badge, Checkbox, EmptyState, PageHeader, Select, Textarea } from "@/components/ui/Controls";
 import { FormBanner, Input, Label } from "@/components/ui/Field";
 import {
   createCollectionRow, deleteCollectionRow, listCollection, reorderCollection,
@@ -276,7 +276,21 @@ function FieldInput({
         {field.label}
         {field.required && <span className="text-danger"> *</span>}
       </Label>
-      {field.type === "textarea" ? (
+      {field.type === "choice" ? (
+        <Select
+          id={id}
+          required={field.required}
+          value={String(value ?? "")}
+          onChange={(e) => onChange(e.target.value)}
+        >
+          <option value="">None</option>
+          {(field.options ?? []).map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </Select>
+      ) : field.type === "textarea" ? (
         <Textarea
           id={id}
           required={field.required}
