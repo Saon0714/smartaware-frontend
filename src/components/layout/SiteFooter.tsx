@@ -84,7 +84,21 @@ export async function SiteFooter() {
         {/* Extra space at the foot on small screens: the floating Smart AI
             launcher sits bottom-right and would otherwise cover this row. */}
         <div className="mx-auto max-w-6xl px-4 py-6 pb-20 text-xs text-muted sm:px-6 sm:pb-6">
-          <p>&copy; {new Date().getFullYear()} SmartAWARE. All rights reserved.</p>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>&copy; {new Date().getFullYear()} SmartAWARE. All rights reserved.</span>
+            <span aria-hidden className="text-border">|</span>
+            <span>
+              Powered by{" "}
+              <a
+                href="https://adcompetence.com/"
+                rel="noopener noreferrer"
+                target="_blank"
+                className="text-primary underline underline-offset-4 hover:text-primary-hover"
+              >
+                AdCompetence
+              </a>
+            </span>
+          </p>
         </div>
       </div>
     </footer>

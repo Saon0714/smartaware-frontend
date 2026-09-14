@@ -3359,6 +3359,8 @@ export interface components {
         /** HomePageOut */
         HomePageOut: {
             hero: components["schemas"]["ContentBlockOut"] | null;
+            /** Core Values */
+            core_values?: components["schemas"]["CoreValueOut"][];
             /** Key Strengths */
             key_strengths: components["schemas"]["KeyStrengthOut"][];
             /** Services */
@@ -4683,6 +4685,15 @@ export interface components {
             sort_order: number;
             /** Is Published */
             is_published: boolean;
+            /**
+             * Source
+             * @default manual
+             */
+            source: string;
+            /** Source Url */
+            source_url?: string | null;
+            /** Reviewed At */
+            reviewed_at?: string | null;
         };
         /** TestimonialWrite */
         TestimonialWrite: {
@@ -4706,6 +4717,10 @@ export interface components {
              * @default false
              */
             is_published: boolean;
+            /** Source Url */
+            source_url?: string | null;
+            /** Reviewed At */
+            reviewed_at?: string | null;
         };
         /** TestimonialWritePatch */
         TestimonialWritePatch: {
@@ -4723,6 +4738,10 @@ export interface components {
             sort_order?: number | null;
             /** Is Published */
             is_published?: boolean | null;
+            /** Source Url */
+            source_url?: string | null;
+            /** Reviewed At */
+            reviewed_at?: string | null;
         };
         /** UserOut */
         UserOut: {

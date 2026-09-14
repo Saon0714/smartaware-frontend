@@ -3,6 +3,7 @@ import Link from "next/link";
 import { IconTile, StrengthMark } from "@/components/brand/Icon";
 import { PageHero } from "@/components/layout/PageHero";
 import { Prose, Section } from "@/components/content/Prose";
+import { TestimonialCarousel } from "@/components/content/TestimonialCarousel";
 import { getHomePage } from "@/lib/api/content";
 import { resolveRegion } from "@/lib/region/server";
 
@@ -29,6 +30,10 @@ export default async function HomePage() {
 
   // Cards link into the visitor's chosen market rather than to an anchor on the
   // hub, so "how we help" leads somewhere that already reflects their country.
+  // Carries a default server-side, so it generates as optional. Normalising
+  // once keeps the markup below free of guards.
+  const coreValues = page.core_values ?? [];
+
   const serviceHref = (slug: string) =>
     active ? `/services/${active.slug}/${slug}` : `/services#${slug}`;
 
@@ -144,22 +149,35 @@ export default async function HomePage() {
         </Section>
       )}
 
-      {page.testimonials.length > 0 && (
-        <Section title="What our clients say" tone="surface">
-          <ul className="sa-stagger grid gap-6 md:grid-cols-2">
-            {page.testimonials.map((quote) => (
-              <li key={quote.id} className="sa-card rounded-lg border border-border bg-bg p-7">
-                <span aria-hidden className="text-4xl leading-none text-primary/25">&ldquo;</span>
-                <blockquote className="-mt-4 text-muted">{quote.quote}</blockquote>
-                <p className="mt-4 text-sm font-medium">
-                  {quote.author_name}
-                  {quote.author_company ? (
-                    <span className="font-normal text-muted"> · {quote.author_company}</span>
-                  ) : null}
+      {coreValues.length > 0 && (
+        <Section
+          title="Our core values"
+          subtitle="How we work, on every account."
+          tone={page.key_strengths.length > 0 ? "surface" : "default"}
+        >
+          <ul className="sa-stagger grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {coreValues.map((value) => (
+              <li
+                key={value.id}
+                className="sa-card group rounded-xl border border-border bg-bg p-6"
+              >
+                <IconTile name={value.icon_key} className="group-hover:scale-105" />
+                <h3 className="mt-4 font-medium">{value.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted">
+                  {value.description}
                 </p>
               </li>
             ))}
           </ul>
+        </Section>
+      )}
+
+      {page.testimonials.length > 0 && (
+        <Section
+          title="What our clients say"
+          tone={coreValues.length > 0 ? "default" : "surface"}
+        >
+          <TestimonialCarousel items={page.testimonials} />
         </Section>
       )}
 
