@@ -3355,6 +3355,15 @@ export interface components {
             environment: string;
             /** Version */
             version: string;
+            /**
+             * Schema Status
+             * @default unknown
+             */
+            schema_status: string;
+            /** Schema Expected */
+            schema_expected?: string | null;
+            /** Schema Applied */
+            schema_applied?: string | null;
         };
         /** HomePageOut */
         HomePageOut: {
