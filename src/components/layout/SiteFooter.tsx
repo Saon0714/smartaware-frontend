@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
-import { listLegalPages } from "@/lib/api/content";
+import { getContactPage, listLegalPages } from "@/lib/api/content";
 import { listRegions } from "@/lib/api/services";
 
 /**
@@ -15,10 +15,22 @@ import { listRegions } from "@/lib/api/services";
 export async function SiteFooter() {
   // The footer renders on every page, including when the API is unreachable.
   // Losing these links is acceptable; taking the whole site down is not.
-  const [legalPages, regions] = await Promise.all([
+  const [legalPages, regions, contact] = await Promise.all([
     listLegalPages().catch(() => []),
     listRegions().catch(() => []),
+    getContactPage().catch(() => null),
   ]);
+
+  // Everything the footer shows is published content, so an unpublished or
+  // unsupplied detail simply does not appear rather than leaving a label with
+  // nothing beside it. Departmental numbers belong on the Contact page, where
+  // there is room to say which market each one is for.
+  const details = (contact?.details ?? []).filter((d) => d.detail_type !== "department");
+  const find = (type: string) => details.find((d) => d.detail_type === type);
+  const address = find("address");
+  const phone = find("phone");
+  const email = find("email");
+  const socials = contact?.social_links ?? [];
 
   return (
     <footer className="relative mt-16 overflow-hidden border-t border-border bg-surface">
@@ -27,14 +39,57 @@ export async function SiteFooter() {
         className="absolute inset-x-0 top-0 h-px"
         style={{ background: "var(--sa-gradient-brand)", opacity: 0.5 }}
       />
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
-        <div className="md:col-span-2">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4">
+        <div>
           <Logo variant="full" height={64} />
           <p className="mt-4 max-w-sm text-sm text-muted">
             Professional tax, accounting and compliance advisory services for
             individuals and businesses in the United Kingdom, India, the UAE and
             Oman.
           </p>
+
+          {socials.length > 0 && (
+            <ul className="mt-5 flex flex-wrap gap-3">
+              {socials.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={link.url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="sa-press inline-flex items-center rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary"
+                  >
+                    {link.platform}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div>
+          <h2 className="text-sm font-medium">Contact</h2>
+          <ul className="mt-3 space-y-3 text-sm text-muted">
+            {address && (
+              <li className="whitespace-pre-line not-italic">{address.value}</li>
+            )}
+            {phone && (
+              <li>
+                <a
+                  href={`tel:${phone.value.replace(/\s+/g, "")}`}
+                  className="sa-link hover:text-primary"
+                >
+                  {phone.value}
+                </a>
+              </li>
+            )}
+            {email && (
+              <li>
+                <a href={`mailto:${email.value}`} className="sa-link hover:text-primary">
+                  {email.value}
+                </a>
+              </li>
+            )}
+          </ul>
         </div>
 
         <div>

@@ -5,6 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
 import { enquiryPrefill } from "@/lib/enquiry/prefill";
+import { resolveRegion } from "@/lib/region/server";
 
 /**
  * Rendered per request rather than prerendered at build time.
@@ -95,7 +96,18 @@ export default async function ContactPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [page, params] = await Promise.all([getContactPage(), searchParams]);
+  const [page, params, { regions, active }] = await Promise.all([
+    getContactPage(),
+    searchParams,
+    resolveRegion(),
+  ]);
+
+  // The new-business numbers are one per market and belong together, captioned
+  // by the country they serve. Mixed into the grid above they read as four
+  // unexplained phone numbers.
+  const general = page.details.filter((d) => d.detail_type !== "department");
+  const byMarket = page.details.filter((d) => d.detail_type === "department");
+  const regionById = new Map(regions.map((region) => [region.id, region]));
 
   // Set when the visitor arrived from an "Enquire about this" button on a
   // service page. Everything it fills in stays editable.
@@ -119,9 +131,9 @@ export default async function ContactPage({
       </PageHero>
 
       <Section>
-        {page.details.length > 0 ? (
-          <dl className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {page.details.map((detail) => (
+        {general.length > 0 ? (
+          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {general.map((detail) => (
               <div key={detail.id} className="sa-card rounded-lg border border-border p-6">
                 <dt className="text-sm font-medium text-muted">
                   {TYPE_LABELS[detail.detail_type] ?? detail.label}
@@ -139,6 +151,48 @@ export default async function ContactPage({
               Our published contact details will appear here. In the meantime,
               please use the enquiry form and a member of the team will respond.
             </p>
+          </div>
+        )}
+
+        {byMarket.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold tracking-tight">
+              New business enquiries
+            </h2>
+            <span aria-hidden className="sa-accent-bar mt-3" />
+            <p className="mt-4 max-w-2xl text-muted">
+              Speak to someone in your market directly.
+            </p>
+
+            <ul className="sa-stagger mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {byMarket.map((detail) => {
+                const market = detail.region_id
+                  ? regionById.get(detail.region_id)
+                  : undefined;
+                const here = market && market.slug === active?.slug;
+                return (
+                  <li
+                    key={detail.id}
+                    className={`sa-card rounded-xl border p-5 ${
+                      here ? "border-primary bg-primary/5" : "border-border bg-bg"
+                    }`}
+                  >
+                    <p className="text-xs text-muted">
+                      {market?.name ?? detail.label}
+                      {here && (
+                        <span className="ml-2 text-primary">· your selection</span>
+                      )}
+                    </p>
+                    <a
+                      href={`tel:${detail.value.replace(/\s+/g, "")}`}
+                      className="mt-2 block font-medium text-primary hover:underline"
+                    >
+                      {detail.value}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         )}
 
