@@ -49,17 +49,21 @@ export async function SiteFooter() {
             Oman.
           </p>
 
+          {/* Plain muted links, like every other column here. As bordered
+              chips inheriting the body colour the marks rendered solid black,
+              which made two social links the highest-contrast thing in a footer
+              of grey text — more prominent than the address. */}
           {socials.length > 0 && (
-            <ul className="mt-5 flex flex-wrap gap-3">
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">
               {socials.map((link) => (
                 <li key={link.id}>
                   <a
                     href={link.url}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="sa-press inline-flex items-center gap-2 rounded-md border border-border bg-bg px-3 py-2 text-xs font-medium hover:border-primary hover:text-primary"
+                    className="sa-link inline-flex items-center gap-2 text-muted hover:text-primary"
                   >
-                    <SocialIcon platform={link.platform} />
+                    <SocialIcon platform={link.platform} className="h-[18px] w-[18px]" />
                     {link.platform}
                   </a>
                 </li>
