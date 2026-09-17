@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { Monogram } from "@/components/brand/Monogram";
 import type { HomePage } from "@/lib/api/content";
 
 type Testimonial = HomePage["testimonials"][number];
@@ -117,7 +118,10 @@ export function TestimonialCarousel({ items }: { items: readonly Testimonial[] }
                 </blockquote>
 
                 <figcaption className="mt-auto flex items-center gap-4 pt-8">
-                  <Initials of={quote.author_company ?? quote.author_name} />
+                  <Monogram
+                    of={quote.author_company ?? quote.author_name}
+                    className="h-11 w-11 text-sm"
+                  />
                   <div>
                     <p className="text-sm font-medium">{quote.author_name}</p>
                     <p className="text-sm text-muted">
@@ -219,30 +223,4 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-/**
- * A monogram standing in for a photograph.
- *
- * Testimonials look unanchored without a face beside them, and these have no
- * photographs — nor will the Trustpilot ones, which carry a display name and
- * nothing else. Initials give the attribution something to sit against without
- * inventing a likeness.
- */
-function Initials({ of }: { of: string }) {
-  const letters = of
-    .replace(/[^a-zA-Z ]/g, "")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
 
-  return (
-    <span
-      aria-hidden
-      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-white shadow-[var(--sa-shadow-sm)]"
-      style={{ background: "var(--sa-gradient-brand)" }}
-    >
-      {letters || "SA"}
-    </span>
-  );
-}

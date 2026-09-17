@@ -117,7 +117,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
         key: "photo_s3_key",
         label: "Photograph key",
         type: "text",
-        help: "Photo uploads arrive with document storage in a later chunk.",
+        help: "Photographs cannot be uploaded yet — leave this blank for now.",
       },
       PUBLISH_FIELD,
     ],

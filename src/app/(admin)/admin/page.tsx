@@ -3,7 +3,8 @@
 import Link from "next/link";
 
 import { useAsync } from "@/components/admin/useAsync";
-import { EmptyState } from "@/components/ui/Controls";
+import { Icon, IconTile } from "@/components/brand/Icon";
+import { EmptyState, PageHeader } from "@/components/ui/Controls";
 import { listClients } from "@/lib/api/admin";
 import type { Permission } from "@/lib/api/auth";
 import { getTaskCounts, listTasks } from "@/lib/api/tasks";
@@ -21,89 +22,125 @@ import { useSession } from "@/lib/auth/SessionProvider";
  * do, not from its role name: two permissions are a runtime setting.
  */
 
-const SHORTCUTS: readonly { href: string; title: string; description: string; needs?: Permission }[] = [
+const SHORTCUTS: readonly {
+  href: string;
+  title: string;
+  description: string;
+  icon: string;
+  needs?: Permission;
+}[] = [
   {
     href: "/admin/clients",
+    icon: "building",
     title: "Clients",
     description: "Accounts, the services they take, their manager and status.",
     needs: "client:view",
   },
   {
     href: "/admin/tasks",
+    icon: "clipboard",
     title: "Tasks",
     description: "Work in progress across your clients, and completion records.",
     needs: "task:view",
   },
   {
     href: "/admin/staff",
+    icon: "users",
     title: "Team",
     description: "Managers, and the clients each of them covers.",
     needs: "user:manage",
   },
   {
     href: "/admin/invites",
+    icon: "mail",
     title: "Invitations",
     description: "Invite a client to the portal, or a manager to the staff portal.",
     needs: "invite:manage",
   },
   {
     href: "/admin/documents",
+    icon: "file",
     title: "Documents",
     description: "Files clients have sent in, and documents shared with them.",
     needs: "document:view",
   },
   {
     href: "/admin/notes",
+    icon: "message",
     title: "Client Notes",
     description: "Information shared with clients in their portal.",
     needs: "note:view",
   },
   {
     href: "/admin/enquiries",
+    icon: "inbox",
     title: "Enquiries",
     description: "Submissions from the website contact form.",
     needs: "enquiry:view",
   },
   {
     href: "/admin/content",
+    icon: "briefcase",
     title: "Website Content",
     description: "About Us copy, values, milestones, contact details and legal pages.",
     needs: "content:manage",
   },
   {
     href: "/admin/services",
+    icon: "layers",
     title: "Services",
     description: "The service catalogue, sub-services and which markets offer what.",
     needs: "content:manage",
   },
   {
     href: "/admin/regions",
+    icon: "globe",
     title: "Markets",
     description: "Countries with their own services page.",
     needs: "content:manage",
   },
   {
     href: "/admin/faq",
+    icon: "help",
     title: "FAQ (Smart AI)",
     description: "The knowledge the chatbot answers from, and its index status.",
     needs: "faq:manage",
   },
   {
     href: "/admin/settings",
+    icon: "settings",
     title: "Settings",
     description: "Notification recipients, Smart AI tuning, access rules and payments.",
     needs: "settings:manage",
   },
 ];
 
-function Stat({ label, value, href }: { label: string; value: number; href: string }) {
+function Stat({
+  label,
+  value,
+  href,
+  icon,
+}: {
+  label: string;
+  value: number;
+  href: string;
+  icon: string;
+}) {
   return (
     <Link
       href={href}
-      className="sa-card sa-interactive block rounded-lg border border-border bg-bg p-5"
+      className="sa-card sa-interactive group block rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)]"
     >
-      <p className="text-sm text-muted">{label}</p>
-      <p className="sa-gradient-text mt-1 text-3xl font-semibold tabular-nums">{value}</p>
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-sm text-muted">{label}</p>
+        <span
+          aria-hidden
+          className="text-muted transition-colors duration-200 group-hover:text-primary"
+        >
+          <Icon name={icon} className="h-4 w-4" />
+        </span>
+      </div>
+      <p className="sa-gradient-text mt-2 text-3xl font-semibold tabular-nums">{value}</p>
     </Link>
   );
 }
@@ -125,24 +162,35 @@ export default function StaffHomePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight">
-        {isAdmin ? "Admin Portal" : "Staff Portal"}
-      </h1>
-      <p className="mt-2 text-muted">
-        {isAdmin
-          ? `Signed in as ${user?.email}.`
-          : `Signed in as ${user?.email}. You see the clients you have been tagged to.`}
-      </p>
+      <PageHeader
+        title={isAdmin ? "Admin Portal" : "Staff Portal"}
+        description={
+          isAdmin
+            ? `Signed in as ${user?.email}.`
+            : `Signed in as ${user?.email}. You see the clients you have been tagged to.`
+        }
+      />
 
       {can("client:view") && (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="Your clients" value={myClients.length} href="/admin/clients" />
-          <Stat label="Open tasks" value={open} href="/admin/tasks" />
-          <Stat label="Overdue" value={(overdue.data ?? []).length} href="/admin/tasks" />
+          <Stat
+            label="Your clients"
+            value={myClients.length}
+            href="/admin/clients"
+            icon="building"
+          />
+          <Stat label="Open tasks" value={open} href="/admin/tasks" icon="clipboard" />
+          <Stat
+            label="Overdue"
+            value={(overdue.data ?? []).length}
+            href="/admin/tasks"
+            icon="clock"
+          />
           <Stat
             label="Not active"
             value={onHold}
             href="/admin/clients?status=hold"
+            icon="shield"
           />
         </div>
       )}
@@ -164,9 +212,15 @@ export default function StaffHomePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="sa-card sa-interactive group rounded-lg border border-border p-5 transition-colors hover:border-primary"
+            className="sa-card sa-interactive group rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)] transition-colors hover:border-primary"
           >
-            <h3 className="font-medium transition-colors duration-200 group-hover:text-primary">
+            <IconTile
+              name={item.icon}
+              size="h-10 w-10"
+              iconSize="h-[18px] w-[18px]"
+              className="transition-transform group-hover:scale-105"
+            />
+            <h3 className="mt-4 font-medium transition-colors duration-200 group-hover:text-primary">
               {item.title}
             </h3>
             <p className="mt-1 text-sm text-muted">{item.description}</p>

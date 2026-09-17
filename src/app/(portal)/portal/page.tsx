@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 
+import { Icon } from "@/components/brand/Icon";
+import { PageHeader } from "@/components/ui/Controls";
 import { useSession } from "@/lib/auth/SessionProvider";
 
 export default function PortalHomePage() {
@@ -9,28 +11,24 @@ export default function PortalHomePage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Welcome{user?.full_name ? `, ${user.full_name}` : ""}
-      </h1>
-      <p className="mt-2 text-muted">
-        {client?.company_name ?? "Your SmartAWARE client portal."}
-      </p>
+      <PageHeader
+        title={`Welcome${user?.full_name ? `, ${user.full_name}` : ""}`}
+        description={client?.company_name ?? "Your SmartAWARE client portal."}
+      />
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-3">
-        <div className="sa-card rounded-lg border border-border p-5">
-          <dt className="text-sm text-muted">Client reference</dt>
-          <dd className="mt-1 font-medium">{client?.client_ref ?? "—"}</dd>
-        </div>
-        <div className="sa-card rounded-lg border border-border p-5">
-          <dt className="text-sm text-muted">Account status</dt>
-          <dd className="mt-1 font-medium capitalize">{client?.status ?? "—"}</dd>
-        </div>
-        <div className="sa-card rounded-lg border border-border p-5">
-          <dt className="text-sm text-muted">Onboarding</dt>
-          <dd className="mt-1 font-medium">
-            {client?.onboarding_completed_at ? "Complete" : "Not started"}
-          </dd>
-        </div>
+        <Fact icon="receipt" label="Client reference" value={client?.client_ref ?? "—"} />
+        <Fact
+          icon="shield"
+          label="Account status"
+          value={client?.status ?? "—"}
+          capitalise
+        />
+        <Fact
+          icon="clipboard"
+          label="Onboarding"
+          value={client?.onboarding_completed_at ? "Complete" : "Not started"}
+        />
       </dl>
 
       <div className="mt-8 sa-card rounded-lg border border-border p-5">
@@ -74,7 +72,7 @@ export default function PortalHomePage() {
           <Link
             key={item.href}
             href={item.href}
-            className="sa-card sa-interactive sa-card rounded-lg border border-border p-5 transition-colors hover:border-primary"
+            className="sa-card sa-interactive rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)] transition-colors hover:border-primary"
           >
             <h2 className="font-medium">{item.title}</h2>
             <p className="mt-1 text-sm text-muted">{item.text}</p>
@@ -83,8 +81,31 @@ export default function PortalHomePage() {
       </div>
 
       <p className="mt-4 rounded-lg border border-dashed border-border p-5 text-sm text-muted">
-        Payments and invoices arrive in a later chunk.
+        Payments and invoices are not available here yet. SmartAWARE will let
+        you know when they are.
       </p>
+    </div>
+  );
+}
+
+function Fact({
+  icon,
+  label,
+  value,
+  capitalise = false,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+  capitalise?: boolean;
+}) {
+  return (
+    <div className="sa-card rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)]">
+      <dt className="flex items-center gap-2 text-sm text-muted">
+        <Icon name={icon} className="h-4 w-4" />
+        {label}
+      </dt>
+      <dd className={`mt-2 font-medium ${capitalise ? "capitalize" : ""}`}>{value}</dd>
     </div>
   );
 }

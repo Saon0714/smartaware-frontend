@@ -72,8 +72,77 @@ export function PageHeader({
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
   return (
-    <p className="sa-fade rounded-lg border border-dashed border-border bg-surface/50 p-8 text-center text-sm text-muted">
+    <p className="sa-fade rounded-xl border border-dashed border-border bg-bg p-10 text-center text-sm text-muted">
       {children}
     </p>
+  );
+}
+
+/**
+ * The standard panel: white, on the tinted page.
+ *
+ * Every screen in both portals was hand-rolling `rounded-lg border border-border
+ * p-5`, which meant they drifted and none of them had any elevation. One
+ * component, so a card looks like a card everywhere.
+ */
+export function Panel({
+  children,
+  className = "",
+  padded = true,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  /** Off for panels that hold a table, which brings its own edge padding. */
+  padded?: boolean;
+}) {
+  return (
+    <div
+      className={`sa-card rounded-xl border border-border bg-bg shadow-[var(--sa-shadow-sm)] ${
+        padded ? "p-5" : ""
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Chrome for a data table: the panel, the scroller, and a tinted header row.
+ *
+ * A bare table on a white page is a grid of hairlines. Giving the head its own
+ * ground and letting the panel clip the corners is most of what separates a
+ * table that looks built from one that looks unfinished.
+ */
+export function TableShell({
+  children,
+  minWidth = "min-w-[56rem]",
+}: {
+  children: React.ReactNode;
+  minWidth?: string;
+}) {
+  return (
+    <div className="sa-card overflow-hidden rounded-xl border border-border bg-bg shadow-[var(--sa-shadow-sm)]">
+      <div className="overflow-x-auto">
+        <table className={`w-full ${minWidth} border-collapse text-sm`}>{children}</table>
+      </div>
+    </div>
+  );
+}
+
+export function TableHead({ columns }: { columns: readonly string[] }) {
+  return (
+    <thead>
+      <tr className="border-b border-border bg-surface text-left">
+        {columns.map((column) => (
+          <th
+            key={column}
+            scope="col"
+            className="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wide text-muted"
+          >
+            {column}
+          </th>
+        ))}
+      </tr>
+    </thead>
   );
 }

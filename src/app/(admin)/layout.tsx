@@ -27,23 +27,23 @@ import { useSession } from "@/lib/auth/SessionProvider";
  * cannot disagree.
  */
 const NAV: readonly (NavItem & { needs?: Permission })[] = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/clients", label: "Clients", needs: "client:view" },
-  { href: "/admin/staff", label: "Team", needs: "user:manage" },
-  { href: "/admin/invites", label: "Invitations", needs: "invite:manage" },
-  { href: "/admin/tasks", label: "Tasks", needs: "task:view" },
+  { href: "/admin", icon: "chart", label: "Overview" },
+  { href: "/admin/clients", icon: "building", label: "Clients", needs: "client:view" },
+  { href: "/admin/staff", icon: "users", label: "Team", needs: "user:manage" },
+  { href: "/admin/invites", icon: "mail", label: "Invitations", needs: "invite:manage" },
+  { href: "/admin/tasks", icon: "clipboard", label: "Tasks", needs: "task:view" },
   // Invoices are deliberately absent: Section 12's payment flow is on hold
   // until SmartAWARE supplies the Wise payment link, and the page does not
   // exist yet. A navigation entry pointing at a 404 is worse than no entry.
-  { href: "/admin/documents", label: "Documents", needs: "document:view" },
-  { href: "/admin/notes", label: "Client Notes", needs: "note:view" },
-  { href: "/admin/enquiries", label: "Enquiries", needs: "enquiry:view" },
-  { href: "/admin/services", label: "Services", needs: "content:manage" },
-  { href: "/admin/regions", label: "Markets", needs: "content:manage" },
-  { href: "/admin/faq", label: "FAQ (Smart AI)", needs: "faq:manage" },
-  { href: "/admin/chat-logs", label: "Smart AI Transcripts", needs: "chat_logs:view" },
-  { href: "/admin/content", label: "Website Content", needs: "content:manage" },
-  { href: "/admin/settings", label: "Settings", needs: "settings:manage" },
+  { href: "/admin/documents", icon: "file", label: "Documents", needs: "document:view" },
+  { href: "/admin/notes", icon: "message", label: "Client Notes", needs: "note:view" },
+  { href: "/admin/enquiries", icon: "inbox", label: "Enquiries", needs: "enquiry:view" },
+  { href: "/admin/services", icon: "layers", label: "Services", needs: "content:manage" },
+  { href: "/admin/regions", icon: "globe", label: "Markets", needs: "content:manage" },
+  { href: "/admin/faq", icon: "help", label: "FAQ (Smart AI)", needs: "faq:manage" },
+  { href: "/admin/chat-logs", icon: "book", label: "Smart AI Transcripts", needs: "chat_logs:view" },
+  { href: "/admin/content", icon: "briefcase", label: "Website Content", needs: "content:manage" },
+  { href: "/admin/settings", icon: "settings", label: "Settings", needs: "settings:manage" },
 ];
 
 export default function StaffLayout({ children }: { children: ReactNode }) {

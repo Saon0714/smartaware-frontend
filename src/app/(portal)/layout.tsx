@@ -10,15 +10,15 @@ import { RequireAuth } from "@/lib/auth/RequireAuth";
  * present now so the shape of the portal is settled.
  */
 const NAV: readonly NavItem[] = [
-  { href: "/portal", label: "Overview" },
-  { href: "/portal/profile", label: "Profile" },
-  { href: "/portal/tasks", label: "Tasks" },
-  { href: "/portal/manager", label: "My Manager" },
+  { href: "/portal", icon: "chart", label: "Overview" },
+  { href: "/portal/profile", icon: "user", label: "Profile" },
+  { href: "/portal/tasks", icon: "clipboard", label: "Tasks" },
+  { href: "/portal/manager", icon: "user-check", label: "My Manager" },
   // Payments and invoices are deliberately absent: Section 12's flow is on hold
   // until SmartAWARE supplies the Wise payment link, and the page does not
   // exist. A navigation entry pointing at a 404 is worse than no entry.
-  { href: "/portal/documents", label: "Documents" },
-  { href: "/portal/notes", label: "Notes" },
+  { href: "/portal/documents", icon: "file", label: "Documents" },
+  { href: "/portal/notes", icon: "message", label: "Notes" },
 ];
 
 export default function PortalLayout({ children }: { children: ReactNode }) {

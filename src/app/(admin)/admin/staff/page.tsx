@@ -181,7 +181,7 @@ function PortfolioEditor({
 
   return (
     <form
-      className="sa-card rounded-lg border border-border p-5"
+      className="sa-card rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)]"
       onSubmit={async (event) => {
         event.preventDefault();
         setBusy(true);

@@ -111,7 +111,12 @@ export function LoginForm({ audience }: { audience: LoginAudience }) {
   const copy = COPY[audience];
 
   return (
-    <div className="sa-card rounded-lg border border-border bg-bg p-8">
+    <div className="sa-card relative overflow-hidden rounded-2xl border border-border bg-bg p-8 shadow-[var(--sa-shadow-lg)]">
+      <span
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-1"
+        style={{ background: "var(--sa-gradient-brand)" }}
+      />
       <AudienceToggle active={audience} />
 
       <h1 className="mt-6 text-2xl font-semibold tracking-tight">{copy.heading}</h1>

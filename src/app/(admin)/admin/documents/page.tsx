@@ -73,7 +73,7 @@ export default function DocumentsAdminPage() {
         </div>
       )}
 
-      <section className="mt-6 sa-card rounded-lg border border-border bg-surface p-6">
+      <section className="sa-card mt-6 rounded-xl border border-border bg-bg p-6 shadow-[var(--sa-shadow-sm)]">
         <h2 className="font-medium">Share a document with a client</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <div>
@@ -150,7 +150,7 @@ export default function DocumentsAdminPage() {
         {rows.map((document) => (
           <li
             key={document.id}
-            className="flex flex-wrap items-center justify-between gap-4 sa-card rounded-lg border border-border p-4"
+            className="sa-card flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-bg p-4 shadow-[var(--sa-shadow-sm)]"
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">

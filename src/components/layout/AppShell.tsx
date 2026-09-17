@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { Icon } from "@/components/brand/Icon";
 import { LogoLink } from "@/components/brand/Logo";
+import { Monogram } from "@/components/brand/Monogram";
 import { ChatWidgetSlot } from "@/components/chat/ChatWidgetSlot";
 import { loginPathForTarget } from "@/lib/auth/destinations";
 import { useSession } from "@/lib/auth/SessionProvider";
@@ -12,6 +14,8 @@ import { useSession } from "@/lib/auth/SessionProvider";
 export interface NavItem {
   href: string;
   label: string;
+  /** Key into the icon set. Sections without one still work; they look poorer. */
+  icon?: string;
 }
 
 /**
@@ -37,7 +41,16 @@ export function activeNavHref(
 }
 
 /**
- * Shared shell for the Customer Portal and Admin Portal.
+ * Shared shell for the Customer Portal and the staff portal.
+ *
+ * It carries the public site's language — the brand gradient, the same card and
+ * surface treatment, the same typography — without its motion. Entrance
+ * animation belongs on a page someone visits once, not on a list they refresh
+ * forty times a day, which is what `sa-workspace` switches off.
+ *
+ * The page sits on the tinted surface and panels are white on top of it. The
+ * other way round, a white panel on a white page has only its border to say it
+ * is a panel, and the whole interface reads flat.
  *
  * The navigation it receives is chosen per-portal by the caller. That is a
  * presentation decision only — the backend authorises every request
@@ -57,6 +70,8 @@ export function AppShell({
   const router = useRouter();
   const activeHref = activeNavHref(pathname, navItems);
 
+  const displayName = client?.company_name ?? user?.full_name ?? user?.email ?? "";
+
   async function handleSignOut() {
     const login = loginPathForTarget(pathname);
     await signOut();
@@ -64,28 +79,39 @@ export function AppShell({
   }
 
   return (
-    // `sa-workspace` switches off entrance animation for the interfaces staff
-    // and clients actually work in, while keeping hover feedback.
-    <div className="sa-workspace flex min-h-screen flex-col">
-      <header className="border-b border-border bg-bg">
+    <div className="sa-workspace flex min-h-screen flex-col bg-surface">
+      {/* Sticky: these pages run long, and losing the way out of a section
+          halfway down a task list is a small cruelty. */}
+      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur">
+        <span
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-px"
+          style={{ background: "var(--sa-gradient-brand)", opacity: 0.45 }}
+        />
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <LogoLink variant="wordmark" height={34} priority />
-            <span aria-hidden className="text-border">|</span>
-            <span className="text-sm text-muted">{title}</span>
+            <LogoLink variant="wordmark" height={32} priority />
+            <span
+              className="hidden rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-medium text-muted sm:inline"
+            >
+              {title}
+            </span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <p className="text-sm font-medium">{user?.full_name ?? user?.email}</p>
-              <p className="text-xs text-muted">
+              <p className="text-sm font-medium leading-tight">
+                {user?.full_name ?? user?.email}
+              </p>
+              <p className="text-xs capitalize text-muted">
                 {client?.company_name ?? user?.role}
               </p>
             </div>
+            <Monogram of={displayName} />
             <button
               type="button"
               onClick={handleSignOut}
-              className="sa-press rounded-md border border-border px-3 py-1.5 text-sm hover:border-primary hover:text-primary"
+              className="sa-press rounded-md border border-border bg-bg px-3 py-1.5 text-sm hover:border-primary hover:text-primary"
             >
               Sign out
             </button>
@@ -93,9 +119,42 @@ export function AppShell({
         </div>
       </header>
 
+      {/* Below the sidebar's breakpoint there was no navigation at all: the
+          portal was reachable on a phone and then impossible to move around.
+          A scrolling row of the same sections, which needs no script and no
+          menu to open. */}
+      <nav
+        aria-label={`${title} sections`}
+        className="sticky top-16 z-30 border-b border-border bg-bg/85 backdrop-blur md:hidden"
+      >
+        <ul className="flex gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {navItems.map((item) => {
+            const active = item.href === activeHref;
+            return (
+              <li key={item.href} className="shrink-0">
+                <Link
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm transition-colors duration-200 ${
+                    active
+                      ? "border-primary/40 bg-primary/5 font-medium text-primary"
+                      : "border-border text-muted"
+                  }`}
+                >
+                  <Icon name={item.icon} className="h-4 w-4" />
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
       <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 py-8 sm:px-6">
-        <nav aria-label={title} className="hidden w-56 shrink-0 md:block">
-          <ul className="space-y-1">
+        <nav aria-label={title} className="hidden w-60 shrink-0 md:block">
+          {/* Sticky below the header, so the sections stay reachable however
+              far down a long page you are. */}
+          <ul className="sticky top-24 space-y-1">
             {navItems.map((item) => {
               const active = item.href === activeHref;
               return (
@@ -103,12 +162,23 @@ export function AppShell({
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative block rounded-md px-3 py-2 text-sm transition-all duration-200 before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-[image:var(--sa-gradient-brand)] before:transition-transform before:duration-200 before:content-[''] ${
+                    className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${
                       active
-                        ? "bg-surface font-medium text-primary before:scale-y-100"
-                        : "text-text before:scale-y-0 hover:bg-surface hover:pl-4 hover:before:scale-y-100"
+                        ? "bg-bg font-medium text-primary shadow-[var(--sa-shadow-sm)]"
+                        : "text-muted hover:bg-bg/70 hover:text-text"
                     }`}
                   >
+                    <span
+                      aria-hidden
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200 ${
+                        active ? "text-white" : "bg-bg text-muted group-hover:text-primary"
+                      }`}
+                      style={
+                        active ? { background: "var(--sa-gradient-brand)" } : undefined
+                      }
+                    >
+                      <Icon name={item.icon} className="h-4 w-4" />
+                    </span>
                     {item.label}
                   </Link>
                 </li>
@@ -117,7 +187,7 @@ export function AppShell({
           </ul>
         </nav>
 
-        <main className="min-w-0 flex-1">{children}</main>
+        <main className="min-w-0 flex-1 pb-4">{children}</main>
       </div>
 
       <ChatWidgetSlot />

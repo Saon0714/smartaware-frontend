@@ -7,7 +7,7 @@ import { ServicesCell } from "@/components/admin/ServicesCell";
 import { StatusCell } from "@/components/admin/StatusCell";
 import { useAsync } from "@/components/admin/useAsync";
 import { Select } from "@/components/ui/Controls";
-import { EmptyState, PageHeader } from "@/components/ui/Controls";
+import { EmptyState, PageHeader, TableHead, TableShell } from "@/components/ui/Controls";
 import { FormBanner, Input } from "@/components/ui/Field";
 import { useSession } from "@/lib/auth/SessionProvider";
 import {
@@ -72,7 +72,7 @@ export default function ClientsPage() {
       )}
 
       <form
-        className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_1fr_1fr]"
+        className="sa-card mt-6 grid gap-3 rounded-xl border border-border bg-bg p-4 shadow-[var(--sa-shadow-sm)] sm:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_1fr_1fr]"
         onSubmit={(event) => {
           event.preventDefault();
           setFilters((f) => ({ ...f, search }));
@@ -158,25 +158,25 @@ export default function ClientsPage() {
       )}
 
       {rows.length > 0 && (
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full min-w-[56rem] border-collapse text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-muted">
-                <th className="py-2 pr-4 font-medium">Client</th>
-                <th className="py-2 pr-4 font-medium">Services</th>
-                <th className="py-2 pr-4 font-medium">Country</th>
-                <th className="py-2 pr-4 font-medium">Manager</th>
-                <th className="py-2 pr-4 font-medium">Status</th>
-                <th className="py-2 font-medium">Last sign-in</th>
-              </tr>
-            </thead>
+        <div className="mt-6">
+          <TableShell>
+            <TableHead
+              columns={[
+                "Client",
+                "Services",
+                "Country",
+                "Manager",
+                "Status",
+                "Last sign-in",
+              ]}
+            />
             <tbody>
               {rows.map((client) => (
                 <tr
                   key={client.id}
-                  className="border-b border-border align-top last:border-0 hover:bg-surface"
+                  className="border-b border-border align-top transition-colors duration-150 last:border-0 hover:bg-surface"
                 >
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-4">
                     <Link
                       href={`/admin/clients/${client.id}`}
                       className="font-medium text-primary hover:underline"
@@ -185,7 +185,7 @@ export default function ClientsPage() {
                     </Link>
                     <p className="text-xs text-muted">{client.user_email}</p>
                   </td>
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-4">
                     <ServicesCell
                       clientId={client.id}
                       services={client.services}
@@ -197,17 +197,17 @@ export default function ClientsPage() {
                       }
                     />
                   </td>
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-4">
                     {client.country || <span className="text-muted">—</span>}
                   </td>
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-4">
                     {client.assigned_manager ? (
                       client.assigned_manager.full_name ?? client.assigned_manager.email
                     ) : (
                       <span className="text-muted">Unassigned</span>
                     )}
                   </td>
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-4">
                     <StatusCell
                       clientId={client.id}
                       status={client.status}
@@ -220,7 +220,7 @@ export default function ClientsPage() {
                       }
                     />
                   </td>
-                  <td className="py-3 text-muted">
+                  <td className="px-4 py-4 text-muted">
                     {client.last_login_at
                       ? new Date(client.last_login_at).toLocaleDateString("en-GB")
                       : "Never"}
@@ -228,7 +228,7 @@ export default function ClientsPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </TableShell>
         </div>
       )}
     </div>

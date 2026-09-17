@@ -84,7 +84,7 @@ export default function ChatLogsPage() {
         </ul>
 
         {detail && (
-          <div className="sa-card rounded-lg border border-border p-5">
+          <div className="sa-card rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)]">
             <h2 className="text-sm font-medium text-muted">Transcript</h2>
             <ul className="mt-4 space-y-3">
               {(detail.messages ?? []).map((message) => (

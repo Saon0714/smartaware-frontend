@@ -117,7 +117,7 @@ export default function ServiceEditorPage() {
 
         <ul className="mt-4 space-y-2">
           {(availability.data?.regions ?? []).map((row) => (
-            <li key={row.region_id} className="sa-card rounded-lg border border-border p-4">
+            <li key={row.region_id} className="sa-card rounded-xl border border-border bg-bg p-4 shadow-[var(--sa-shadow-sm)]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <Checkbox
