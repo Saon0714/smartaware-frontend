@@ -5,7 +5,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { IconTile } from "@/components/brand/Icon";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
-import { enquiryPrefill } from "@/lib/enquiry/prefill";
+import { enquiryContext } from "@/lib/enquiry/prefill";
 import { resolveRegion } from "@/lib/region/server";
 
 /**
@@ -129,8 +129,8 @@ export default async function ContactPage({
 
   // Set when the visitor arrived from an "Enquire about this" button on a
   // service page. Everything it fills in stays editable.
-  const prefill = enquiryPrefill(params);
-  const prefilled = Object.keys(prefill).length > 0;
+  const context = enquiryContext(params);
+  const prefilled = Boolean(context.service || context.subService || context.country);
 
   return (
     <>
@@ -261,7 +261,7 @@ export default async function ContactPage({
               </p>
             )}
             <div className="mt-6">
-              <EnquiryForm prefill={prefill} />
+              <EnquiryForm context={context} />
             </div>
           </div>
 

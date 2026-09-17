@@ -339,6 +339,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/enquiry-catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Services and their specific services, per market
+         * @description What the enquiry form narrows itself with.
+         *
+         *     The whole tree at once, because the narrowing happens as the person ticks
+         *     boxes: choosing a market decides which services are offered, and choosing
+         *     services decides which specific services are. A round trip per tick would
+         *     be slower and would leave the form unusable whenever the API is briefly
+         *     unreachable — as it stands, the form falls back to the unnarrowed lists.
+         *
+         *     Names are the ones that market uses, so a service India lists as "VAT / GST
+         *     Services" is named that way in an enquiry sent from India's page.
+         */
+        get: operations["public-enquiries_enquiry_catalogue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/enquiries": {
         parameters: {
             query?: never;
@@ -2514,6 +2543,23 @@ export interface components {
             /** @default general */
             doc_type: components["schemas"]["DocumentType"];
         };
+        /** CatalogueMarket */
+        CatalogueMarket: {
+            /**
+             * Country
+             * @description Matches an option of the form's Country field.
+             */
+            country: string;
+            /** Services */
+            services?: components["schemas"]["CatalogueService"][];
+        };
+        /** CatalogueService */
+        CatalogueService: {
+            /** Name */
+            name: string;
+            /** Sub Services */
+            sub_services?: components["schemas"]["SubServiceOption"][];
+        };
         /** CategoryAvailabilityGrid */
         CategoryAvailabilityGrid: {
             /**
@@ -3105,6 +3151,14 @@ export interface components {
             message: string;
         };
         /**
+         * EnquiryCatalogueOut
+         * @description What the enquiry form narrows its own options with.
+         */
+        EnquiryCatalogueOut: {
+            /** Markets */
+            markets?: components["schemas"]["CatalogueMarket"][];
+        };
+        /**
          * EnquiryCreate
          * @description A submission.
          *
@@ -3271,6 +3325,11 @@ export interface components {
             help_text: string | null;
             /** Is Required */
             is_required: boolean;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
             /** Options */
             options: unknown[] | null;
             /** Validation */
@@ -3952,6 +4011,11 @@ export interface components {
              */
             subcategories?: string[];
             /**
+             * Sub Services
+             * @description `subcategories` and `details` as one list, deduplicated and tidied — what a visitor is shown, and what an enquiry can name.
+             */
+            sub_services?: string[];
+            /**
              * Other Regions
              * @description Other markets offering this service.
              */
@@ -4492,6 +4556,20 @@ export interface components {
             status: components["schemas"]["ClientStatus"];
             /** Note */
             note: string;
+        };
+        /**
+         * SubServiceOption
+         * @description One specific service, as the enquiry form offers it.
+         *
+         *     `label` is what the person reads, under a heading naming the service.
+         *     `value` additionally names the service, because sub-service names are not
+         *     unique across the catalogue and a stored answer has no heading above it.
+         */
+        SubServiceOption: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
         };
         /** TaskCompleteRequest */
         TaskCompleteRequest: {
@@ -5471,6 +5549,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "public-enquiries_enquiry_catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EnquiryCatalogueOut"];
                 };
             };
         };

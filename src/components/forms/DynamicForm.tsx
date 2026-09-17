@@ -21,6 +21,32 @@ import type { FormDefinition, FormField } from "@/lib/api/enquiries";
 
 export type FormValues = Record<string, string | string[] | boolean>;
 
+/**
+ * One choice. `value` is what gets submitted, `label` what is read, and
+ * `group` an optional heading to sit the choice under.
+ *
+ * The three differ when a label is only meaningful under its heading: the
+ * enquiry form's specific services read as plain names beneath the service
+ * they belong to, but store a value that names the service too, because a
+ * stored answer has no heading above it.
+ */
+export type FieldOption = { value: string; label: string; group?: string };
+
+/**
+ * Options a field takes from the other answers rather than from its own row.
+ *
+ * Returning null means "this field is not one of those" and its stored options
+ * stand. Nothing here knows what the dependency *is* — the caller does.
+ */
+export type DependentOptions = (
+  field: FormField,
+  values: FormValues,
+) => readonly FieldOption[] | null;
+
+function asOptions(values: readonly unknown[]): FieldOption[] {
+  return values.map((option) => ({ value: String(option), label: String(option) }));
+}
+
 function initialValue(field: FormField): string | string[] | boolean {
   if (field.field_type === "checkbox") return false;
   if (field.field_type === "multiselect") return [];
@@ -35,6 +61,7 @@ export function DynamicForm({
   busy = false,
   error,
   showHoneypot = true,
+  dependentOptions,
 }: {
   definition: FormDefinition;
   /** Existing values, for forms that edit a record rather than create one. */
@@ -44,6 +71,8 @@ export function DynamicForm({
   error?: string | null;
   /** The honeypot belongs on public forms; a signed-in editor is not a bot. */
   showHoneypot?: boolean;
+  /** Narrow a field's choices from the answers so far. */
+  dependentOptions?: DependentOptions;
   onSubmit: (answers: Record<string, unknown>, honeypot: string) => void;
 }) {
   const [values, setValues] = useState<FormValues>(() =>
@@ -67,7 +96,27 @@ export function DynamicForm({
   const [honeypot, setHoneypot] = useState("");
 
   function set(key: string, value: string | string[] | boolean) {
-    setValues((current) => ({ ...current, [key]: value }));
+    setValues((current) => {
+      const next = { ...current, [key]: value };
+      if (!dependentOptions) return next;
+      // An answer that the latest change took off the menu is dropped. Leaving
+      // it would submit something the person can no longer see — untick a
+      // service and its specific services have to go with it.
+      for (const field of definition.fields) {
+        if (field.key === key) continue;
+        const allowed = dependentOptions(field, next);
+        if (!allowed) continue;
+        const permitted = new Set(allowed.map((option) => option.value));
+        const chosen = next[field.key];
+        if (Array.isArray(chosen)) {
+          const kept = chosen.filter((entry) => permitted.has(entry));
+          if (kept.length !== chosen.length) next[field.key] = kept;
+        } else if (typeof chosen === "string" && chosen && !permitted.has(chosen)) {
+          next[field.key] = "";
+        }
+      }
+      return next;
+    });
   }
 
   return (
@@ -104,6 +153,7 @@ export function DynamicForm({
           key={field.id}
           field={field}
           value={values[field.key] ?? initialValue(field)}
+          options={dependentOptions?.(field, values) ?? null}
           onChange={(value) => set(field.key, value)}
         />
       ))}
@@ -118,15 +168,18 @@ export function DynamicForm({
 function DynamicField({
   field,
   value,
+  options: dependent,
   onChange,
 }: {
   field: FormField;
   value: string | string[] | boolean;
+  /** Supplied when this field's choices come from the other answers. */
+  options: readonly FieldOption[] | null;
   onChange: (value: string | string[] | boolean) => void;
 }) {
   const id = `enquiry-${field.key}`;
   const describedBy = field.help_text ? `${id}-help` : undefined;
-  const options = field.options ?? [];
+  const options = dependent ?? asOptions(field.options ?? []);
 
   const label = (
     <Label htmlFor={id}>
@@ -168,7 +221,7 @@ function DynamicField({
     // answer without telling anyone.
     const current = String(value);
     const unlisted =
-      current && !options.some((option) => String(option) === current) ? current : null;
+      current && !options.some((option) => option.value === current) ? current : null;
 
     return (
       <div>
@@ -185,8 +238,8 @@ function DynamicField({
           </option>
           {unlisted && <option value={unlisted}>{unlisted}</option>}
           {options.map((option) => (
-            <option key={String(option)} value={String(option)}>
-              {String(option)}
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </Select>
@@ -201,16 +254,16 @@ function DynamicField({
         <legend className="text-sm font-medium">{field.label}</legend>
         <div className="mt-2 space-y-1.5">
           {options.map((option) => (
-            <label key={String(option)} className="flex items-center gap-2 text-sm">
+            <label key={option.value} className="flex items-center gap-2 text-sm">
               <input
                 type="radio"
                 name={field.key}
-                value={String(option)}
-                checked={value === option}
-                onChange={() => onChange(String(option))}
-                className="h-4 w-4 border-border text-primary"
+                value={option.value}
+                checked={value === option.value}
+                onChange={() => onChange(option.value)}
+                className="h-4 w-4 accent-[var(--sa-color-primary)]"
               />
-              {String(option)}
+              {option.label}
             </label>
           ))}
         </div>
@@ -221,32 +274,82 @@ function DynamicField({
 
   if (field.field_type === "multiselect") {
     const selected = Array.isArray(value) ? value : [];
+    // A chosen value the list no longer offers is shown rather than hidden.
+    // It would otherwise be submitted invisibly and refused by the server,
+    // with nothing on screen to say which answer caused it.
+    const listed = new Set(options.map((option) => option.value));
+    const shown: FieldOption[] = [
+      ...options,
+      ...selected.filter((v) => !listed.has(v)).map((v) => ({ value: v, label: v })),
+    ];
+
+    const toggle = (optionValue: string, on: boolean) =>
+      onChange(
+        on
+          ? [...selected, optionValue]
+          : selected.filter((entry) => entry !== optionValue),
+      );
+
+    const box = (option: FieldOption) => (
+      <label key={option.value} className="flex items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={selected.includes(option.value)}
+          onChange={(e) => toggle(option.value, e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--sa-color-primary)]"
+        />
+        {option.label}
+      </label>
+    );
+
+    // Headings, when the choices carry them. A label is sometimes only
+    // meaningful under one — "VAT registration support" says which tax but not
+    // which service, and two services can offer a specific service by the very
+    // same name.
+    const groups: { name: string | null; options: FieldOption[] }[] = [];
+    for (const option of shown) {
+      const name = option.group ?? null;
+      const last = groups[groups.length - 1];
+      if (last && last.name === name) last.options.push(option);
+      else groups.push({ name, options: [option] });
+    }
+
     return (
-      <fieldset>
-        <legend className="text-sm font-medium">{field.label}</legend>
-        <div className="mt-2 space-y-1.5">
-          {options.map((option) => {
-            const text = String(option);
-            return (
-              <label key={text} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={selected.includes(text)}
-                  onChange={(e) =>
-                    onChange(
-                      e.target.checked
-                        ? [...selected, text]
-                        : selected.filter((v) => v !== text),
-                    )
-                  }
-                  className="h-4 w-4 rounded border-border text-primary"
-                />
-                {text}
-              </label>
-            );
-          })}
-        </div>
+      <fieldset aria-describedby={describedBy}>
+        <legend className="text-sm font-medium">
+          {field.label}
+          {field.is_required && (
+            <span className="text-danger" aria-label="required">
+              {" "}
+              *
+            </span>
+          )}
+        </legend>
         {help}
+        {shown.length === 0 ? (
+          <p className="mt-2 text-sm text-muted">
+            {field.placeholder ?? "Nothing to choose from yet."}
+          </p>
+        ) : (
+          <div className="mt-2 max-h-72 space-y-3 overflow-y-auto rounded-lg border border-border bg-bg p-3 [scrollbar-color:var(--sa-color-border)_transparent] [scrollbar-width:thin]">
+            {groups.map((group, index) =>
+              group.name ? (
+                <div key={`${group.name}-${index}`}>
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                    {group.name}
+                  </p>
+                  <div className="mt-1.5 space-y-1.5 pl-1">
+                    {group.options.map(box)}
+                  </div>
+                </div>
+              ) : (
+                <div key={`ungrouped-${index}`} className="space-y-1.5">
+                  {group.options.map(box)}
+                </div>
+              ),
+            )}
+          </div>
+        )}
       </fieldset>
     );
   }

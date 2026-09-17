@@ -77,23 +77,12 @@ export default async function ServiceDetailPage({
   // options because both are the Region's name.
   const region = regions.find((candidate) => candidate.slug === regionSlug) ?? null;
 
-  // The specific services under this category.
-  //
-  // Two admin-editable lists feed this: `subcategories`, which exists for
-  // categories that are formally broken down, and `details`, the itemised
-  // "what this includes" list that every seeded category actually uses. They
-  // are the same thing to a visitor, so they are shown as one set, deduplicated
-  // in case an editor enters an item in both. Trailing full stops are trimmed
-  // because these read as headings here rather than as sentences in a list.
-  const seen = new Set<string>();
-  const subServices = [...(detail.subcategories ?? []), ...(detail.details ?? [])]
-    .map((item) => item.trim().replace(/\.$/, ""))
-    .filter((item) => {
-      const key = item.toLowerCase();
-      if (!item || seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+  // The specific services under this category, merged and tidied by the API
+  // from the two admin-editable lists that feed it. Merged there rather than
+  // here because the enquiry form offers the same list: an "Enquire" button
+  // can only land on an option the form actually has when both read it from
+  // one place.
+  const subServices = detail.sub_services ?? [];
 
   return (
     <>

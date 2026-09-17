@@ -25,3 +25,22 @@ export function submitEnquiry(
     body: { answers, website: honeypot || null },
   });
 }
+
+export type EnquiryCatalogue = Json<
+  ApiPaths["/api/v1/public/enquiry-catalogue"]["get"]["responses"][200]
+>;
+// Every list on this payload has a server-side default, so the generated type
+// marks it optional. It is always present in practice.
+export type CatalogueMarket = NonNullable<EnquiryCatalogue["markets"]>[number];
+export type CatalogueService = NonNullable<CatalogueMarket["services"]>[number];
+export type SubServiceOption = NonNullable<CatalogueService["sub_services"]>[number];
+
+/**
+ * Services and their specific services, per market.
+ *
+ * Fetched whole so the form can narrow itself as boxes are ticked without a
+ * round trip, and so a brief outage costs the narrowing rather than the form.
+ */
+export function getEnquiryCatalogue(): Promise<EnquiryCatalogue> {
+  return apiFetch<EnquiryCatalogue>("/public/enquiry-catalogue");
+}

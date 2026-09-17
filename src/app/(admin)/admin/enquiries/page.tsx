@@ -7,7 +7,7 @@ import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
 import { Badge, EmptyState, PageHeader, Textarea } from "@/components/ui/Controls";
 import { FormBanner } from "@/components/ui/Field";
-import { listEnquiries, updateEnquiry, type Enquiry } from "@/lib/api/admin";
+import { getAdminForm, listEnquiries, updateEnquiry, type Enquiry } from "@/lib/api/admin";
 
 /**
  * Website enquiries.
@@ -15,6 +15,10 @@ import { listEnquiries, updateEnquiry, type Enquiry } from "@/lib/api/admin";
  * The payload is rendered generically rather than field by field: the form's
  * fields are editable, so hardcoding them here would break the moment someone
  * added one — and older enquiries would lose the answers they do hold.
+ *
+ * Their headings come from the form definition, retired fields included, so an
+ * answer is labelled the way it was asked for rather than by the identifier it
+ * is stored under.
  */
 export default function EnquiriesPage() {
   const [filter, setFilter] = useState<"all" | "open" | "handled">("open");
@@ -23,8 +27,12 @@ export default function EnquiriesPage() {
     filter,
   );
   const [busy, setBusy] = useState(false);
+  const form = useAsync(() => getAdminForm("enquiry"), "enquiry");
 
   const enquiries = data ?? [];
+  const labels = new Map(
+    (form.data?.fields ?? []).map((field) => [field.key, field.label]),
+  );
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);
@@ -84,6 +92,7 @@ export default function EnquiriesPage() {
           <EnquiryCard
             key={enquiry.id}
             enquiry={enquiry}
+            labels={labels}
             busy={busy}
             onUpdate={(body) => run(() => updateEnquiry(enquiry.id, body))}
           />
@@ -104,10 +113,13 @@ export default function EnquiriesPage() {
 
 function EnquiryCard({
   enquiry,
+  labels,
   busy,
   onUpdate,
 }: {
   enquiry: Enquiry;
+  /** Field key to the heading the form gave it. */
+  labels: Map<string, string>;
   busy: boolean;
   onUpdate: (body: Record<string, unknown>) => void;
 }) {
@@ -153,7 +165,11 @@ function EnquiryCard({
           <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-[auto_1fr]">
             {Object.entries(enquiry.payload).map(([key, value]) => (
               <div key={key} className="contents">
-                <dt className="text-sm text-muted">{key.replace(/_/g, " ")}</dt>
+                <dt className="text-sm text-muted">
+                  {/* A field deleted outright leaves nothing to look up, so
+                      the stored key is tidied rather than shown raw. */}
+                  {labels.get(key) ?? key.replace(/_/g, " ")}
+                </dt>
                 <dd className="text-sm">
                   {Array.isArray(value) ? value.join(", ") : String(value)}
                 </dd>

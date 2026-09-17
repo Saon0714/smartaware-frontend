@@ -20,7 +20,7 @@ export function Checkbox({
       <input
         {...props}
         type="checkbox"
-        className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary/20"
+        className="h-4 w-4 accent-[var(--sa-color-primary)] focus:ring-2 focus:ring-primary/20"
       />
       {label}
     </label>

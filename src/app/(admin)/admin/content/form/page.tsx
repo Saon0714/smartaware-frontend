@@ -182,13 +182,16 @@ export default function EnquiryFormFieldsPage() {
         {fields.map((field) => (
           <li
             key={field.id}
-            className="sa-card flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-bg p-4 shadow-[var(--sa-shadow-sm)]"
+            className={`sa-card flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-bg p-4 shadow-[var(--sa-shadow-sm)] ${
+              field.is_active ? "" : "opacity-70"
+            }`}
           >
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-medium">{field.label}</p>
                 <Badge>{typeLabel(field.field_type)}</Badge>
                 {field.is_required && <Badge tone="warning">Required</Badge>}
+                {!field.is_active && <Badge tone="neutral">Not on the form</Badge>}
               </div>
               {field.options && field.options.length > 0 && (
                 <p className="mt-1 text-xs text-muted">
@@ -199,31 +202,48 @@ export default function EnquiryFormFieldsPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Checkbox
-                label="Required"
-                checked={field.is_required}
-                disabled={busy}
-                onChange={(e) =>
-                  void run(() =>
-                    updateFormField(field.id, { is_required: e.target.checked }),
-                  )
-                }
-              />
-              <Button
-                variant="secondary"
-                disabled={busy}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Remove “${field.label}” from the form? Answers already submitted are kept.`,
+              {field.is_active && (
+                <Checkbox
+                  label="Required"
+                  checked={field.is_required}
+                  disabled={busy}
+                  onChange={(e) =>
+                    void run(() =>
+                      updateFormField(field.id, { is_required: e.target.checked }),
                     )
-                  ) {
-                    void run(() => deactivateFormField(field.id));
                   }
-                }}
-              >
-                Remove
-              </Button>
+                />
+              )}
+              {field.is_active ? (
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        `Remove “${field.label}” from the form? Answers already submitted are kept.`,
+                      )
+                    ) {
+                      void run(() => deactivateFormField(field.id));
+                    }
+                  }}
+                >
+                  Remove
+                </Button>
+              ) : (
+                // Removing a field only takes it off the form — the answers
+                // already given under it are still there, and so is the way
+                // back.
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() =>
+                    void run(() => updateFormField(field.id, { is_active: true }))
+                  }
+                >
+                  Put back
+                </Button>
+              )}
             </div>
           </li>
         ))}

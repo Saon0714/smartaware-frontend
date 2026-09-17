@@ -19,15 +19,22 @@ export const ENQUIRY_PARAMS = {
   country: "country",
 } as const;
 
-/** The form field keys these map onto (spec 3.2 / the seeded enquiry form). */
-const FIELD = {
-  service: "service_required",
+/**
+ * Field keys the form is wired to by name.
+ *
+ * The field list is otherwise entirely data — these three are structural, the
+ * way a column name is. The backend names the same three for the same reason:
+ * it narrows the catalogue by country, checks the services against it, and
+ * checks the specific services against the services.
+ */
+export const ENQUIRY_FIELDS = {
   country: "country",
-  detail: "nature_of_requirement",
+  services: "service_required",
+  subServices: "sub_services",
 } as const;
 
 export type EnquiryContext = {
-  /** The service category, as named in the catalogue. */
+  /** The service category, named as the chosen market names it. */
   service?: string | null;
   /** The specific service under it, when the enquiry came from one. */
   subService?: string | null;
@@ -53,33 +60,22 @@ function one(value: string | string[] | undefined): string | null {
 }
 
 /**
- * Turn the query string into initial values for the enquiry form.
- *
- * The sub-service has no field of its own — the form's shape is admin-editable
- * and inventing one here would hardcode exactly what Section 3.2 says must stay
- * in the database. It is instead phrased into the free-text requirement, which
- * is where a person would have written it anyway, and which they can rewrite.
+ * Read the context back out of the query string.
  *
  * Values are length-capped: they arrive from the URL, so a hostile link should
- * not be able to paste an essay into somebody's form.
+ * not be able to paste an essay into somebody's form. Turning them into form
+ * answers happens later, against the live catalogue — a service page names a
+ * specific service, and only the catalogue knows which stored value that is.
  */
-export function enquiryPrefill(
+export function enquiryContext(
   searchParams: Record<string, string | string[] | undefined>,
-): Record<string, string> {
+): EnquiryContext {
   const cap = (value: string | null, max: number) =>
-    value ? value.trim().slice(0, max) : "";
+    value ? value.trim().slice(0, max) : null;
 
-  const service = cap(one(searchParams[ENQUIRY_PARAMS.service]), 120);
-  const subService = cap(one(searchParams[ENQUIRY_PARAMS.subService]), 160);
-  const country = cap(one(searchParams[ENQUIRY_PARAMS.country]), 80);
-
-  const prefill: Record<string, string> = {};
-  if (service) prefill[FIELD.service] = service;
-  if (country) prefill[FIELD.country] = country;
-  if (subService) {
-    prefill[FIELD.detail] = service
-      ? `I would like to enquire about ${subService} (${service}).`
-      : `I would like to enquire about ${subService}.`;
-  }
-  return prefill;
+  return {
+    service: cap(one(searchParams[ENQUIRY_PARAMS.service]), 120),
+    subService: cap(one(searchParams[ENQUIRY_PARAMS.subService]), 160),
+    country: cap(one(searchParams[ENQUIRY_PARAMS.country]), 80),
+  };
 }
