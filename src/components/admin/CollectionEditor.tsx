@@ -292,12 +292,16 @@ function FieldInput({
           value={String(value ?? "")}
           onChange={(e) => onChange(e.target.value)}
         >
-          <option value="">None</option>
-          {(field.options ?? []).map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          <option value="">{field.required ? "Choose one…" : "None"}</option>
+          {(field.options ?? []).map((option) => {
+            const { value: optionValue, label } =
+              typeof option === "string" ? { value: option, label: option } : option;
+            return (
+              <option key={optionValue} value={optionValue}>
+                {label}
+              </option>
+            );
+          })}
         </Select>
       ) : field.type === "textarea" ? (
         <Textarea

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { blockTitle } from "@/components/admin/contentMap";
 import { useAsync } from "@/components/admin/useAsync";
 import { Badge, EmptyState, PageHeader } from "@/components/ui/Controls";
 import { FormBanner } from "@/components/ui/Field";
@@ -47,7 +48,7 @@ export default function BlocksPage() {
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium">{block.title || "Untitled section"}</p>
+                  <p className="font-medium">{blockTitle(block.key) ?? block.title ?? "Untitled section"}</p>
                   <Badge tone={block.is_published ? "success" : "neutral"}>
                     {block.is_published ? "Published" : "Hidden"}
                   </Badge>

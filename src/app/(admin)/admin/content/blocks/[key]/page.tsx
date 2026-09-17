@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
+import { blockPageOf, blockPlacement, blockTitle } from "@/components/admin/contentMap";
 import { describeError, useAsync } from "@/components/admin/useAsync";
 import { Button } from "@/components/ui/Button";
 import { Checkbox, PageHeader, Textarea } from "@/components/ui/Controls";
@@ -23,6 +24,7 @@ import {
 export default function BlockEditorPage() {
   const params = useParams<{ key: string }>();
   const blockKey = params.key;
+  const page = blockPageOf(blockKey);
 
   const block = useAsync(() => getBlock(blockKey), blockKey);
   const items = useAsync(() => listBlockItems(blockKey), blockKey);
@@ -95,16 +97,24 @@ export default function BlockEditorPage() {
           Website Content
         </Link>
         <span aria-hidden> / </span>
-        <Link href="/admin/content/blocks" className="hover:text-primary">
-          Page Text
+        {/* Back to the group this section sits in, rather than to a flat list
+            of every section on the site. */}
+        <Link
+          href={page ? `/admin/content#${page.id}` : "/admin/content/blocks"}
+          className="hover:text-primary"
+        >
+          {page?.title ?? "Page Text"}
         </Link>
         <span aria-hidden> / </span>
-        <span>{block.data?.title || "Page section"}</span>
+        <span>{blockTitle(blockKey) ?? block.data?.title ?? "Page section"}</span>
       </nav>
 
       <PageHeader
-        title={block.data?.title ?? "Page section"}
-        description="Wording for this section of the public website. Saving publishes it straight away."
+        title={blockTitle(blockKey) ?? block.data?.title ?? "Page section"}
+        description={
+          blockPlacement(blockKey) ??
+          "Wording for this section of the public website. Saving publishes it straight away."
+        }
       />
 
       {block.error && (

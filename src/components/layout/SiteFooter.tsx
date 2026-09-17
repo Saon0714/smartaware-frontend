@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
 import { SocialIcon } from "@/components/brand/SocialIcon";
-import { getContactPage, listLegalPages } from "@/lib/api/content";
+import { getContactPage, getContentBlock, listLegalPages } from "@/lib/api/content";
 import { listRegions } from "@/lib/api/services";
 
 /**
@@ -16,10 +16,11 @@ import { listRegions } from "@/lib/api/services";
 export async function SiteFooter() {
   // The footer renders on every page, including when the API is unreachable.
   // Losing these links is acceptable; taking the whole site down is not.
-  const [legalPages, regions, contact] = await Promise.all([
+  const [legalPages, regions, contact, blurb] = await Promise.all([
     listLegalPages().catch(() => []),
     listRegions().catch(() => []),
     getContactPage().catch(() => null),
+    getContentBlock("footer_blurb").catch(() => null),
   ]);
 
   // Everything the footer shows is published content, so an unpublished or
@@ -43,12 +44,11 @@ export async function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-x-8 gap-y-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <Logo variant="full" height={64} />
-          <p className="mt-4 max-w-sm text-sm text-muted">
-            Professional tax, accounting and compliance advisory services for
-            individuals and businesses in the United Kingdom, India, the UAE and
-            Oman.
-          </p>
-
+          {blurb?.body && (
+            <p className="mt-4 max-w-sm whitespace-pre-line text-sm text-muted">
+              {blurb.body}
+            </p>
+          )}
         </div>
 
         <div>

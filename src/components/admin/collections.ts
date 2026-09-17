@@ -9,12 +9,15 @@
 import { ICON_KEYS } from "@/components/brand/Icon";
 
 
+/** A `choice` option. A bare string is its own label. */
+export type ChoiceOption = string | { value: string; label: string };
+
 export interface FieldSpec {
   key: string;
   label: string;
   type: "text" | "textarea" | "number" | "checkbox" | "choice";
   /** For `choice`. The empty option is added by the editor. */
-  options?: readonly string[];
+  options?: readonly ChoiceOption[];
   required?: boolean;
   help?: string;
   /** Hidden from the create/edit form but shown in the list. */
@@ -60,7 +63,8 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   "core-values": {
     path: "core-values",
     title: "Core Values",
-    description: "Shown on the About Us page.",
+    description:
+      "The same cards appear on the home page and the About Us page — one entry serves both.",
     titleField: "title",
     subtitleField: "description",
     addLabel: "Add value",
@@ -74,7 +78,8 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   "key-strengths": {
     path: "key-strengths",
     title: "Key Strengths",
-    description: "Shown on the homepage and the About Us page.",
+    description:
+      "The same list appears on the home page and the About Us page — one entry serves both.",
     titleField: "title",
     subtitleField: "description",
     addLabel: "Add strength",
@@ -88,7 +93,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   milestones: {
     path: "milestones",
     title: "Company Milestones",
-    description: "The timeline on the About Us page.",
+    description: "The timeline part-way down the About Us page.",
     titleField: "title",
     subtitleField: "body",
     addLabel: "Add milestone",
@@ -103,7 +108,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
     path: "team",
     title: "Team Members",
     description:
-      "Publish only people who have approved their details appearing publicly.",
+      "The team on the About Us page. Publish only people who have approved their details appearing publicly.",
     titleField: "name",
     subtitleField: "designation",
     addLabel: "Add team member",
@@ -126,7 +131,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
     path: "qualifications",
     title: "Qualifications & Memberships",
     description:
-      "Only verified credentials appear publicly — a qualification must be both verified and published.",
+      "Professional bodies and credentials on the About Us page. Only verified credentials appear publicly — a qualification must be both verified and published.",
     titleField: "name",
     subtitleField: "issuer",
     addLabel: "Add qualification",
@@ -148,7 +153,7 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
     path: "achievements",
     title: "Achievements",
     description:
-      "Headline figures shown on the homepage and About Us page. Publish only verified numbers.",
+      "The same figures appear on the home page and the About Us page — one entry serves both. Publish only verified numbers.",
     titleField: "label",
     subtitleField: "value",
     addLabel: "Add achievement",
@@ -162,7 +167,8 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   testimonials: {
     path: "testimonials",
     title: "Testimonials",
-    description: "Publish only quotes the client has approved.",
+    description:
+      "The carousel on the home page. Publish only quotes the client has approved.",
     titleField: "author_name",
     subtitleField: "quote",
     addLabel: "Add testimonial",
@@ -178,7 +184,8 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   "contact-details": {
     path: "contact-details",
     title: "Contact Details",
-    description: "Addresses, phone numbers and hours shown on the Contact page.",
+    description:
+      "Addresses, numbers, email and hours. These appear on the Contact page and in the footer of every page — change a number here and it changes everywhere it is shown.",
     titleField: "label",
     subtitleField: "value",
     addLabel: "Add contact detail",
@@ -186,10 +193,19 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
       { key: "label", label: "Label", type: "text", required: true },
       {
         key: "detail_type",
-        label: "Type",
-        type: "text",
+        label: "What this is",
+        type: "choice",
         required: true,
-        help: "address, phone, whatsapp, email, hours, map or department.",
+        options: [
+          { value: "address", label: "Postal address" },
+          { value: "phone", label: "Telephone number" },
+          { value: "whatsapp", label: "WhatsApp number" },
+          { value: "email", label: "Email address" },
+          { value: "hours", label: "Opening hours" },
+          { value: "map", label: "Map link" },
+          { value: "department", label: "Number for one market" },
+        ],
+        help: "Decides where it appears. The footer shows the first address, telephone number and email address; numbers for one market are listed on the Contact page only.",
       },
       { key: "value", label: "Value", type: "textarea", required: true },
       PUBLISH_FIELD,
@@ -198,12 +214,19 @@ export const COLLECTIONS: Record<string, CollectionSpec> = {
   "social-links": {
     path: "social-links",
     title: "Social Links",
-    description: "Shown on the Contact page.",
+    description:
+      "Shown on the Contact page and in the footer of every page — one entry serves both.",
     titleField: "platform",
     subtitleField: "url",
     addLabel: "Add link",
     fields: [
-      { key: "platform", label: "Platform", type: "text", required: true },
+      {
+        key: "platform",
+        label: "Platform",
+        type: "text",
+        required: true,
+        help: "Shown as written. LinkedIn and Facebook get their own mark; anything else gets a plain one.",
+      },
       { key: "url", label: "URL", type: "text", required: true },
       PUBLISH_FIELD,
     ],

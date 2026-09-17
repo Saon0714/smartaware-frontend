@@ -49,6 +49,11 @@ export function listLegalPages(): Promise<LegalPageSummary[]> {
   return apiFetch<LegalPageSummary[]>("/public/legal");
 }
 
+/** One named block, for copy that belongs to no single page — the footer's. */
+export function getContentBlock(key: string): Promise<ContentBlock> {
+  return apiFetch<ContentBlock>(`/public/content/${encodeURIComponent(key)}`);
+}
+
 export function getLegalPage(slug: string): Promise<LegalPage> {
   return apiFetch<LegalPage>(`/public/legal/${encodeURIComponent(slug)}`);
 }
