@@ -164,41 +164,61 @@ export function AppShell({
       </nav>
 
       <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 sm:px-6 md:min-h-0">
+        {/* A panel in its own right, not a column of links floating on the
+            page. The frame stays put and the list scrolls inside it, so the
+            border still reads as an edge on a short window. */}
         <nav
           aria-label={title}
-          className="hidden w-60 shrink-0 py-8 md:block md:overflow-y-auto md:overscroll-contain"
+          className="hidden w-60 shrink-0 py-8 md:flex md:min-h-0 md:flex-col"
         >
-          <ul className="space-y-1">
-            {navItems.map((item) => {
-              const active = item.href === activeHref;
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-200 ${
-                      active
-                        ? "bg-bg font-medium text-primary shadow-[var(--sa-shadow-sm)]"
-                        : "text-muted hover:bg-bg/70 hover:text-text"
-                    }`}
-                  >
-                    <span
-                      aria-hidden
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200 ${
-                        active ? "text-white" : "bg-bg text-muted group-hover:text-primary"
+          {/* Sized to its own list rather than stretched down the window: six
+              sections in the Client Portal should not leave a column of empty
+              panel beneath them. It shrinks and the list scrolls when the
+              window is too short for all of them. */}
+          <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-bg shadow-[var(--sa-shadow-sm)]">
+            <ul className="min-h-0 divide-y divide-border overflow-y-auto overscroll-contain [scrollbar-color:var(--sa-color-border)_transparent] [scrollbar-width:thin]">
+              {navItems.map((item) => {
+                const active = item.href === activeHref;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`group relative flex items-center gap-3 py-2.5 pl-4 pr-3 text-sm transition-colors duration-200 ${
+                        active
+                          ? "bg-primary/6 font-medium text-primary"
+                          : "text-muted hover:bg-surface hover:text-text"
                       }`}
-                      style={
-                        active ? { background: "var(--sa-gradient-brand)" } : undefined
-                      }
                     >
-                      <Icon name={item.icon} className="h-4 w-4" />
-                    </span>
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+                      {/* The current section is marked on the edge of the
+                          panel, where it cannot be mistaken for a hover. */}
+                      {active && (
+                        <span
+                          aria-hidden
+                          className="absolute inset-y-0 left-0 w-1"
+                          style={{ background: "var(--sa-gradient-brand)" }}
+                        />
+                      )}
+                      <span
+                        aria-hidden
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200 ${
+                          active
+                            ? "text-white"
+                            : "bg-surface text-muted group-hover:text-primary"
+                        }`}
+                        style={
+                          active ? { background: "var(--sa-gradient-brand)" } : undefined
+                        }
+                      >
+                        <Icon name={item.icon} className="h-4 w-4" />
+                      </span>
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </nav>
 
         <main
