@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Section } from "@/components/content/Prose";
 import { PageHero } from "@/components/layout/PageHero";
+import { IconTile } from "@/components/brand/Icon";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { getContactPage, type ContactDetail } from "@/lib/api/content";
 import { enquiryPrefill } from "@/lib/enquiry/prefill";
@@ -36,6 +37,17 @@ export const metadata: Metadata = {
  * so a visitor always has a way to make contact.
  */
 
+/** The glyph each kind of detail carries, matching the card grids elsewhere. */
+const TYPE_ICONS: Record<string, string> = {
+  address: "map-pin",
+  email: "mail",
+  phone: "phone",
+  whatsapp: "whatsapp",
+  hours: "clock",
+  map: "map",
+  department: "globe",
+};
+
 const TYPE_LABELS: Record<string, string> = {
   address: "Address",
   email: "Email",
@@ -49,7 +61,10 @@ const TYPE_LABELS: Record<string, string> = {
 function DetailValue({ detail }: { detail: ContactDetail }) {
   if (detail.detail_type === "email") {
     return (
-      <a href={`mailto:${detail.value}`} className="text-primary underline underline-offset-4">
+      <a
+        href={`mailto:${detail.value}`}
+        className="font-medium text-primary hover:underline"
+      >
         {detail.value}
       </a>
     );
@@ -58,7 +73,7 @@ function DetailValue({ detail }: { detail: ContactDetail }) {
     return (
       <a
         href={`tel:${detail.value.replace(/\s+/g, "")}`}
-        className="text-primary underline underline-offset-4"
+        className="font-medium text-primary hover:underline"
       >
         {detail.value}
       </a>
@@ -70,7 +85,7 @@ function DetailValue({ detail }: { detail: ContactDetail }) {
         href={`https://wa.me/${detail.value.replace(/[^0-9]/g, "")}`}
         rel="noopener noreferrer"
         target="_blank"
-        className="text-primary underline underline-offset-4"
+        className="font-medium text-primary hover:underline"
       >
         {detail.value}
       </a>
@@ -82,9 +97,12 @@ function DetailValue({ detail }: { detail: ContactDetail }) {
         href={detail.value}
         rel="noopener noreferrer"
         target="_blank"
-        className="text-primary underline underline-offset-4"
+        className="sa-arrow inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
       >
         Open in Google Maps
+        <span className="sa-arrow-mark" aria-hidden>
+          →
+        </span>
       </a>
     );
   }
@@ -132,18 +150,38 @@ export default async function ContactPage({
 
       <Section>
         {general.length > 0 ? (
-          <dl className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {general.map((detail) => (
-              <div key={detail.id} className="sa-card rounded-lg border border-border p-6">
-                <dt className="text-sm font-medium text-muted">
-                  {TYPE_LABELS[detail.detail_type] ?? detail.label}
-                </dt>
-                <dd className="mt-2">
-                  <DetailValue detail={detail} />
-                </dd>
-              </div>
-            ))}
-          </dl>
+          /* One panel, and the items inside carry no border of their own.
+             Six separate cards drew a box around the empty space under every
+             one-line value — an address runs to several lines and an email to
+             one, and the outline is what made that read as half-finished. */
+          <div className="sa-card rounded-2xl border border-border bg-bg p-2 sm:p-4">
+            {/* Columns rather than a grid. A grid makes every cell in a row as
+                tall as the tallest, so a five-line address left a void beside
+                the one-line email and telephone. Flowed columns give each item
+                only the height it needs. */}
+            <dl className="gap-x-8 sm:columns-2 lg:columns-3">
+              {general.map((detail) => (
+                <div
+                  key={detail.id}
+                  className="mb-1 flex break-inside-avoid items-start gap-4 rounded-xl p-4 transition-colors duration-200 hover:bg-surface"
+                >
+                  <IconTile
+                    name={TYPE_ICONS[detail.detail_type]}
+                    size="h-10 w-10"
+                    iconSize="h-[18px] w-[18px]"
+                  />
+                  <div className="min-w-0">
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted">
+                      {TYPE_LABELS[detail.detail_type] ?? detail.label}
+                    </dt>
+                    <dd className="mt-1.5 text-sm leading-relaxed">
+                      <DetailValue detail={detail} />
+                    </dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+          </div>
         ) : (
           <div className="rounded-lg border border-dashed border-border p-8 text-center">
             <p className="font-medium">Contact details coming soon</p>
@@ -173,22 +211,36 @@ export default async function ContactPage({
                 return (
                   <li
                     key={detail.id}
-                    className={`sa-card rounded-xl border p-5 ${
-                      here ? "border-primary bg-primary/5" : "border-border bg-bg"
+                    className={`sa-card relative overflow-hidden rounded-xl border p-5 ${
+                      here ? "border-primary/40 bg-bg" : "border-border bg-bg"
                     }`}
                   >
-                    <p className="text-xs text-muted">
-                      {market?.name ?? detail.label}
-                      {here && (
-                        <span className="ml-2 text-primary">· your selection</span>
-                      )}
-                    </p>
+                    {here && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-0 top-0 h-1"
+                        style={{ background: "var(--sa-gradient-brand)" }}
+                      />
+                    )}
+                    <div className="flex items-center gap-3">
+                      <IconTile
+                        name="globe"
+                        size="h-9 w-9"
+                        iconSize="h-4 w-4"
+                      />
+                      <p className="text-sm font-medium">
+                        {market?.name ?? detail.label}
+                      </p>
+                    </div>
                     <a
                       href={`tel:${detail.value.replace(/\s+/g, "")}`}
-                      className="mt-2 block font-medium text-primary hover:underline"
+                      className="mt-4 block text-lg font-medium text-primary hover:underline"
                     >
                       {detail.value}
                     </a>
+                    {here && (
+                      <p className="mt-1 text-xs text-muted">Your selected market</p>
+                    )}
                   </li>
                 );
               })}
@@ -199,14 +251,14 @@ export default async function ContactPage({
         {page.social_links.length > 0 && (
           <div className="mt-10">
             <h2 className="text-sm font-medium text-muted">Follow us</h2>
-            <ul className="mt-3 flex flex-wrap gap-4">
+            <ul className="mt-3 flex flex-wrap gap-3">
               {page.social_links.map((link) => (
                 <li key={link.id}>
                   <a
                     href={link.url}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="text-sm text-primary underline underline-offset-4"
+                    className="sa-press inline-flex items-center rounded-md border border-border bg-bg px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary"
                   >
                     {link.platform}
                   </a>

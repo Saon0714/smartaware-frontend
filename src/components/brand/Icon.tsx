@@ -36,6 +36,10 @@ const PATHS: Record<string, string> = {
   // A handshake is unreadable at this size — every attempt came out as a
   // squiggle — so the idea of one-to-one attention is carried by a person with
   // a tick instead.
+  mail: "M3 6h18v12H3zM3.5 6.8l8.5 5.7 8.5-5.7",
+  phone: "M6.5 3h3l1.4 3.8-2 1.4a12 12 0 006.4 6.4l1.4-2 3.8 1.4v3a2 2 0 01-2.2 2A17.3 17.3 0 013.5 5.2 2 2 0 015.5 3z",
+  whatsapp: "M4 20l1.3-3.6A8 8 0 1112 20a8 8 0 01-4-1.1zM9.4 9.2c.2-.4.5-.4.7-.4h.5l.8 1.9-.6.7a5 5 0 002.8 2.8l.7-.6 1.9.8v.5c0 .3-.1.5-.5.7a3 3 0 01-2.5-.4 9 9 0 01-3.5-3.5 3 3 0 01-.3-2.5z",
+  map: "M9 4L3 7v13l6-3 6 3 6-3V4l-6 3zM9 4v13M15 7v13",
   "user-check": "M10 12a4 4 0 100-8 4 4 0 000 8zM3 21a7 7 0 0111.3-5.5M16 18l2 2 4-4",
   message: "M4 5h16v11H9l-5 4z",
 };
