@@ -1,9 +1,11 @@
 /**
  * Smart AI chat.
  *
- * One endpoint serves both placements. On portal pages `apiFetch` attaches the
- * access token, which lets the backend attribute the transcript — it does not
- * widen what the bot can see. Spec 4.1 keeps it FAQ-only everywhere.
+ * One endpoint serves both placements, and it is called anonymously from both.
+ * Nothing said to Smart AI is recorded, so there is no transcript for an
+ * account to be attached to — the conversation is held in the browser and the
+ * earlier turns travel back with each question so the model has context.
+ * Spec 4.1 keeps it FAQ-only everywhere.
  */
 
 import { apiFetch, type ApiPaths } from "./client";
@@ -14,12 +16,14 @@ export type AskResponse = Json<
   ApiPaths["/api/v1/public/chat"]["post"]["responses"][200]
 >;
 
+export type ChatTurn = { role: "user" | "assistant"; content: string };
+
 export function askSmartAi(
   question: string,
-  sessionToken: string | null,
+  history: readonly ChatTurn[],
 ): Promise<AskResponse> {
   return apiFetch<AskResponse>("/public/chat", {
     method: "POST",
-    body: { question, session_token: sessionToken },
+    body: { question, history },
   });
 }

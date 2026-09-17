@@ -17,6 +17,7 @@ export const ENQUIRY_PARAMS = {
   service: "service",
   subService: "sub",
   country: "country",
+  question: "q",
 } as const;
 
 /**
@@ -31,6 +32,7 @@ export const ENQUIRY_FIELDS = {
   country: "country",
   services: "service_required",
   subServices: "sub_services",
+  message: "additional_information",
 } as const;
 
 export type EnquiryContext = {
@@ -40,6 +42,14 @@ export type EnquiryContext = {
   subService?: string | null;
   /** The market, which matches a Country option because both come from Region. */
   country?: string | null;
+  /**
+   * A question Smart AI could not answer.
+   *
+   * It travels in the URL rather than being recorded when it was asked:
+   * nothing said to the chatbot is stored, so this is the person carrying
+   * their own question across, and they see it in the form before it is sent.
+   */
+  question?: string | null;
 };
 
 /** A link to the contact form, pre-loaded with what the visitor clicked. */
@@ -48,6 +58,7 @@ export function enquiryHref(context: EnquiryContext): string {
   if (context.service) params.set(ENQUIRY_PARAMS.service, context.service);
   if (context.subService) params.set(ENQUIRY_PARAMS.subService, context.subService);
   if (context.country) params.set(ENQUIRY_PARAMS.country, context.country);
+  if (context.question) params.set(ENQUIRY_PARAMS.question, context.question);
   const query = params.toString();
   // The anchor lands the visitor on the form rather than at the top of a page
   // whose first screen is contact details they did not ask for.
@@ -77,5 +88,6 @@ export function enquiryContext(
     service: cap(one(searchParams[ENQUIRY_PARAMS.service]), 120),
     subService: cap(one(searchParams[ENQUIRY_PARAMS.subService]), 160),
     country: cap(one(searchParams[ENQUIRY_PARAMS.country]), 80),
+    question: cap(one(searchParams[ENQUIRY_PARAMS.question]), 1000),
   };
 }

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { ApiError } from "@/lib/api/client";
 import { askSmartAi } from "@/lib/api/chat";
+import { enquiryHref } from "@/lib/enquiry/prefill";
 
 /**
  * Smart AI — the floating chat widget.
@@ -12,18 +13,21 @@ import { askSmartAi } from "@/lib/api/chat";
  * Spec Section 4 requires it on every public page and every portal page, so it
  * lives in the shared shells rather than being added per page.
  *
- * The session token is kept in sessionStorage so a conversation survives
- * navigation within a tab but does not outlive it. It is an opaque server-issued
- * identifier for a transcript, not a credential — the bot answers from the FAQ
- * only and can reach no account data, so it grants nothing if read.
+ * The conversation is held here and nowhere else. Nothing said to Smart AI is
+ * recorded server-side, so the earlier turns travel back with each question to
+ * give the model context, and closing the tab ends the conversation for good.
+ *
+ * When it cannot answer, it offers the contact form carrying the question — the
+ * one route by which SmartAWARE sees what was asked, taken deliberately, with
+ * the wording in front of the person before they send it.
  */
-
-const SESSION_KEY = "smartaware.chat.session";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   escalated?: boolean;
+  /** The question this answer failed to cover, offered to the contact form. */
+  asked?: string;
 }
 
 const GREETING: Message = {
@@ -38,13 +42,8 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const sessionToken = useRef<string | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    sessionToken.current = sessionStorage.getItem(SESSION_KEY);
-  }, []);
 
   useEffect(() => {
     if (open) {
@@ -68,18 +67,26 @@ export function ChatWidget() {
     const question = input.trim();
     if (!question || busy) return;
 
+    // The greeting is ours, not something the person said, so it is not sent.
+    const history = messages
+      .filter((message) => message !== GREETING)
+      .map(({ role, content }) => ({ role, content }));
+
     setMessages((current) => [...current, { role: "user", content: question }]);
     setInput("");
     setError(null);
     setBusy(true);
 
     try {
-      const reply = await askSmartAi(question, sessionToken.current);
-      sessionToken.current = reply.session_token;
-      sessionStorage.setItem(SESSION_KEY, reply.session_token);
+      const reply = await askSmartAi(question, history);
       setMessages((current) => [
         ...current,
-        { role: "assistant", content: reply.answer, escalated: reply.escalated },
+        {
+          role: "assistant",
+          content: reply.answer,
+          escalated: reply.escalated,
+          asked: question,
+        },
       ]);
     } catch (err) {
       setError(
@@ -147,11 +154,12 @@ export function ChatWidget() {
                 {message.escalated && (
                   <p className="mt-1.5 text-xs">
                     <Link
-                      href="/contact"
+                      href={enquiryHref({ question: message.asked })}
                       className="sa-link sa-arrow text-primary"
                       onClick={() => setOpen(false)}
                     >
-                      Contact SmartAWARE <span className="sa-arrow-mark" aria-hidden>→</span>
+                      Ask the team instead{" "}
+                      <span className="sa-arrow-mark" aria-hidden>→</span>
                     </Link>
                   </p>
                 )}

@@ -173,6 +173,9 @@ function initialValues(
   const country = context.country ?? "";
   const values: Record<string, unknown> = {};
   if (country) values[ENQUIRY_FIELDS.country] = country;
+  // Carried from Smart AI when it could not answer. Starting text in an
+  // ordinary box — the person reads it, edits it, or clears it.
+  if (context.question) values[ENQUIRY_FIELDS.message] = context.question;
 
   const service = servicesFor(catalogue, country).find(
     (candidate) => candidate.name === context.service,

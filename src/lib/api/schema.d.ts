@@ -1718,40 +1718,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/chat-sessions": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List Sessions */
-        get: operations["admin-faq_list_sessions"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/admin/chat-sessions/{session_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Session */
-        get: operations["admin-faq_get_session"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/admin/clients": {
         parameters: {
             query?: never;
@@ -2410,19 +2376,20 @@ export interface components {
         AskRequest: {
             /** Question */
             question: string;
-            /** Session Token */
-            session_token?: string | null;
+            /**
+             * History
+             * @description Earlier turns, oldest first. Held by the browser, never stored here.
+             */
+            history?: components["schemas"]["ChatTurn"][];
         };
         /** AskResponse */
         AskResponse: {
-            /** Session Token */
-            session_token: string;
             /** Answer */
             answer: string;
             /** Escalated */
             escalated: boolean;
             /** Top Similarity */
-            top_similarity: number | null;
+            top_similarity?: number | null;
         };
         /**
          * AssignedManagerOut
@@ -2604,88 +2571,24 @@ export interface components {
             /** New Password */
             new_password: string;
         };
-        /** ChatMessageOut */
-        ChatMessageOut: {
+        /**
+         * ChatTurn
+         * @description One turn of the conversation, as the asker's browser holds it.
+         *
+         *     History arrives with the question rather than being looked up, because
+         *     there is nothing to look it up in: the server keeps no transcript. It is
+         *     capped and re-cleaned server-side all the same — anything a caller sends is
+         *     a claim, not a record.
+         */
+        ChatTurn: {
             /**
-             * Id
-             * Format: uuid
+             * Role
+             * @enum {string}
              */
-            id: string;
-            role: components["schemas"]["ChatRole"];
+            role: "user" | "assistant";
             /** Content */
             content: string;
-            /** Escalated */
-            escalated: boolean;
-            /** Top Similarity */
-            top_similarity: number | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
         };
-        /**
-         * ChatRole
-         * @enum {string}
-         */
-        ChatRole: "user" | "assistant";
-        /** ChatSessionDetail */
-        ChatSessionDetail: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            surface: components["schemas"]["ChatSurface"];
-            /** User Id */
-            user_id: string | null;
-            /** Client Id */
-            client_id: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Last Activity At */
-            last_activity_at: string | null;
-            /**
-             * Message Count
-             * @default 0
-             */
-            message_count: number;
-            /** Messages */
-            messages?: components["schemas"]["ChatMessageOut"][];
-        };
-        /** ChatSessionOut */
-        ChatSessionOut: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            surface: components["schemas"]["ChatSurface"];
-            /** User Id */
-            user_id: string | null;
-            /** Client Id */
-            client_id: string | null;
-            /**
-             * Created At
-             * Format: date-time
-             */
-            created_at: string;
-            /** Last Activity At */
-            last_activity_at: string | null;
-            /**
-             * Message Count
-             * @default 0
-             */
-            message_count: number;
-        };
-        /**
-         * ChatSurface
-         * @enum {string}
-         */
-        ChatSurface: "public" | "portal";
         /** ClientDetail */
         ClientDetail: {
             /**
@@ -3791,7 +3694,7 @@ export interface components {
          * Permission
          * @enum {string}
          */
-        Permission: "task:view" | "task:create" | "task:update" | "task:complete" | "task:assign" | "task:delete" | "client:view" | "client:create" | "client:update" | "client:set_status" | "client:assign_manager" | "invite:manage" | "document:view" | "document:upload" | "document:upload_as_staff" | "document:delete" | "invoice:view" | "invoice:manage" | "invoice:reconcile" | "note:view" | "note:manage" | "content:manage" | "faq:manage" | "settings:manage" | "user:manage" | "enquiry:view" | "chat_logs:view" | "audit:view";
+        Permission: "task:view" | "task:create" | "task:update" | "task:complete" | "task:assign" | "task:delete" | "client:view" | "client:create" | "client:update" | "client:set_status" | "client:assign_manager" | "invite:manage" | "document:view" | "document:upload" | "document:upload_as_staff" | "document:delete" | "invoice:view" | "invoice:manage" | "invoice:reconcile" | "note:view" | "note:manage" | "content:manage" | "faq:manage" | "settings:manage" | "user:manage" | "enquiry:view" | "audit:view";
         /** PersonSummary */
         PersonSummary: {
             /**
@@ -9091,68 +8994,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["FaqIndexStatus"];
-                };
-            };
-        };
-    };
-    "admin-faq_list_sessions": {
-        parameters: {
-            query?: {
-                escalated_only?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ChatSessionOut"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    "admin-faq_get_session": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                session_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ChatSessionDetail"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

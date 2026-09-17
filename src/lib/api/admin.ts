@@ -237,14 +237,6 @@ export type FaqIndexStatus = Json<
   ApiPaths["/api/v1/admin/faq-index/status"]["get"]["responses"][200]
 >;
 
-export type ChatSessionSummary = Json<
-  ApiPaths["/api/v1/admin/chat-sessions"]["get"]["responses"][200]
->[number];
-
-export type ChatSessionDetail = Json<
-  ApiPaths["/api/v1/admin/chat-sessions/{session_id}"]["get"]["responses"][200]
->;
-
 export const listFaq = (includeDeleted = false) =>
   apiFetch<FaqEntry[]>(`/admin/faq${includeDeleted ? "?include_deleted=true" : ""}`);
 
@@ -262,14 +254,6 @@ export const restoreFaq = (id: string) =>
 
 export const getFaqIndexStatus = () =>
   apiFetch<FaqIndexStatus>("/admin/faq-index/status");
-
-export const listChatSessions = (escalatedOnly = false) =>
-  apiFetch<ChatSessionSummary[]>(
-    `/admin/chat-sessions${escalatedOnly ? "?escalated_only=true" : ""}`,
-  );
-
-export const getChatSession = (id: string) =>
-  apiFetch<ChatSessionDetail>(`/admin/chat-sessions/${id}`);
 
 // --- Clients, staff and invitations -------------------------------------------------
 

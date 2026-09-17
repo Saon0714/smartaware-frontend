@@ -41,7 +41,6 @@ const NAV: readonly (NavItem & { needs?: Permission })[] = [
   { href: "/admin/services", icon: "layers", label: "Services", needs: "content:manage" },
   { href: "/admin/regions", icon: "globe", label: "Markets", needs: "content:manage" },
   { href: "/admin/faq", icon: "help", label: "FAQ (Smart AI)", needs: "faq:manage" },
-  { href: "/admin/chat-logs", icon: "book", label: "Smart AI Transcripts", needs: "chat_logs:view" },
   { href: "/admin/content", icon: "briefcase", label: "Website Content", needs: "content:manage" },
   { href: "/admin/settings", icon: "settings", label: "Settings", needs: "settings:manage" },
 ];
