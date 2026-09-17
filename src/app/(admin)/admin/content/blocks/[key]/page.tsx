@@ -99,12 +99,12 @@ export default function BlockEditorPage() {
           Page Text
         </Link>
         <span aria-hidden> / </span>
-        <span>{block.data?.title ?? blockKey}</span>
+        <span>{block.data?.title || "Page section"}</span>
       </nav>
 
       <PageHeader
-        title={block.data?.title ?? blockKey}
-        description={`Section key: ${blockKey}`}
+        title={block.data?.title ?? "Page section"}
+        description="Wording for this section of the public website. Saving publishes it straight away."
       />
 
       {block.error && (

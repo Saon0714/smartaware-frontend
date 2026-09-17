@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { Icon } from "@/components/brand/Icon";
 import { LogoLink } from "@/components/brand/Logo";
@@ -52,6 +52,11 @@ export function activeNavHref(
  * other way round, a white panel on a white page has only its border to say it
  * is a panel, and the whole interface reads flat.
  *
+ * From the sidebar breakpoint up, the shell fills the viewport and the sidebar
+ * and the content each scroll on their own, so the wheel moves whichever one
+ * the pointer is over. Below it there is no sidebar to scroll, so the page
+ * scrolls as a whole and the header and section chips stay stuck to the top.
+ *
  * The navigation it receives is chosen per-portal by the caller. That is a
  * presentation decision only — the backend authorises every request
  * independently, so a hidden link is not a permission.
@@ -69,6 +74,14 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const activeHref = activeNavHref(pathname, navItems);
+  const main = useRef<HTMLElement>(null);
+
+  // The browser restores scroll on the window, which no longer moves once the
+  // content is its own scroller. Without this, leaving a long client list
+  // opens the next section already scrolled halfway down it.
+  useEffect(() => {
+    main.current?.scrollTo({ top: 0 });
+  }, [pathname]);
 
   const displayName = client?.company_name ?? user?.full_name ?? user?.email ?? "";
 
@@ -79,10 +92,10 @@ export function AppShell({
   }
 
   return (
-    <div className="sa-workspace flex min-h-screen flex-col bg-surface">
+    <div className="sa-workspace flex min-h-screen flex-col bg-surface md:h-screen md:min-h-0 md:overflow-hidden">
       {/* Sticky: these pages run long, and losing the way out of a section
           halfway down a task list is a small cruelty. */}
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur">
+      <header className="sticky top-0 z-40 shrink-0 border-b border-border bg-bg/85 backdrop-blur">
         <span
           aria-hidden
           className="absolute inset-x-0 bottom-0 h-px"
@@ -125,7 +138,7 @@ export function AppShell({
           menu to open. */}
       <nav
         aria-label={`${title} sections`}
-        className="sticky top-16 z-30 border-b border-border bg-bg/85 backdrop-blur md:hidden"
+        className="sticky top-16 z-30 shrink-0 border-b border-border bg-bg/85 backdrop-blur md:hidden"
       >
         <ul className="flex gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {navItems.map((item) => {
@@ -150,11 +163,12 @@ export function AppShell({
         </ul>
       </nav>
 
-      <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 py-8 sm:px-6">
-        <nav aria-label={title} className="hidden w-60 shrink-0 md:block">
-          {/* Sticky below the header, so the sections stay reachable however
-              far down a long page you are. */}
-          <ul className="sticky top-24 space-y-1">
+      <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-4 sm:px-6 md:min-h-0">
+        <nav
+          aria-label={title}
+          className="hidden w-60 shrink-0 py-8 md:block md:overflow-y-auto md:overscroll-contain"
+        >
+          <ul className="space-y-1">
             {navItems.map((item) => {
               const active = item.href === activeHref;
               return (
@@ -187,7 +201,12 @@ export function AppShell({
           </ul>
         </nav>
 
-        <main className="min-w-0 flex-1 pb-4">{children}</main>
+        <main
+          ref={main}
+          className="min-w-0 flex-1 py-8 md:overflow-y-auto md:overscroll-contain"
+        >
+          {children}
+        </main>
       </div>
 
       <ChatWidgetSlot />

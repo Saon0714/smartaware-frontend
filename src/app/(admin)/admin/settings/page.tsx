@@ -32,7 +32,7 @@ export default function SettingsPage() {
     try {
       await updateSetting(setting.key, value);
       await groups.reload();
-      setSaved(setting.label ?? setting.key);
+      setSaved(setting.label);
       return true;
     } catch (err) {
       setError(describeError(err));
@@ -84,12 +84,21 @@ function SettingRow({
   onSave: (setting: Setting, value: unknown) => Promise<boolean>;
 }) {
   const assumed = setting.description?.includes("ASSUMED DEFAULT");
+  // A multi-choice row is several controls, so its name heads the group rather
+  // than labelling any one of them.
+  const grouped = setting.control === "multi_choice";
 
   return (
     <div className="sa-card rounded-xl border border-border bg-bg p-5 shadow-[var(--sa-shadow-sm)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <Label htmlFor={`setting-${setting.key}`}>{setting.label}</Label>
+          {grouped ? (
+            <p id={`setting-${setting.key}`} className="block text-sm font-medium">
+              {setting.label}
+            </p>
+          ) : (
+            <Label htmlFor={`setting-${setting.key}`}>{setting.label}</Label>
+          )}
           {setting.hint && <p className="mt-1 text-sm text-muted">{setting.hint}</p>}
           {assumed && (
             <p className="mt-2 text-xs text-muted">
@@ -97,7 +106,6 @@ function SettingRow({
               SmartAWARE&apos;s confirmation.
             </p>
           )}
-          <p className="mt-2 font-mono text-xs text-muted">{setting.key}</p>
         </div>
 
         <div className="w-full sm:w-72">
@@ -148,6 +156,10 @@ function SettingControl({
     );
   }
 
+  if (setting.control === "multi_choice") {
+    return <MultiChoiceControl setting={setting} onSave={onSave} />;
+  }
+
   if (setting.control === "email_list") {
     return <EmailListControl setting={setting} onSave={onSave} />;
   }
@@ -194,6 +206,47 @@ function ValueControl({
         Save
       </Button>
     </form>
+  );
+}
+
+/** Several of a fixed set of values — picked, rather than typed as a list. */
+function MultiChoiceControl({
+  setting,
+  onSave,
+}: {
+  setting: Setting;
+  onSave: (setting: Setting, value: unknown) => Promise<boolean>;
+}) {
+  const chosen: string[] = Array.isArray(setting.value)
+    ? (setting.value as string[])
+    : [];
+  const [busy, setBusy] = useState(false);
+
+  async function toggle(value: string, on: boolean) {
+    setBusy(true);
+    await onSave(
+      setting,
+      on ? [...chosen, value] : chosen.filter((v) => v !== value),
+    );
+    setBusy(false);
+  }
+
+  return (
+    <div role="group" aria-labelledby={`setting-${setting.key}`} className="space-y-2">
+      {setting.choices.map((choice) => (
+        <Checkbox
+          key={choice.value}
+          id={`setting-${setting.key}-${choice.value}`}
+          label={choice.label}
+          checked={chosen.includes(choice.value)}
+          disabled={busy}
+          onChange={(e) => void toggle(choice.value, e.target.checked)}
+        />
+      ))}
+      {chosen.length === 0 && (
+        <p className="text-sm text-muted">None — this applies to nobody.</p>
+      )}
+    </div>
   );
 }
 

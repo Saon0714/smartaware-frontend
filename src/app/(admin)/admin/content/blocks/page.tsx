@@ -47,7 +47,7 @@ export default function BlocksPage() {
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium">{block.title ?? block.key}</p>
+                  <p className="font-medium">{block.title || "Untitled section"}</p>
                   <Badge tone={block.is_published ? "success" : "neutral"}>
                     {block.is_published ? "Published" : "Hidden"}
                   </Badge>
@@ -56,7 +56,6 @@ export default function BlocksPage() {
                   )}
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-muted">{block.body}</p>
-                <p className="mt-1 font-mono text-xs text-muted">{block.key}</p>
               </div>
               <span aria-hidden className="text-muted">→</span>
             </Link>

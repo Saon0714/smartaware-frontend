@@ -4264,6 +4264,16 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserOut"];
         };
+        /**
+         * SettingChoice
+         * @description One option of a `choice` or `multi_choice` setting.
+         */
+        SettingChoice: {
+            /** Value */
+            value: string;
+            /** Label */
+            label: string;
+        };
         /** SettingGroupOut */
         SettingGroupOut: {
             /** Group */
@@ -4296,17 +4306,16 @@ export interface components {
             /**
              * Control
              * @default text
+             * @enum {string}
              */
-            control: string;
+            control: "number" | "toggle" | "text" | "choice" | "multi_choice" | "email_list";
             /** Label */
-            label?: string | null;
+            label: string;
             /**
              * Choices
              * @default []
              */
-            choices: {
-                [key: string]: string;
-            }[];
+            choices: components["schemas"]["SettingChoice"][];
             /** Minimum */
             minimum?: number | null;
             /** Maximum */

@@ -19,17 +19,54 @@ import {
  * validates submissions against this same definition.
  */
 
-const FIELD_TYPES = [
-  "text", "textarea", "email", "phone", "number", "date",
-  "select", "multiselect", "checkbox", "radio", "country",
-] as const;
+/** What each answer looks like on the form, named as an editor would name it. */
+const FIELD_TYPES: readonly { value: string; label: string }[] = [
+  { value: "text", label: "Short text" },
+  { value: "textarea", label: "Long text" },
+  { value: "email", label: "Email address" },
+  { value: "phone", label: "Phone number" },
+  { value: "number", label: "Number" },
+  { value: "date", label: "Date" },
+  { value: "select", label: "Dropdown, one answer" },
+  { value: "multiselect", label: "Dropdown, several answers" },
+  { value: "checkbox", label: "Tick box" },
+  { value: "radio", label: "Buttons, one answer" },
+  { value: "country", label: "Country" },
+];
+
+function typeLabel(value: string): string {
+  return FIELD_TYPES.find((t) => t.value === value)?.label ?? value;
+}
+
+/**
+ * The name a submission is filed under, derived from the label.
+ *
+ * It has to be a lower-case identifier because it is a key in every stored
+ * answer, but that is a storage detail — asking whoever writes the question to
+ * also invent an identifier for it only invites a typo in something that can
+ * never be changed afterwards.
+ */
+export function keyForLabel(label: string, taken: readonly string[]): string {
+  const base =
+    label
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 56) || "field";
+  const stem = /^[a-z]/.test(base) ? base : `field_${base}`;
+  if (!taken.includes(stem)) return stem;
+  for (let n = 2; ; n += 1) {
+    const candidate = `${stem}_${n}`;
+    if (!taken.includes(candidate)) return candidate;
+  }
+}
 
 export default function EnquiryFormFieldsPage() {
   const form = useAsync(() => getAdminForm("enquiry"), "enquiry");
   const [busy, setBusy] = useState(false);
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({
-    key: "", label: "", field_type: "text", is_required: false,
+    label: "", field_type: "text", is_required: false,
   });
 
   const fields = form.data?.fields ?? [];
@@ -82,11 +119,12 @@ export default function EnquiryFormFieldsPage() {
             const ok = await run(() =>
               createFormField("enquiry", {
                 ...draft,
+                key: keyForLabel(draft.label, fields.map((f) => f.key)),
                 sort_order: fields.length + 1,
               }),
             );
             if (ok) {
-              setDraft({ key: "", label: "", field_type: "text", is_required: false });
+              setDraft({ label: "", field_type: "text", is_required: false });
               setAdding(false);
             }
           }}
@@ -106,23 +144,6 @@ export default function EnquiryFormFieldsPage() {
               />
             </div>
             <div>
-              <Label htmlFor="key">
-                Key<span className="text-danger"> *</span>
-              </Label>
-              <Input
-                id="key"
-                required
-                pattern="[a-z][a-z0-9_]*"
-                placeholder="referred_by"
-                value={draft.key}
-                onChange={(e) => setDraft({ ...draft, key: e.target.value })}
-              />
-              <p className="mt-1 text-xs text-muted">
-                Lower case and underscores. Stored with every submission and
-                cannot be changed later.
-              </p>
-            </div>
-            <div>
               <Label htmlFor="field_type">Type</Label>
               <Select
                 id="field_type"
@@ -130,8 +151,8 @@ export default function EnquiryFormFieldsPage() {
                 onChange={(e) => setDraft({ ...draft, field_type: e.target.value })}
               >
                 {FIELD_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
+                  <option key={type.value} value={type.value}>
+                    {type.label}
                   </option>
                 ))}
               </Select>
@@ -166,10 +187,9 @@ export default function EnquiryFormFieldsPage() {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-medium">{field.label}</p>
-                <Badge>{field.field_type}</Badge>
+                <Badge>{typeLabel(field.field_type)}</Badge>
                 {field.is_required && <Badge tone="warning">Required</Badge>}
               </div>
-              <p className="mt-1 font-mono text-xs text-muted">{field.key}</p>
               {field.options && field.options.length > 0 && (
                 <p className="mt-1 text-xs text-muted">
                   {field.options.length} options
