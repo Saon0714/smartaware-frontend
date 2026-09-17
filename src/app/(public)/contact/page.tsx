@@ -248,26 +248,6 @@ export default async function ContactPage({
           </div>
         )}
 
-        {page.social_links.length > 0 && (
-          <div className="mt-10">
-            <h2 className="text-sm font-medium text-muted">Follow us</h2>
-            <ul className="mt-3 flex flex-wrap gap-3">
-              {page.social_links.map((link) => (
-                <li key={link.id}>
-                  <a
-                    href={link.url}
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className="sa-press inline-flex items-center rounded-md border border-border bg-bg px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary"
-                  >
-                    {link.platform}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         <div id="enquiry" className="mt-12 grid scroll-mt-24 gap-10 lg:grid-cols-[3fr_2fr]">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">Make an enquiry</h2>

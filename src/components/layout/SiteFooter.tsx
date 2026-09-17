@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/Logo";
+import { SocialIcon } from "@/components/brand/SocialIcon";
 import { getContactPage, listLegalPages } from "@/lib/api/content";
 import { listRegions } from "@/lib/api/services";
 
@@ -56,8 +57,9 @@ export async function SiteFooter() {
                     href={link.url}
                     rel="noopener noreferrer"
                     target="_blank"
-                    className="sa-press inline-flex items-center rounded-md border border-border bg-bg px-3 py-1.5 text-xs font-medium hover:border-primary hover:text-primary"
+                    className="sa-press inline-flex items-center gap-2 rounded-md border border-border bg-bg px-3 py-2 text-xs font-medium hover:border-primary hover:text-primary"
                   >
+                    <SocialIcon platform={link.platform} />
                     {link.platform}
                   </a>
                 </li>
