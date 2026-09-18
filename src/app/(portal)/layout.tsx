@@ -14,9 +14,7 @@ const NAV: readonly NavItem[] = [
   { href: "/portal/profile", icon: "user", label: "Profile" },
   { href: "/portal/tasks", icon: "clipboard", label: "Tasks" },
   { href: "/portal/manager", icon: "user-check", label: "My Manager" },
-  // Payments and invoices are deliberately absent: Section 12's flow is on hold
-  // until SmartAWARE supplies the Wise payment link, and the page does not
-  // exist. A navigation entry pointing at a 404 is worse than no entry.
+  { href: "/portal/invoices", icon: "receipt", label: "Invoices" },
   { href: "/portal/documents", icon: "file", label: "Documents" },
   { href: "/portal/notes", icon: "message", label: "Notes" },
 ];

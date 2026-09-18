@@ -32,9 +32,7 @@ const NAV: readonly (NavItem & { needs?: Permission })[] = [
   { href: "/admin/staff", icon: "users", label: "Team", needs: "user:manage" },
   { href: "/admin/invites", icon: "mail", label: "Invitations", needs: "invite:manage" },
   { href: "/admin/tasks", icon: "clipboard", label: "Tasks", needs: "task:view" },
-  // Invoices are deliberately absent: Section 12's payment flow is on hold
-  // until SmartAWARE supplies the Wise payment link, and the page does not
-  // exist yet. A navigation entry pointing at a 404 is worse than no entry.
+  { href: "/admin/invoices", icon: "receipt", label: "Invoices", needs: "invoice:view" },
   { href: "/admin/documents", icon: "file", label: "Documents", needs: "document:view" },
   { href: "/admin/notes", icon: "message", label: "Client Notes", needs: "note:view" },
   { href: "/admin/enquiries", icon: "inbox", label: "Enquiries", needs: "enquiry:view" },

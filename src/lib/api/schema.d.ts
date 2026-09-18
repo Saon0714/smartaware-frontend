@@ -541,6 +541,107 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/portal/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My invoices */
+        get: operations["portal-invoices_my_invoices"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/invoices/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My invoice counts */
+        get: operations["portal-invoices_my_invoice_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/invoices/{invoice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** One invoice */
+        get: operations["portal-invoices_my_invoice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/invoices/{invoice_id}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start a payment
+         * @description Hand back the Wise URL, and note that it was handed over.
+         *
+         *     A POST rather than a GET because it writes: the URL a client was actually
+         *     sent to is worth having when a payment later has to be matched by hand.
+         *     It records an attempt and nothing more — opening Wise is not paying, so the
+         *     invoice stays exactly as unpaid as it was.
+         */
+        post: operations["portal-invoices_start_payment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/invoices/{invoice_id}/receipt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send the payment receipt back
+         * @description The client's half of reconciliation.
+         *
+         *     Nothing about this marks the invoice paid — it puts the proof in front of
+         *     the people who can check it. Section 7 routes that to the administrator and
+         *     the client's own manager rather than the whole team, because it is a
+         *     request to do something rather than news.
+         */
+        post: operations["portal-invoices_upload_receipt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/portal/profile": {
         parameters: {
             query?: never;
@@ -2142,6 +2243,123 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List */
+        get: operations["admin-invoices_list"];
+        put?: never;
+        /** Create */
+        post: operations["admin-invoices_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/invoices/counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Counts */
+        get: operations["admin-invoices_counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/invoices/{invoice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get */
+        get: operations["admin-invoices_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["admin-invoices_update"];
+        trace?: never;
+    };
+    "/api/v1/admin/invoices/{invoice_id}/document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Attach Document
+         * @description Share the invoice itself with the client, and tell them it is there.
+         *
+         *     Filed as an ordinary document so it appears in their Documents as well —
+         *     the invoice screen is a better place to find it, not the only one.
+         */
+        post: operations["admin-invoices_attach_document"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/invoices/{invoice_id}/mark-paid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mark Paid
+         * @description Confirm the money arrived.
+         *
+         *     Audited because this is the one action in the payment flow that no system
+         *     verified: Wise told us nothing, the client's receipt is a claim, and what
+         *     makes the invoice paid is a person saying they checked.
+         */
+        post: operations["admin-invoices_mark_paid"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/invoices/{invoice_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel */
+        post: operations["admin-invoices_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/notes": {
         parameters: {
             query?: never;
@@ -2503,12 +2721,22 @@ export interface components {
             /** @default general */
             doc_type: components["schemas"]["DocumentType"];
         };
+        /** Body_admin-invoices_attach_document */
+        "Body_admin-invoices_attach_document": {
+            /** File */
+            file: string;
+        };
         /** Body_portal-documents_upload_document */
         "Body_portal-documents_upload_document": {
             /** File */
             file: string;
             /** @default general */
             doc_type: components["schemas"]["DocumentType"];
+        };
+        /** Body_portal-invoices_upload_receipt */
+        "Body_portal-invoices_upload_receipt": {
+            /** File */
+            file: string;
         };
         /** CatalogueMarket */
         CatalogueMarket: {
@@ -3423,6 +3651,129 @@ export interface components {
          * @enum {string}
          */
         InviteStatus: "pending" | "used" | "revoked" | "expired";
+        /** InvoiceCounts */
+        InvoiceCounts: {
+            /**
+             * Unpaid
+             * @default 0
+             */
+            unpaid: number;
+            /**
+             * Overdue
+             * @default 0
+             */
+            overdue: number;
+            /**
+             * Paid
+             * @default 0
+             */
+            paid: number;
+            /**
+             * Cancelled
+             * @default 0
+             */
+            cancelled: number;
+        };
+        /** InvoiceCreate */
+        InvoiceCreate: {
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Service Description */
+            service_description: string;
+            /** Amount */
+            amount: number | string;
+            /** Currency */
+            currency: string;
+            /** Invoice Reference */
+            invoice_reference?: string | null;
+            /** Issued At */
+            issued_at?: string | null;
+            /** Due Date */
+            due_date?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /**
+         * InvoiceFileOut
+         * @description Enough to render a download link. The file itself is served by the
+         *     documents endpoints, which already do the scoping and the audit.
+         */
+        InvoiceFileOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** File Name */
+            file_name: string;
+            /** Size Bytes */
+            size_bytes?: number | null;
+            /** Uploaded At */
+            uploaded_at?: string | null;
+        };
+        /** InvoiceOut */
+        InvoiceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Invoice Reference */
+            invoice_reference: string;
+            /** Service Description */
+            service_description: string;
+            /** Amount */
+            amount: string;
+            /** Currency */
+            currency: string;
+            status: components["schemas"]["InvoiceStatus"];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "unpaid" | "overdue" | "awaiting_confirmation" | "paid" | "cancelled";
+            /** Issued At */
+            issued_at: string | null;
+            /** Due Date */
+            due_date: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            document?: components["schemas"]["InvoiceFileOut"] | null;
+            receipt?: components["schemas"]["InvoiceFileOut"] | null;
+            /** Pay Url */
+            pay_url?: string | null;
+        };
+        /**
+         * InvoiceStatus
+         * @enum {string}
+         */
+        InvoiceStatus: "unpaid" | "paid" | "cancelled";
+        /** InvoiceUpdate */
+        InvoiceUpdate: {
+            /** Service Description */
+            service_description?: string | null;
+            /** Amount */
+            amount?: number | string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Issued At */
+            issued_at?: string | null;
+            /** Due Date */
+            due_date?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
         /** KeyStrengthOut */
         KeyStrengthOut: {
             /**
@@ -3547,6 +3898,20 @@ export interface components {
         ManagerClientsRequest: {
             /** Client Ids */
             client_ids?: string[];
+            /** Note */
+            note?: string | null;
+        };
+        /**
+         * MarkPaidRequest
+         * @description Recorded against the person who decided it, because "the system says
+         *     paid" and "someone checked the Wise account" are different claims.
+         */
+        MarkPaidRequest: {
+            /**
+             * External Payment Ref
+             * @description The Wise transaction reference, so the decision can be re-checked.
+             */
+            external_payment_ref?: string | null;
             /** Note */
             note?: string | null;
         };
@@ -3691,6 +4056,24 @@ export interface components {
             completed_at: string | null;
         };
         /**
+         * PayLinkOut
+         * @description The redirect target, handed over one invoice at a time.
+         *
+         *     Built fresh from the invoice rather than read back from the row: an amount
+         *     corrected after a first attempt must not still be payable at the old
+         *     figure.
+         */
+        PayLinkOut: {
+            /** Invoice Reference */
+            invoice_reference: string;
+            /** Amount */
+            amount: string;
+            /** Currency */
+            currency: string;
+            /** Pay Url */
+            pay_url: string;
+        };
+        /**
          * Permission
          * @enum {string}
          */
@@ -3805,6 +4188,13 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /**
+         * ReconciliationMethod
+         * @description Manual today (spec 12.4). The column exists so an automated Wise
+         *     reconciliation can be introduced later without a schema change.
+         * @enum {string}
+         */
+        ReconciliationMethod: "manual" | "automated";
         /** RegionOut */
         RegionOut: {
             /**
@@ -4395,6 +4785,60 @@ export interface components {
              * @default false
              */
             is_archived: boolean;
+        };
+        /**
+         * StaffInvoiceOut
+         * @description Adds what only staff should see: who settled it and against what.
+         */
+        StaffInvoiceOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Client Id
+             * Format: uuid
+             */
+            client_id: string;
+            /** Invoice Reference */
+            invoice_reference: string;
+            /** Service Description */
+            service_description: string;
+            /** Amount */
+            amount: string;
+            /** Currency */
+            currency: string;
+            status: components["schemas"]["InvoiceStatus"];
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "unpaid" | "overdue" | "awaiting_confirmation" | "paid" | "cancelled";
+            /** Issued At */
+            issued_at: string | null;
+            /** Due Date */
+            due_date: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            document?: components["schemas"]["InvoiceFileOut"] | null;
+            receipt?: components["schemas"]["InvoiceFileOut"] | null;
+            /** Pay Url */
+            pay_url?: string | null;
+            /** Client Name */
+            client_name?: string | null;
+            /** Notes */
+            notes?: string | null;
+            reconciliation_method?: components["schemas"]["ReconciliationMethod"] | null;
+            /** Reconciled At */
+            reconciled_at?: string | null;
+            /** Reconciled By */
+            reconciled_by?: string | null;
+            /** External Payment Ref */
+            external_payment_ref?: string | null;
         };
         /** StaffNoteOut */
         StaffNoteOut: {
@@ -5756,6 +6200,143 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-invoices_my_invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceOut"][];
+                };
+            };
+        };
+    };
+    "portal-invoices_my_invoice_counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceCounts"];
+                };
+            };
+        };
+    };
+    "portal-invoices_my_invoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-invoices_start_payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PayLinkOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "portal-invoices_upload_receipt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_portal-invoices_upload_receipt"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceOut"];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -9863,6 +10444,258 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StaffDocumentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_list": {
+        parameters: {
+            query?: {
+                client_id?: string | null;
+                status?: components["schemas"]["InvoiceStatus"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceCounts"];
+                };
+            };
+        };
+    };
+    "admin-invoices_get": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_update": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_attach_document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_admin-invoices_attach_document"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_mark_paid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkPaidRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    "admin-invoices_cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StaffInvoiceOut"];
                 };
             };
             /** @description Validation Error */
